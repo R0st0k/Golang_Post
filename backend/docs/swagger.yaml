@@ -1,0 +1,12 @@
+basePath: /api/v1
+host: localhost:8080
+info:
+  contact:
+    email: 2002rostok@gmail.com
+    name: R0st0k
+  description: Information System "Post" API
+  termsOfService: http://swagger.io/terms/
+  title: Information System \"Post\"
+  version: "1.0"
+paths: {}
+swagger: "2.0"

@@ -1,0 +1,16 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "Information System \"Post\" API",
+        "title": "Information System \\\"Post\\\"",
+        "termsOfService": "http://swagger.io/terms/",
+        "contact": {
+            "name": "R0st0k",
+            "email": "2002rostok@gmail.com"
+        },
+        "version": "1.0"
+    },
+    "host": "localhost:8080",
+    "basePath": "/api/v1",
+    "paths": {}
+}
