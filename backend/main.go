@@ -1,6 +1,8 @@
 package main
 
 import (
+	"backend/db"
+	"backend/demo_db"
 	_ "backend/docs"
 	"backend/routers"
 )
@@ -17,6 +19,10 @@ import (
 // @BasePath  /api/v1
 
 func main() {
+	db.Init()
+
+	demo_db.Insert()
+
 	router := routers.CreateRouters()
 	router.Run(":8080")
 }
