@@ -4,6 +4,7 @@ import (
 	"backend/db"
 	"context"
 	"fmt"
+	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"time"
@@ -30,6 +31,7 @@ type Stage struct {
 
 type Sending struct {
 	Id               primitive.ObjectID `bson:"_id,omitempty" json:"_id,omitempty"`
+	OrderID          uuid.UUID          `bson:"order_id" json:"order_id"`
 	RegistrationDate time.Time          `bson:"registration_date" json:"registration_date"`
 	Sender           Client             `bson:"sender" json:"sender"`
 	Receiver         Client             `bson:"receiver" json:"receiver"`
@@ -46,6 +48,7 @@ func (s *Sending) InsertExample() error {
 
 	sending := Sending{
 		RegistrationDate: time.Now(),
+		OrderID:          uuid.New(),
 		Sender: Client{
 			Name:       "Налсур",
 			Surname:    "Мулюков",

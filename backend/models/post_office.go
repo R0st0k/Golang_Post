@@ -3,7 +3,6 @@ package models
 import (
 	"backend/db"
 	"context"
-	"encoding/json"
 	"fmt"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -97,11 +96,6 @@ func (po *PostOffice) FindExample() ([]PostOffice, error) {
 	}
 	if err = cursor.All(ctx, &postOffices); err != nil {
 		return nil, fmt.Errorf("FindExample: %v", err)
-	}
-
-	for _, element := range postOffices {
-		json, _ := json.MarshalIndent(element, "", "\t")
-		fmt.Println(string(json))
 	}
 
 	return postOffices, nil
