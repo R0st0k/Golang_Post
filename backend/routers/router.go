@@ -1,6 +1,7 @@
 package routers
 
 import (
+	"backend/controllers"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
@@ -14,7 +15,7 @@ func CreateRouters() *gin.Engine {
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	v1 := router.Group("/api/v1/")
 	{
-		v1.GET("HelloWorld")
+		v1.GET("example", controllers.GetExample)
 	}
 
 	return router

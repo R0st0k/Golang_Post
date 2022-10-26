@@ -8,5 +8,15 @@ info:
   termsOfService: http://swagger.io/terms/
   title: Information System \"Post\"
   version: "1.0"
-paths: {}
+paths:
+  /example:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "500":
+          description: Fail
+      summary: Insert and get example data from database
 swagger: "2.0"

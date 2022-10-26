@@ -12,5 +12,22 @@
     },
     "host": "localhost:8080",
     "basePath": "/api/v1",
-    "paths": {}
+    "paths": {
+        "/example": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Insert and get example data from database",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "500": {
+                        "description": "Fail"
+                    }
+                }
+            }
+        }
+    }
 }
