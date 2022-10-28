@@ -19,26 +19,22 @@ type Address struct {
 	Apartment  string `bson:"apartment,omitempty" json:"apartment,omitempty" example:"1"`
 }
 
-type Employee struct {
-	Name        string    `bson:"name" json:"name" example:"Райан"`
-	Surname     string    `bson:"surname" json:"surname" example:"Гослинг"`
-	MiddleName  string    `bson:"middle_name,omitempty" json:"middle_name,omitempty" example:"Томасович"`
-	Gender      string    `bson:"gender" json:"gender" example:"М"`
-	BirthDate   time.Time `bson:"birth_date" json:"birth_date"`
-	Position    string    `bson:"position" json:"position" example:"Водитель"`
-	PhoneNumber string    `bson:"phone_number" json:"phone_number" example:"88005553535"`
-}
-
 type PostOffice struct {
-	Id        primitive.ObjectID `bson:"_id,omitempty" json:"_id,omitempty"`
-	Type      string             `bson:"type" json:"type" example:"Отделение связи"`
-	Address   Address            `bson:"address" json:"address"`
-	Employees []Employee         `bson:"employees" json:"employees"`
+	ID        primitive.ObjectID   `bson:"_id,omitempty" json:"_id,omitempty"`
+	Type      string               `bson:"type" json:"type" example:"Отделение связи"`
+	Address   Address              `bson:"address" json:"address"`
+	Employees []primitive.ObjectID `bson:"employees" json:"employees"`
 }
 
 func (po *PostOffice) InsertExample() error {
+	e := new(Employee)
+	employees, err := e.FindExample()
+	if err != nil {
+		return fmt.Errorf("InsertExample: %v", err)
+	}
+
 	client := db.GetDB()
-	sendingsCollection := client.Database("Post").Collection("PostOffice")
+	postOfficeCollection := client.Database("Post").Collection("PostOffice")
 
 	postOffice := PostOffice{
 		Type: "Отделение связи",
@@ -50,31 +46,12 @@ func (po *PostOffice) InsertExample() error {
 			Street:     "ул. Ленина",
 			Building:   "42",
 		},
-		Employees: []Employee{
-			{
-				Surname:     "Гослинг",
-				Name:        "Райан",
-				MiddleName:  "Томасович",
-				Gender:      "М",
-				BirthDate:   time.Now().Add(-time.Duration(200000) * time.Hour),
-				Position:    "Водитель",
-				PhoneNumber: "88005553535",
-			},
-			{
-				Surname:     "Секретова",
-				Name:        "Секрета",
-				MiddleName:  "Секретовна",
-				Gender:      "Ж",
-				BirthDate:   time.Now().Add(-time.Duration(500000) * time.Hour),
-				Position:    "Почтальон",
-				PhoneNumber: "82233222233",
-			},
-		},
+		Employees: []primitive.ObjectID{employees[0].ID, employees[1].ID},
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	_, err := sendingsCollection.InsertOne(ctx, postOffice)
+	_, err = postOfficeCollection.InsertOne(ctx, postOffice)
 	if err != nil {
 		return fmt.Errorf("InsertExample: %v", err)
 	}
@@ -84,13 +61,13 @@ func (po *PostOffice) InsertExample() error {
 
 func (po *PostOffice) FindExample() ([]PostOffice, error) {
 	client := db.GetDB()
-	sendingsCollection := client.Database("Post").Collection("PostOffice")
+	postOfficeCollection := client.Database("Post").Collection("PostOffice")
 
 	var postOffices []PostOffice
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	cursor, err := sendingsCollection.Find(ctx, bson.D{{"type", "Отделение связи"}})
+	cursor, err := postOfficeCollection.Find(ctx, bson.D{{"type", "Отделение связи"}})
 	if err != nil {
 		return nil, fmt.Errorf("FindExample: %v", err)
 	}

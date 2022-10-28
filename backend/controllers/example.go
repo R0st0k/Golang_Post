@@ -13,8 +13,20 @@ import (
 // @Failure 500 "Fail"
 // @Router  /example [get]
 func GetExample(c *gin.Context) {
+	e := new(models.Employee)
+	err := e.InsertExample()
+	if err != nil {
+		c.Error(err)
+		return
+	}
+	employees, err := e.FindExample()
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
 	s := new(models.Sending)
-	err := s.InsertExample()
+	err = s.InsertExample()
 	if err != nil {
 		c.Error(err)
 		return
@@ -37,5 +49,5 @@ func GetExample(c *gin.Context) {
 		return
 	}
 
-	c.IndentedJSON(http.StatusOK, []interface{}{sendings, postOffices})
+	c.IndentedJSON(http.StatusOK, []interface{}{sendings, postOffices, employees})
 }

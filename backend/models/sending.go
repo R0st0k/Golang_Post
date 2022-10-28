@@ -24,13 +24,14 @@ type Size struct {
 }
 
 type Stage struct {
-	Name     string    `bson:"name" json:"name" example:"Принято в отделении связи"`
-	Date     time.Time `bson:"date" json:"date"`
-	Postcode string    `bson:"postcode" json:"postcode" example:"453870"`
+	Name       string             `bson:"name" json:"name" example:"Принято в отделении связи"`
+	Date       time.Time          `bson:"date" json:"date"`
+	Postcode   string             `bson:"postcode" json:"postcode" example:"453870"`
+	EmployeeID primitive.ObjectID `bson:"employee_id" json:"employee_id"`
 }
 
 type Sending struct {
-	Id               primitive.ObjectID `bson:"_id,omitempty" json:"_id,omitempty"`
+	ID               primitive.ObjectID `bson:"_id,omitempty" json:"_id,omitempty"`
 	OrderID          uuid.UUID          `bson:"order_id" json:"order_id"`
 	RegistrationDate time.Time          `bson:"registration_date" json:"registration_date"`
 	Sender           Client             `bson:"sender" json:"sender"`
@@ -43,8 +44,14 @@ type Sending struct {
 }
 
 func (s *Sending) InsertExample() error {
+	e := new(Employee)
+	employees, err := e.FindExample()
+	if err != nil {
+		return fmt.Errorf("InsertExample: %v", err)
+	}
+
 	client := db.GetDB()
-	sendingsCollection := client.Database("Post").Collection("Sendings")
+	sendingCollection := client.Database("Post").Collection("Sending")
 
 	sending := Sending{
 		RegistrationDate: time.Now(),
@@ -82,14 +89,16 @@ func (s *Sending) InsertExample() error {
 		Weight: 1000,
 		Stages: []Stage{
 			{
-				Name:     "Принято в отделении связи",
-				Date:     time.Now(),
-				Postcode: "453870",
+				Name:       "Принято в отделении связи",
+				Date:       time.Now(),
+				Postcode:   "453870",
+				EmployeeID: employees[0].ID,
 			},
 			{
-				Name:     "Вручено адресату",
-				Date:     time.Now(),
-				Postcode: "123456",
+				Name:       "Вручено адресату",
+				Date:       time.Now(),
+				Postcode:   "123456",
+				EmployeeID: employees[1].ID,
 			},
 		},
 		Status: "Доставлено",
@@ -97,7 +106,7 @@ func (s *Sending) InsertExample() error {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	_, err := sendingsCollection.InsertOne(ctx, sending)
+	_, err = sendingCollection.InsertOne(ctx, sending)
 	if err != nil {
 		return fmt.Errorf("InsertExample: %v", err)
 	}
@@ -107,13 +116,13 @@ func (s *Sending) InsertExample() error {
 
 func (s *Sending) FindExample() ([]Sending, error) {
 	client := db.GetDB()
-	sendingsCollection := client.Database("Post").Collection("Sendings")
+	sendingCollection := client.Database("Post").Collection("Sending")
 
 	var sendings []Sending
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	cursor, err := sendingsCollection.Find(ctx, bson.M{"registration_date": bson.D{{"$lt", time.Now()}}})
+	cursor, err := sendingCollection.Find(ctx, bson.M{"registration_date": bson.D{{"$lt", time.Now()}}})
 	if err != nil {
 		return nil, fmt.Errorf("FindExample: %v", err)
 	}
