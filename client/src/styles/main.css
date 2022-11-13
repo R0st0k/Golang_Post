@@ -1,0 +1,44 @@
+.MainPage {
+    width: 100%;
+    height: 1000px;
+    background-color: white;
+}
+
+.headMain{
+    z-index: 101;
+}
+
+.background{
+    z-index: 0;
+    position: fixed;
+    bottom: 0; right: 0;
+
+}
+
+.InputSearch{
+    z-index: 100;
+    position : absolute;
+    margin-top: 10%;
+    margin-left: 25%;
+}
+
+.OrderSearch{
+    box-sizing: border-box;
+
+    width: 447px;
+    height: 56px;
+
+    border: 3px solid #2971C5;
+    border-radius: 4px;
+    padding: 5px;
+}
+
+.IconSearch{
+    width: 55px;
+    border-radius: 10px;
+}
+
+.logo{
+    position: absolute;
+    top: -70px;
+}
