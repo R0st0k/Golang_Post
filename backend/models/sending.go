@@ -7,6 +7,7 @@ import (
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"time"
 )
 
@@ -18,15 +19,15 @@ type Client struct {
 }
 
 type Size struct {
-	Length int `bson:"length" json:"length" example:"100"`
-	Width  int `bson:"width" json:"width" example:"73"`
-	Height int `bson:"height" json:"height" example:"42"`
+	Length int64 `bson:"length" json:"length" example:"100"`
+	Width  int64 `bson:"width" json:"width" example:"73"`
+	Height int64 `bson:"height" json:"height" example:"42"`
 }
 
 type Stage struct {
 	Name       string             `bson:"name" json:"name" example:"Принято в отделении связи"`
 	Date       time.Time          `bson:"date" json:"date"`
-	Postcode   string             `bson:"postcode" json:"postcode" example:"453870"`
+	Postcode   int64              `bson:"postcode" json:"postcode" example:"453870"`
 	EmployeeID primitive.ObjectID `bson:"employee_id" json:"employee_id"`
 }
 
@@ -38,16 +39,16 @@ type Sending struct {
 	Receiver         Client             `bson:"receiver" json:"receiver"`
 	Type             string             `bson:"type" json:"type" example:"Посылка"`
 	Size             Size               `bson:"size" json:"size"`
-	Weight           int                `bson:"weight" json:"weight" example:"1000"`
+	Weight           int64              `bson:"weight" json:"weight" example:"1000"`
 	Stages           []Stage            `bson:"stages" json:"stages"`
 	Status           string             `bson:"status" json:"status" example:"Доставлено"`
 }
 
-func (s *Sending) InsertExample() error {
+func (s *Sending) InsertExample() (string, error) {
 	e := new(Employee)
 	employees, err := e.FindExample()
 	if err != nil {
-		return fmt.Errorf("InsertExample: %v", err)
+		return "", fmt.Errorf("InsertExample: %v", err)
 	}
 
 	client := db.GetDB()
@@ -61,7 +62,7 @@ func (s *Sending) InsertExample() error {
 			Surname:    "Мулюков",
 			MiddleName: "Рустэмович",
 			Address: Address{
-				Postcode:   "453870",
+				Postcode:   453870,
 				Region:     "Республика Башкортостан",
 				District:   "Мелеузовский район",
 				Settlement: "пос. Нугуш",
@@ -73,7 +74,7 @@ func (s *Sending) InsertExample() error {
 			Name:    "Екатерина",
 			Surname: "Феминисткова",
 			Address: Address{
-				Postcode:  "123456",
+				Postcode:  123456,
 				Region:    "г. Москва",
 				Street:    "ул. Мира",
 				Building:  "1",
@@ -91,13 +92,13 @@ func (s *Sending) InsertExample() error {
 			{
 				Name:       "Принято в отделении связи",
 				Date:       time.Now(),
-				Postcode:   "453870",
+				Postcode:   453870,
 				EmployeeID: employees[0].ID,
 			},
 			{
 				Name:       "Вручено адресату",
 				Date:       time.Now(),
-				Postcode:   "123456",
+				Postcode:   123456,
 				EmployeeID: employees[1].ID,
 			},
 		},
@@ -108,10 +109,10 @@ func (s *Sending) InsertExample() error {
 	defer cancel()
 	_, err = sendingCollection.InsertOne(ctx, sending)
 	if err != nil {
-		return fmt.Errorf("InsertExample: %v", err)
+		return "", fmt.Errorf("InsertExample: %v", err)
 	}
 
-	return nil
+	return sending.OrderID.String(), nil
 }
 
 func (s *Sending) FindExample() ([]Sending, error) {
@@ -131,4 +132,23 @@ func (s *Sending) FindExample() ([]Sending, error) {
 	}
 
 	return sendings, nil
+}
+
+func (s *Sending) GetSendingByOrderID(order_id uuid.UUID) (Sending, error) {
+	client := db.GetDB()
+	sendingCollection := client.Database("Post").Collection("Sending")
+
+	var sending Sending
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	projection := bson.D{{"type", 1}, {"status", 1}, {"stages", 1}, {"_id", 0}}
+	opts := options.FindOne().SetProjection(projection)
+	err := sendingCollection.FindOne(ctx, bson.D{{"order_id", order_id}}, opts).Decode(&sending)
+	if err != nil {
+		return sending, fmt.Errorf("FindExample: %v", err)
+	}
+
+	return sending, nil
 }

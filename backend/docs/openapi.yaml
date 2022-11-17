@@ -1,0 +1,152 @@
+openapi: 3.0.2
+servers:
+  - url: http://localhost:8080/api/v1
+    description: Production server
+info:
+  contact:
+    email: 2002rostok@gmail.com
+    name: R0st0k
+  description: Information System "Post" API
+  termsOfService: http://swagger.io/terms/
+  title: Information System "Post"
+  version: 0.1.0
+tags:
+  - name: getInformation
+    description: Endpoints to get information
+  - name: updateInformation
+    description: Endpoints to update information
+paths:
+  /sending:
+    get:
+      summary: Get information about a single sending
+      description: >
+        Get information about a sending by `order_id`.
+        Require a complete match of `order_id`.
+        Return `type`, `status` and `stages`.
+      tags:
+        - getInformation
+      parameters:
+        - $ref: '#/components/parameters/OrderID'
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SendingGetResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /postcodes_by_city:
+    get:
+      summary: Get information about postcodes in cities
+      description: >
+        Get information about postcodes in cities.
+        Return map with `city` key and `postcode` array value
+      tags:
+        - getInformation
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostcodesByCityGetResponse'
+components:
+  schemas:
+    Error:
+      type: object
+      required:
+        - error_message
+      properties:
+        error_message:
+          type: string
+          example: You don't look at errors anyway
+    SendingType:
+      type: string
+      enum: [ Письмо, Посылка, Бандероль ]
+      example: Письмо
+    SendingStatus:
+      type: string
+      enum: [ В пути, Доставлено, Утеряно ]
+      example: В пути
+    AddressPostcode:
+      type: integer
+      format: int64
+      minimum: 001001
+      maximum: 999999
+      example: 212017
+    SendingStage:
+      type: object
+      required:
+        - name
+        - date
+        - postcode
+        - city
+      properties:
+        name:
+          type: string
+          enum:
+            - Принято в отделении связи
+            - Покинуло место приема
+            - Прибыло в сортировочный центр
+            - Покинуло сортировочный центр
+            - Прибыло в место вручения
+            - Вручено адресату
+          example: Принято в отделении связи
+        date:
+          type: string
+          format: date-time
+        postcode:
+          $ref: '#/components/schemas/AddressPostcode'
+        city:
+          type: string
+          example: Санкт-Петербург
+    SendingGetResponse:
+      type: object
+      required:
+        - type
+        - status
+        - stages
+      properties:
+        type:
+          $ref: '#/components/schemas/SendingType'
+        status:
+          $ref: '#/components/schemas/SendingStatus'
+        stages:
+          type: array
+          items:
+            $ref: '#/components/schemas/SendingStage'
+    PostcodesByCityGetResponse:
+      type: object
+      additionalProperties:
+        type: array
+        items:
+          $ref: '#/components/schemas/AddressPostcode'
+      example:
+        Санкт-Петербург: [123001, 123002]
+        Москва: [124001]
+  parameters:
+    OrderID:
+      in: query
+      name: order_id
+      schema:
+        type: string
+        format: uuid
+      required: true
+      description: ID of sending
+      example: 123e4567-e89b-12d3-a456-426655440000
+  responses:
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: Resource Not Found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'

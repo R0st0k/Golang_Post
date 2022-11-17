@@ -1,25 +1,28 @@
 package main
 
 import (
+	post "backend/api"
 	"backend/db"
-	_ "backend/docs"
-	"backend/routers"
+	"log"
+	"net/http"
 )
-
-// @title          Information System \"Post\"
-// @version        1.0
-// @description    Information System "Post" API
-// @termsOfService http://swagger.io/terms/
-
-// @contact.name  R0st0k
-// @contact.email 2002rostok@gmail.com
-
-// @host     localhost:8080
-// @BasePath /api/v1
 
 func main() {
 	db.Init()
 
-	router := routers.CreateRouters()
-	router.Run(":8080")
+	// Create service instance.
+	service := &postService{}
+
+	// Create generated server.
+	srv, err := post.NewServer(service)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	mux := http.NewServeMux()
+	mux.Handle("/api/v1/", http.StripPrefix("/api/v1", srv))
+
+	if err := http.ListenAndServe(":8080", mux); err != nil {
+		log.Fatal(err)
+	}
 }
