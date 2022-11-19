@@ -3,7 +3,9 @@ version: "3.5"
 services:
   client:
     container_name: "post_client"
-    build: ./client
+    build:
+      context: ./client
+      dockerfile: Dockerfile.dev
     restart: unless-stopped
     ports:
       - "3000:3000"
@@ -12,7 +14,9 @@ services:
 
   backend:
     container_name: "post_backend"
-    build: ./backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
     restart: unless-stopped
     ports:
       - "8080:8080"
@@ -25,6 +29,16 @@ services:
     restart: unless-stopped
     volumes:
       - mongo_data:/data/db
+
+  swagger-ui:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.spec
+    ports:
+      - "80:8080"
+    environment:
+      - SWAGGER_JSON=/spec/openapi.yaml
+      - BASE_URL=/swagger
 
 volumes:
   mongo_data:
