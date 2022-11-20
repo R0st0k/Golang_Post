@@ -1,0 +1,20 @@
+{
+  "name": "generator",
+  "version": "0.1.0",
+  "description": "Dataset generator for Post Information System",
+  "main": "generator.js",
+  "scripts": {
+    "gen": "node generator.js"
+  },
+  "keywords": [
+    "generator"
+  ],
+  "author": "muratom",
+  "license": "ISC",
+  "dependencies": {
+    "chance": "^1.1.9",
+    "underscore": "^1.13.6",
+    "uuid": "^9.0.0"
+  },
+  "type": "module"
+}
