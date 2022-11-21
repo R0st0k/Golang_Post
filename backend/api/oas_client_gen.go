@@ -57,12 +57,13 @@ func (c *Client) requestURL(ctx context.Context) *url.URL {
 	return u
 }
 
-// PostcodesByCityGet invokes GET /postcodes_by_city operation.
+// PostcodesBySettlementGet invokes GET /postcodes_by_settlement operation.
 //
-// Get information about postcodes in cities. Return map with `city` key and `postcode` array value.
+// Get information about postcodes in cities. Return map with `settlement` key and `postcode` array
+// value.
 //
-// GET /postcodes_by_city
-func (c *Client) PostcodesByCityGet(ctx context.Context) (res PostcodesByCityGetResponse, err error) {
+// GET /postcodes_by_settlement
+func (c *Client) PostcodesBySettlementGet(ctx context.Context) (res PostcodesBySettlementGetResponse, err error) {
 	var otelAttrs []attribute.KeyValue
 
 	// Run stopwatch.
@@ -76,7 +77,7 @@ func (c *Client) PostcodesByCityGet(ctx context.Context) (res PostcodesByCityGet
 	c.requests.Add(ctx, 1, otelAttrs...)
 
 	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "PostcodesByCityGet",
+	ctx, span := c.cfg.Tracer.Start(ctx, "PostcodesBySettlementGet",
 		clientSpanKind,
 	)
 	// Track stage for error reporting.
@@ -92,7 +93,7 @@ func (c *Client) PostcodesByCityGet(ctx context.Context) (res PostcodesByCityGet
 
 	stage = "BuildURL"
 	u := uri.Clone(c.requestURL(ctx))
-	u.Path += "/postcodes_by_city"
+	u.Path += "/postcodes_by_settlement"
 
 	stage = "EncodeRequest"
 	r, err := ht.NewRequest(ctx, "GET", u, nil)
@@ -108,7 +109,7 @@ func (c *Client) PostcodesByCityGet(ctx context.Context) (res PostcodesByCityGet
 	defer resp.Body.Close()
 
 	stage = "DecodeResponse"
-	result, err := decodePostcodesByCityGetResponse(resp)
+	result, err := decodePostcodesBySettlementGetResponse(resp)
 	if err != nil {
 		return res, errors.Wrap(err, "decode response")
 	}

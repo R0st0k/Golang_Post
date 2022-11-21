@@ -22,7 +22,7 @@ func (p *postService) SendingGet(ctx context.Context, params post.SendingGetPara
 	}
 
 	po := new(models.PostOffice)
-	cityByPostcode, err := po.FindCityByPostcode()
+	settlementByPostcode, err := po.GetSettlementByPostcode()
 	if err != nil {
 		return nil, err
 	}
@@ -37,7 +37,7 @@ func (p *postService) SendingGet(ctx context.Context, params post.SendingGetPara
 		new_stage.Name = post.SendingStageName(sending.Stages[i].Name)
 		new_stage.Date = sending.Stages[i].Date
 		new_stage.Postcode = post.AddressPostcode(sending.Stages[i].Postcode)
-		new_stage.City = cityByPostcode[sending.Stages[i].Postcode]
+		new_stage.Settlement = settlementByPostcode[sending.Stages[i].Postcode]
 		stages = append(stages, *new_stage)
 	}
 	response.Stages = stages
@@ -45,22 +45,22 @@ func (p *postService) SendingGet(ctx context.Context, params post.SendingGetPara
 	return response, nil
 }
 
-func (p *postService) PostcodesByCityGet(ctx context.Context) (post.PostcodesByCityGetResponse, error) {
+func (p *postService) PostcodesBySettlementGet(ctx context.Context) (post.PostcodesBySettlementGetResponse, error) {
 	p.mux.Lock()
 	defer p.mux.Unlock()
 
 	po := new(models.PostOffice)
-	postcodesByCity, err := po.FindPostcodesByCity()
+	postcodesBySettlement, err := po.GetPostcodesBySettlement()
 	if err != nil {
 		return nil, err
 	}
 
 	response := make(map[string][]post.AddressPostcode)
 
-	for key := range postcodesByCity {
+	for key := range postcodesBySettlement {
 		postcodesArray := []post.AddressPostcode{}
-		for postcode := range postcodesByCity[key] {
-			postcodesArray = append(postcodesArray, post.AddressPostcode(postcodesByCity[key][postcode]))
+		for postcode := range postcodesBySettlement[key] {
+			postcodesArray = append(postcodesArray, post.AddressPostcode(postcodesBySettlement[key][postcode]))
 		}
 		response[key] = postcodesArray
 	}

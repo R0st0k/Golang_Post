@@ -44,8 +44,8 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				break
 			}
 			switch elem[0] {
-			case 'p': // Prefix: "postcodes_by_city"
-				if l := len("postcodes_by_city"); len(elem) >= l && elem[0:l] == "postcodes_by_city" {
+			case 'p': // Prefix: "postcodes_by_settlement"
+				if l := len("postcodes_by_settlement"); len(elem) >= l && elem[0:l] == "postcodes_by_settlement" {
 					elem = elem[l:]
 				} else {
 					break
@@ -55,7 +55,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 					// Leaf node.
 					switch r.Method {
 					case "GET":
-						s.handlePostcodesByCityGetRequest([0]string{}, w, r)
+						s.handlePostcodesBySettlementGetRequest([0]string{}, w, r)
 					default:
 						s.notAllowed(w, r, "GET")
 					}
@@ -140,8 +140,8 @@ func (s *Server) FindRoute(method, path string) (r Route, _ bool) {
 				break
 			}
 			switch elem[0] {
-			case 'p': // Prefix: "postcodes_by_city"
-				if l := len("postcodes_by_city"); len(elem) >= l && elem[0:l] == "postcodes_by_city" {
+			case 'p': // Prefix: "postcodes_by_settlement"
+				if l := len("postcodes_by_settlement"); len(elem) >= l && elem[0:l] == "postcodes_by_settlement" {
 					elem = elem[l:]
 				} else {
 					break
@@ -150,8 +150,8 @@ func (s *Server) FindRoute(method, path string) (r Route, _ bool) {
 				if len(elem) == 0 {
 					switch method {
 					case "GET":
-						// Leaf: PostcodesByCityGet
-						r.name = "PostcodesByCityGet"
+						// Leaf: PostcodesBySettlementGet
+						r.name = "PostcodesBySettlementGet"
 						r.operationID = ""
 						r.args = args
 						r.count = 0

@@ -9,7 +9,7 @@ info:
   description: Information System "Post" API
   termsOfService: http://swagger.io/terms/
   title: Information System "Post"
-  version: 0.1.0
+  version: 0.1.1
 tags:
   - name: getInformation
     description: Endpoints to get information
@@ -38,12 +38,12 @@ paths:
           $ref: '#/components/responses/BadRequest'
         '404':
           $ref: '#/components/responses/NotFound'
-  /postcodes_by_city:
+  /postcodes_by_settlement:
     get:
       summary: Get information about postcodes in cities
       description: >
         Get information about postcodes in cities.
-        Return map with `city` key and `postcode` array value
+        Return map with `settlement` key and `postcode` array value
       tags:
         - getInformation
       responses:
@@ -52,7 +52,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PostcodesByCityGetResponse'
+                $ref: '#/components/schemas/PostcodesBySettlementGetResponse'
 components:
   schemas:
     Error:
@@ -72,10 +72,8 @@ components:
       enum: [ В пути, Доставлено, Утеряно ]
       example: В пути
     AddressPostcode:
-      type: integer
-      format: int64
-      minimum: 001001
-      maximum: 999999
+      type: string
+      pattern: '^\d{6}$'
       example: 212017
     SendingStage:
       type: object
@@ -83,7 +81,7 @@ components:
         - name
         - date
         - postcode
-        - city
+        - settlement
       properties:
         name:
           type: string
@@ -100,7 +98,7 @@ components:
           format: date-time
         postcode:
           $ref: '#/components/schemas/AddressPostcode'
-        city:
+        settlement:
           type: string
           example: Санкт-Петербург
     SendingGetResponse:
@@ -118,7 +116,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/SendingStage'
-    PostcodesByCityGetResponse:
+    PostcodesBySettlementGetResponse:
       type: object
       additionalProperties:
         type: array

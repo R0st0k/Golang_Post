@@ -27,7 +27,7 @@ type Size struct {
 type Stage struct {
 	Name       string             `bson:"name" json:"name" example:"Принято в отделении связи"`
 	Date       time.Time          `bson:"date" json:"date"`
-	Postcode   int64              `bson:"postcode" json:"postcode" example:"453870"`
+	Postcode   string             `bson:"postcode" json:"postcode" example:"453870"`
 	EmployeeID primitive.ObjectID `bson:"employee_id" json:"employee_id"`
 }
 
@@ -62,7 +62,7 @@ func (s *Sending) InsertExample() (string, error) {
 			Surname:    "Мулюков",
 			MiddleName: "Рустэмович",
 			Address: Address{
-				Postcode:   453870,
+				Postcode:   "453870",
 				Region:     "Республика Башкортостан",
 				District:   "Мелеузовский район",
 				Settlement: "пос. Нугуш",
@@ -74,7 +74,7 @@ func (s *Sending) InsertExample() (string, error) {
 			Name:    "Екатерина",
 			Surname: "Феминисткова",
 			Address: Address{
-				Postcode:  123456,
+				Postcode:  "123456",
 				Region:    "г. Москва",
 				Street:    "ул. Мира",
 				Building:  "1",
@@ -92,13 +92,13 @@ func (s *Sending) InsertExample() (string, error) {
 			{
 				Name:       "Принято в отделении связи",
 				Date:       time.Now(),
-				Postcode:   453870,
+				Postcode:   "453870",
 				EmployeeID: employees[0].ID,
 			},
 			{
 				Name:       "Вручено адресату",
 				Date:       time.Now(),
-				Postcode:   123456,
+				Postcode:   "123456",
 				EmployeeID: employees[1].ID,
 			},
 		},
@@ -134,7 +134,7 @@ func (s *Sending) FindExample() ([]Sending, error) {
 	return sendings, nil
 }
 
-func (s *Sending) GetSendingByOrderID(order_id uuid.UUID) (Sending, error) {
+func (s *Sending) GetSendingByOrderID(orderID uuid.UUID) (Sending, error) {
 	client := db.GetDB()
 	sendingCollection := client.Database("Post").Collection("Sending")
 
@@ -143,9 +143,13 @@ func (s *Sending) GetSendingByOrderID(order_id uuid.UUID) (Sending, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	projection := bson.D{{"type", 1}, {"status", 1}, {"stages", 1}, {"_id", 0}}
+	projection := bson.D{
+		{"type", 1},
+		{"status", 1},
+		{"stages", 1},
+		{"_id", 0}}
 	opts := options.FindOne().SetProjection(projection)
-	err := sendingCollection.FindOne(ctx, bson.D{{"order_id", order_id}}, opts).Decode(&sending)
+	err := sendingCollection.FindOne(ctx, bson.D{{"order_id", orderID}}, opts).Decode(&sending)
 	if err != nil {
 		return sending, fmt.Errorf("FindExample: %v", err)
 	}

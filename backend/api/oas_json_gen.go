@@ -15,9 +15,9 @@ import (
 
 // Encode encodes AddressPostcode as json.
 func (s AddressPostcode) Encode(e *jx.Encoder) {
-	unwrapped := int64(s)
+	unwrapped := string(s)
 
-	e.Int64(unwrapped)
+	e.Str(unwrapped)
 }
 
 // Decode decodes AddressPostcode from json.
@@ -25,10 +25,10 @@ func (s *AddressPostcode) Decode(d *jx.Decoder) error {
 	if s == nil {
 		return errors.New("invalid: unable to decode AddressPostcode to nil")
 	}
-	var unwrapped int64
+	var unwrapped string
 	if err := func() error {
-		v, err := d.Int64()
-		unwrapped = int64(v)
+		v, err := d.Str()
+		unwrapped = string(v)
 		if err != nil {
 			return err
 		}
@@ -151,14 +151,14 @@ func (s *Error) UnmarshalJSON(data []byte) error {
 }
 
 // Encode implements json.Marshaler.
-func (s PostcodesByCityGetResponse) Encode(e *jx.Encoder) {
+func (s PostcodesBySettlementGetResponse) Encode(e *jx.Encoder) {
 	e.ObjStart()
 	s.encodeFields(e)
 	e.ObjEnd()
 }
 
 // encodeFields implements json.Marshaler.
-func (s PostcodesByCityGetResponse) encodeFields(e *jx.Encoder) {
+func (s PostcodesBySettlementGetResponse) encodeFields(e *jx.Encoder) {
 	for k, elem := range s {
 		e.FieldStart(k)
 
@@ -170,10 +170,10 @@ func (s PostcodesByCityGetResponse) encodeFields(e *jx.Encoder) {
 	}
 }
 
-// Decode decodes PostcodesByCityGetResponse from json.
-func (s *PostcodesByCityGetResponse) Decode(d *jx.Decoder) error {
+// Decode decodes PostcodesBySettlementGetResponse from json.
+func (s *PostcodesBySettlementGetResponse) Decode(d *jx.Decoder) error {
 	if s == nil {
-		return errors.New("invalid: unable to decode PostcodesByCityGetResponse to nil")
+		return errors.New("invalid: unable to decode PostcodesBySettlementGetResponse to nil")
 	}
 	m := s.init()
 	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
@@ -197,21 +197,21 @@ func (s *PostcodesByCityGetResponse) Decode(d *jx.Decoder) error {
 		m[string(k)] = elem
 		return nil
 	}); err != nil {
-		return errors.Wrap(err, "decode PostcodesByCityGetResponse")
+		return errors.Wrap(err, "decode PostcodesBySettlementGetResponse")
 	}
 
 	return nil
 }
 
 // MarshalJSON implements stdjson.Marshaler.
-func (s PostcodesByCityGetResponse) MarshalJSON() ([]byte, error) {
+func (s PostcodesBySettlementGetResponse) MarshalJSON() ([]byte, error) {
 	e := jx.Encoder{}
 	s.Encode(&e)
 	return e.Bytes(), nil
 }
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
-func (s *PostcodesByCityGetResponse) UnmarshalJSON(data []byte) error {
+func (s *PostcodesBySettlementGetResponse) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }
@@ -457,8 +457,8 @@ func (s SendingStage) encodeFields(e *jx.Encoder) {
 	}
 	{
 
-		e.FieldStart("city")
-		e.Str(s.City)
+		e.FieldStart("settlement")
+		e.Str(s.Settlement)
 	}
 }
 
@@ -466,7 +466,7 @@ var jsonFieldsNameOfSendingStage = [4]string{
 	0: "name",
 	1: "date",
 	2: "postcode",
-	3: "city",
+	3: "settlement",
 }
 
 // Decode decodes SendingStage from json.
@@ -510,17 +510,17 @@ func (s *SendingStage) Decode(d *jx.Decoder) error {
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"postcode\"")
 			}
-		case "city":
+		case "settlement":
 			requiredBitSet[0] |= 1 << 3
 			if err := func() error {
 				v, err := d.Str()
-				s.City = string(v)
+				s.Settlement = string(v)
 				if err != nil {
 					return err
 				}
 				return nil
 			}(); err != nil {
-				return errors.Wrap(err, "decode field \"city\"")
+				return errors.Wrap(err, "decode field \"settlement\"")
 			}
 		default:
 			return d.Skip()

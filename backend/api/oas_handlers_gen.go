@@ -14,16 +14,17 @@ import (
 	"github.com/ogen-go/ogen/ogenerrors"
 )
 
-// handlePostcodesByCityGetRequest handles GET /postcodes_by_city operation.
+// handlePostcodesBySettlementGetRequest handles GET /postcodes_by_settlement operation.
 //
-// Get information about postcodes in cities. Return map with `city` key and `postcode` array value.
+// Get information about postcodes in cities. Return map with `settlement` key and `postcode` array
+// value.
 //
-// GET /postcodes_by_city
-func (s *Server) handlePostcodesByCityGetRequest(args [0]string, w http.ResponseWriter, r *http.Request) {
+// GET /postcodes_by_settlement
+func (s *Server) handlePostcodesBySettlementGetRequest(args [0]string, w http.ResponseWriter, r *http.Request) {
 	var otelAttrs []attribute.KeyValue
 
 	// Start a span for this request.
-	ctx, span := s.cfg.Tracer.Start(r.Context(), "PostcodesByCityGet",
+	ctx, span := s.cfg.Tracer.Start(r.Context(), "PostcodesBySettlementGet",
 		serverSpanKind,
 	)
 	defer span.End()
@@ -47,11 +48,11 @@ func (s *Server) handlePostcodesByCityGetRequest(args [0]string, w http.Response
 		err error
 	)
 
-	var response PostcodesByCityGetResponse
+	var response PostcodesBySettlementGetResponse
 	if m := s.cfg.Middleware; m != nil {
 		mreq := middleware.Request{
 			Context:       ctx,
-			OperationName: "PostcodesByCityGet",
+			OperationName: "PostcodesBySettlementGet",
 			OperationID:   "",
 			Body:          nil,
 			Params:        map[string]any{},
@@ -61,7 +62,7 @@ func (s *Server) handlePostcodesByCityGetRequest(args [0]string, w http.Response
 		type (
 			Request  = struct{}
 			Params   = struct{}
-			Response = PostcodesByCityGetResponse
+			Response = PostcodesBySettlementGetResponse
 		)
 		response, err = middleware.HookMiddleware[
 			Request,
@@ -72,11 +73,11 @@ func (s *Server) handlePostcodesByCityGetRequest(args [0]string, w http.Response
 			mreq,
 			nil,
 			func(ctx context.Context, request Request, params Params) (Response, error) {
-				return s.h.PostcodesByCityGet(ctx)
+				return s.h.PostcodesBySettlementGet(ctx)
 			},
 		)
 	} else {
-		response, err = s.h.PostcodesByCityGet(ctx)
+		response, err = s.h.PostcodesBySettlementGet(ctx)
 	}
 	if err != nil {
 		recordError("Internal", err)
@@ -84,7 +85,7 @@ func (s *Server) handlePostcodesByCityGetRequest(args [0]string, w http.Response
 		return
 	}
 
-	if err := encodePostcodesByCityGetResponse(response, w, span); err != nil {
+	if err := encodePostcodesBySettlementGetResponse(response, w, span); err != nil {
 		recordError("EncodeResponse", err)
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return

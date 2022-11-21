@@ -13,12 +13,13 @@ type UnimplementedHandler struct{}
 
 var _ Handler = UnimplementedHandler{}
 
-// PostcodesByCityGet implements GET /postcodes_by_city operation.
+// PostcodesBySettlementGet implements GET /postcodes_by_settlement operation.
 //
-// Get information about postcodes in cities. Return map with `city` key and `postcode` array value.
+// Get information about postcodes in cities. Return map with `settlement` key and `postcode` array
+// value.
 //
-// GET /postcodes_by_city
-func (UnimplementedHandler) PostcodesByCityGet(ctx context.Context) (r PostcodesByCityGetResponse, _ error) {
+// GET /postcodes_by_settlement
+func (UnimplementedHandler) PostcodesBySettlementGet(ctx context.Context) (r PostcodesBySettlementGetResponse, _ error) {
 	return r, ht.ErrNotImplemented
 }
 

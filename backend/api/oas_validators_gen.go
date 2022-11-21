@@ -11,21 +11,20 @@ import (
 )
 
 func (s AddressPostcode) Validate() error {
-	if err := (validate.Int{
-		MinSet:        true,
-		Min:           513,
-		MaxSet:        true,
-		Max:           999999,
-		MinExclusive:  false,
-		MaxExclusive:  false,
-		MultipleOfSet: false,
-		MultipleOf:    0,
-	}).Validate(int64(s)); err != nil {
-		return errors.Wrap(err, "int")
+	if err := (validate.String{
+		MinLength:    0,
+		MinLengthSet: false,
+		MaxLength:    0,
+		MaxLengthSet: false,
+		Email:        false,
+		Hostname:     false,
+		Regex:        regexMap["^\\d{6}$"],
+	}).Validate(string(s)); err != nil {
+		return errors.Wrap(err, "string")
 	}
 	return nil
 }
-func (s PostcodesByCityGetResponse) Validate() error {
+func (s PostcodesBySettlementGetResponse) Validate() error {
 	var failures []validate.FieldError
 	for key, elem := range s {
 		if err := func() error {

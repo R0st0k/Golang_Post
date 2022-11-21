@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-type AddressPostcode int64
+type AddressPostcode string
 
 // Ref: #/components/schemas/Error
 type Error struct {
@@ -23,10 +23,10 @@ func (s *Error) SetErrorMessage(val string) {
 	s.ErrorMessage = val
 }
 
-// Ref: #/components/schemas/PostcodesByCityGetResponse
-type PostcodesByCityGetResponse map[string][]AddressPostcode
+// Ref: #/components/schemas/PostcodesBySettlementGetResponse
+type PostcodesBySettlementGetResponse map[string][]AddressPostcode
 
-func (s *PostcodesByCityGetResponse) init() PostcodesByCityGetResponse {
+func (s *PostcodesBySettlementGetResponse) init() PostcodesBySettlementGetResponse {
 	m := *s
 	if m == nil {
 		m = map[string][]AddressPostcode{}
@@ -84,10 +84,10 @@ func (*SendingGetResponse) sendingGetRes() {}
 
 // Ref: #/components/schemas/SendingStage
 type SendingStage struct {
-	Name     SendingStageName `json:"name"`
-	Date     time.Time        `json:"date"`
-	Postcode AddressPostcode  `json:"postcode"`
-	City     string           `json:"city"`
+	Name       SendingStageName `json:"name"`
+	Date       time.Time        `json:"date"`
+	Postcode   AddressPostcode  `json:"postcode"`
+	Settlement string           `json:"settlement"`
 }
 
 // GetName returns the value of Name.
@@ -105,9 +105,9 @@ func (s SendingStage) GetPostcode() AddressPostcode {
 	return s.Postcode
 }
 
-// GetCity returns the value of City.
-func (s SendingStage) GetCity() string {
-	return s.City
+// GetSettlement returns the value of Settlement.
+func (s SendingStage) GetSettlement() string {
+	return s.Settlement
 }
 
 // SetName sets the value of Name.
@@ -125,9 +125,9 @@ func (s *SendingStage) SetPostcode(val AddressPostcode) {
 	s.Postcode = val
 }
 
-// SetCity sets the value of City.
-func (s *SendingStage) SetCity(val string) {
-	s.City = val
+// SetSettlement sets the value of Settlement.
+func (s *SendingStage) SetSettlement(val string) {
+	s.Settlement = val
 }
 
 type SendingStageName string

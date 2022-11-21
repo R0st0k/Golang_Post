@@ -11,7 +11,7 @@ import (
 )
 
 type Address struct {
-	Postcode   int64  `bson:"postcode" json:"postcode" example:"453870"`
+	Postcode   string `bson:"postcode" json:"postcode" example:"453870"`
 	Region     string `bson:"region,omitempty" json:"region,omitempty" example:"Республика Башкортостан"`
 	District   string `bson:"district,omitempty" json:"district,omitempty" example:"Мелеузовский район"`
 	Settlement string `bson:"settlement" json:"settlement" example:"пос. Нугуш"`
@@ -40,7 +40,7 @@ func (po *PostOffice) InsertExample() error {
 	postOffice := PostOffice{
 		Type: "Отделение связи",
 		Address: Address{
-			Postcode:   453870,
+			Postcode:   "453870",
 			Region:     "Республика Башкортостан",
 			District:   "Мелеузовский район",
 			Settlement: "пос. Нугуш",
@@ -79,7 +79,7 @@ func (po *PostOffice) FindExample() ([]PostOffice, error) {
 	return postOffices, nil
 }
 
-func (po *PostOffice) FindCityByPostcode() (map[int64]string, error) {
+func (po *PostOffice) GetSettlementByPostcode() (map[string]string, error) {
 	client := db.GetDB()
 	postOfficeCollection := client.Database("Post").Collection("PostOffice")
 
@@ -88,7 +88,10 @@ func (po *PostOffice) FindCityByPostcode() (map[int64]string, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	projection := bson.D{{"address.postcode", 1}, {"address.settlement", 1}, {"_id", 0}}
+	projection := bson.D{
+		{"address.postcode", 1},
+		{"address.settlement", 1},
+		{"_id", 0}}
 	opts := options.Find().SetProjection(projection)
 	cursor, err := postOfficeCollection.Find(ctx, bson.D{{}}, opts)
 	if err != nil {
@@ -98,16 +101,16 @@ func (po *PostOffice) FindCityByPostcode() (map[int64]string, error) {
 		return nil, fmt.Errorf("FindExample: %v", err)
 	}
 
-	cityByCode := make(map[int64]string)
+	settlementByPostcode := make(map[string]string)
 
 	for i := range postOffices {
-		cityByCode[postOffices[i].Address.Postcode] = postOffices[i].Address.Settlement
+		settlementByPostcode[postOffices[i].Address.Postcode] = postOffices[i].Address.Settlement
 	}
 
-	return cityByCode, nil
+	return settlementByPostcode, nil
 }
 
-func (po *PostOffice) FindPostcodesByCity() (map[string][]int64, error) {
+func (po *PostOffice) GetPostcodesBySettlement() (map[string][]string, error) {
 	client := db.GetDB()
 	postOfficeCollection := client.Database("Post").Collection("PostOffice")
 
@@ -116,7 +119,10 @@ func (po *PostOffice) FindPostcodesByCity() (map[string][]int64, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	projection := bson.D{{"address.postcode", 1}, {"address.settlement", 1}, {"_id", 0}}
+	projection := bson.D{
+		{"address.postcode", 1},
+		{"address.settlement", 1},
+		{"_id", 0}}
 	opts := options.Find().SetProjection(projection)
 	cursor, err := postOfficeCollection.Find(ctx, bson.D{{}}, opts)
 	if err != nil {
@@ -126,16 +132,16 @@ func (po *PostOffice) FindPostcodesByCity() (map[string][]int64, error) {
 		return nil, fmt.Errorf("FindExample: %v", err)
 	}
 
-	postcodesByCity := make(map[string][]int64)
+	postcodesBySettlement := make(map[string][]string)
 
 	for i := range postOffices {
-		if _, inMap := postcodesByCity[postOffices[i].Address.Settlement]; inMap {
-			postcodesByCity[postOffices[i].Address.Settlement] = append(postcodesByCity[postOffices[i].Address.Settlement], postOffices[i].Address.Postcode)
+		if _, inMap := postcodesBySettlement[postOffices[i].Address.Settlement]; inMap {
+			postcodesBySettlement[postOffices[i].Address.Settlement] = append(postcodesBySettlement[postOffices[i].Address.Settlement], postOffices[i].Address.Postcode)
 		} else {
-			new_city := []int64{postOffices[i].Address.Postcode}
-			postcodesByCity[postOffices[i].Address.Settlement] = new_city
+			newSettlement := []string{postOffices[i].Address.Postcode}
+			postcodesBySettlement[postOffices[i].Address.Settlement] = newSettlement
 		}
 	}
 
-	return postcodesByCity, nil
+	return postcodesBySettlement, nil
 }

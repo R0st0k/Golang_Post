@@ -13,7 +13,7 @@ import (
 	"github.com/ogen-go/ogen/validate"
 )
 
-func decodePostcodesByCityGetResponse(resp *http.Response) (res PostcodesByCityGetResponse, err error) {
+func decodePostcodesBySettlementGetResponse(resp *http.Response) (res PostcodesBySettlementGetResponse, err error) {
 	switch resp.StatusCode {
 	case 200:
 		// Code 200.
@@ -29,7 +29,7 @@ func decodePostcodesByCityGetResponse(resp *http.Response) (res PostcodesByCityG
 			}
 
 			d := jx.DecodeBytes(b)
-			var response PostcodesByCityGetResponse
+			var response PostcodesBySettlementGetResponse
 			if err := func() error {
 				if err := response.Decode(d); err != nil {
 					return err

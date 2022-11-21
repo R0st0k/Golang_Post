@@ -8,12 +8,13 @@ import (
 
 // Handler handles operations described by OpenAPI v3 specification.
 type Handler interface {
-	// PostcodesByCityGet implements GET /postcodes_by_city operation.
+	// PostcodesBySettlementGet implements GET /postcodes_by_settlement operation.
 	//
-	// Get information about postcodes in cities. Return map with `city` key and `postcode` array value.
+	// Get information about postcodes in cities. Return map with `settlement` key and `postcode` array
+	// value.
 	//
-	// GET /postcodes_by_city
-	PostcodesByCityGet(ctx context.Context) (PostcodesByCityGetResponse, error)
+	// GET /postcodes_by_settlement
+	PostcodesBySettlementGet(ctx context.Context) (PostcodesBySettlementGetResponse, error)
 	// SendingGet implements GET /sending operation.
 	//
 	// Get information about a sending by `order_id`. Require a complete match of `order_id`. Return

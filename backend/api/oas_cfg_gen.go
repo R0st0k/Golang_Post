@@ -4,6 +4,7 @@ package api
 
 import (
 	"net/http"
+	"regexp"
 
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/metric"
@@ -16,6 +17,9 @@ import (
 	"github.com/ogen-go/ogen/otelogen"
 )
 
+var regexMap = map[string]*regexp.Regexp{
+	"^\\d{6}$": regexp.MustCompile("^\\d{6}$"),
+}
 var (
 	// Allocate option closure once.
 	clientSpanKind = trace.WithSpanKind(trace.SpanKindClient)
