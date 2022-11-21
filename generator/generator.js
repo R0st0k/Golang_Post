@@ -38,6 +38,10 @@ const sendingStatus = {
     DELIVERED: "Доставлено"
 }
 
+function getOneOf(array) {
+    return _.sample(array, 1)[0]
+}
+
 class PostGenerator {
     constructor() {
         this.employees = []
@@ -210,17 +214,18 @@ class PostGenerator {
             let gender = _.sample(['male', 'female'], 1)[0]
             let haveMiddleName = chance.bool()
             let year = chance.year({ min: 1960, max: 2001 });
+            let fullName = this.#generateRussianFullName(gender)
             let employee = {
                 _id: this.#counter(),
-                surname: chance.last({ gender: gender }),
-                name: chance.first({ gender: gender }),
+                surname: fullName.surname,
+                name: fullName.name,
                 gender: ((gender === 'male') ? 'М' : 'Ж'),
                 birth_date: chance.birthday({ year: year }).toISOString(),
                 position: pos,
                 phone_number: "8" + chance.string({ length: 10, numeric: true }),
             }
             if (haveMiddleName) {
-                employee.middle_name = chance.first({ gender: gender })
+                employee.middle_name = fullName.middle_name
             }
             employees_buffer.push(employee)
         }
@@ -230,8 +235,7 @@ class PostGenerator {
 
     #generatePostOffices(n) {
         if (n < 3) {
-            console.error("invalid number of post offices")
-            return
+            throw "invalid number of post offices"
         }
         function generateOfficeType() {
             return _.sample([
@@ -265,14 +269,12 @@ class PostGenerator {
             return this.post_offices
         }
 
-        console.error("can't generate post offices, try again")
-        return null
+        throw "can't generate post offices, try again"
     }
 
     #generateSendings(n) {
         if (this.post_offices < 1) {
-            console.error("no post offices - no sendings")
-            return
+            throw "no post offices - no sendings"
         }
         function generateStagesAndStatus(sending, employees, post_offices) {
             function getEmployeeID(postcode, position) {
@@ -410,11 +412,63 @@ class PostGenerator {
         return this.sendings.map(x => x._id)
     }
 
-    gen(post_offices_cnt, sendings_cnt) {
-        let res = this.#generatePostOffices(post_offices_cnt)
-        if (isNull(res)) {
-            console.log('fail trying to generate post offices')
+    #generateRussianFullName(gender) {
+        function generateMaleFullName() {
+            const name = [
+                "Руслан", "Ростислав", "Антон", "Даниил", "Данила", "Евгений",
+                "Азат", "Александр", "Фёдор", "Артур", "Тимур", "Базослав",
+                "Шайтан", "Рулон", "Венцеслав", "Аристарх", "Андрей", "Сергей", "Павел"
+            ]
+            const surname = [
+                "Иванов", "Фамосов", "Бушанян", "Киранда", "Тапочек",
+                "Обоев", "Гагарин", "Муссолини", "Сталин", "Бачини",
+                "Кринжеборец", "Кеквейтов", "Пеперотов", "Трампов", "Бидонов"
+            ]
+            const middle_name = [
+                "Русланович", "Ростиславович", "Антонович", "Базославович",
+                "Рулонович", "Огрович", "Камжитосанович", "Бубльгумович",
+                "Попович", "Карпович", "Мультифруктович", "Пиццович"
+            ]
+            return {
+                name: getOneOf(name),
+                surname: getOneOf(surname),
+                middle_name: getOneOf(middle_name)
+            }
         }
+
+        function generateFemaleFullName() {
+            const name = [
+                "Камилла", "Гузель", "Элина", "Аделина", "Дарья", "Екатерина", "Ляйсан",
+                "Фемочка", "Забава", "Илона", "Меган", "Бронислава", "Бажена", "Декабрина"
+            ]
+            const surname = [
+                "Иванова", "Фамосова", "Бушанянова", "Кирандова", "Тапочек", "Бидонова",
+                "Обоева", "Гагарина", "Кринжеборцева", "Кеквейтова", "Пеперотова", "Трампова"
+            ]
+            const middle_name = [
+                "Руслановна", "Ростиславовна", "Антоновна", "Базославовна",
+                "Рулоновна", "Огровна", "Камжитосановна", "Бубльгумовна",
+                "Поповна", "Карповна", "Мультифруктовна", "Пиццовна"
+            ]
+            return {
+                name: getOneOf(name),
+                surname: getOneOf(surname),
+                middle_name: getOneOf(middle_name)
+            }
+        }
+
+        switch (gender) {
+            case 'male':
+                return generateMaleFullName()
+            case 'female':
+                return generateFemaleFullName()
+            default:
+                return "There is only two genders"
+        }
+    }
+
+    gen(post_offices_cnt, sendings_cnt) {
+        this.#generatePostOffices(post_offices_cnt)
         this.#generateSendings(sendings_cnt)
     }
 }
@@ -443,7 +497,12 @@ function writeArrayElementsInFileByLine(filePath, array) {
 const args = process.argv.slice(2)
 
 let generator = new PostGenerator()
-generator.gen(args[0], args[1])
+try {
+    generator.gen(args[0], args[1])
+} catch (e) {
+    console.error(e)
+    process.exit()
+}
 
 writeArrayElementsInFileByLine('./post_office', generator.post_offices)
 writeArrayElementsInFileByLine('./employee', generator.employees)
