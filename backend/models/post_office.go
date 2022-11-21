@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"time"
 )
@@ -95,10 +96,10 @@ func (po *PostOffice) GetSettlementByPostcode() (map[string]string, error) {
 	opts := options.Find().SetProjection(projection)
 	cursor, err := postOfficeCollection.Find(ctx, bson.D{{}}, opts)
 	if err != nil {
-		return nil, fmt.Errorf("FindExample: %v", err)
+		return nil, fmt.Errorf("GetPostOffices: %v", err)
 	}
 	if err = cursor.All(ctx, &postOffices); err != nil {
-		return nil, fmt.Errorf("FindExample: %v", err)
+		return nil, fmt.Errorf("GetPostOffices: %v", err)
 	}
 
 	settlementByPostcode := make(map[string]string)
@@ -126,10 +127,10 @@ func (po *PostOffice) GetPostcodesBySettlement() (map[string][]string, error) {
 	opts := options.Find().SetProjection(projection)
 	cursor, err := postOfficeCollection.Find(ctx, bson.D{{}}, opts)
 	if err != nil {
-		return nil, fmt.Errorf("FindExample: %v", err)
+		return nil, fmt.Errorf("GetPostOffices: %v", err)
 	}
 	if err = cursor.All(ctx, &postOffices); err != nil {
-		return nil, fmt.Errorf("FindExample: %v", err)
+		return nil, fmt.Errorf("GetPostOffices: %v", err)
 	}
 
 	postcodesBySettlement := make(map[string][]string)
@@ -144,4 +145,62 @@ func (po *PostOffice) GetPostcodesBySettlement() (map[string][]string, error) {
 	}
 
 	return postcodesBySettlement, nil
+}
+
+func (po *PostOffice) GetPostWorkerByPostcode(postcode string) (primitive.ObjectID, error) {
+	client := db.GetDB()
+	employeesCollection := client.Database("Post").Collection("PostOffice")
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	var employees []Employee
+
+	matchPostcodeStage := bson.D{{
+		"$match", bson.D{{
+			"address.postcode", postcode,
+		}},
+	}}
+	firstUnwindStage := bson.D{{
+		"$unwind", "$employees",
+	}}
+	lookupStage := bson.D{{
+		"$lookup", bson.D{{
+			"from", "Employee",
+		},
+			{
+				"localField", "employees",
+			},
+			{
+				"foreignField", "_id",
+			},
+			{
+				"as", "employee",
+			}},
+	}}
+	matchPositionStage := bson.D{{
+		"$match", bson.D{{
+			"employee.position", "Сотрудник отделения связи",
+		}},
+	}}
+	secondUnwindStage := bson.D{{
+		"$unwind", "$employee",
+	}}
+	replaceWithStage := bson.D{{
+		"$replaceWith", "$employee",
+	}}
+
+	cursor, err := employeesCollection.Aggregate(ctx, mongo.Pipeline{matchPostcodeStage, firstUnwindStage, lookupStage, matchPositionStage, secondUnwindStage, replaceWithStage})
+	if err != nil {
+		return primitive.NewObjectID(), fmt.Errorf("FindEmployees: %v", err)
+	}
+	if err = cursor.All(ctx, &employees); err != nil {
+		return primitive.NewObjectID(), fmt.Errorf("FindEmployees: %v", err)
+	}
+
+	if len(employees) == 0 {
+		return primitive.NewObjectID(), fmt.Errorf("FindEmployees: There are no post worker in sender's post office to start stage")
+	}
+
+	return employees[0].ID, nil
 }

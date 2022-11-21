@@ -151,8 +151,77 @@ func (s *Sending) GetSendingByOrderID(orderID uuid.UUID) (Sending, error) {
 	opts := options.FindOne().SetProjection(projection)
 	err := sendingCollection.FindOne(ctx, bson.D{{"order_id", orderID}}, opts).Decode(&sending)
 	if err != nil {
-		return sending, fmt.Errorf("FindExample: %v", err)
+		return sending, fmt.Errorf("FindSending: %v", err)
 	}
 
 	return sending, nil
+}
+
+func (s *Sending) InsertNewSending(newSendingOptions map[string]interface{}) (uuid.UUID, error) {
+	po := new(PostOffice)
+	employeeID, err := po.GetPostWorkerByPostcode(newSendingOptions["Sender"].(map[string]string)["Postcode"])
+	if err != nil {
+		return uuid.New(), err
+	}
+
+	client := db.GetDB()
+	sendingCollection := client.Database("Post").Collection("Sending")
+
+	newSending := Sending{
+		RegistrationDate: time.Now(),
+		OrderID:          uuid.New(),
+		Sender: Client{
+			Name:       newSendingOptions["Sender"].(map[string]string)["Name"],
+			Surname:    newSendingOptions["Sender"].(map[string]string)["Surname"],
+			MiddleName: newSendingOptions["Sender"].(map[string]string)["MiddleName"],
+			Address: Address{
+				Postcode:   newSendingOptions["Sender"].(map[string]string)["Postcode"],
+				Region:     newSendingOptions["Sender"].(map[string]string)["Region"],
+				District:   newSendingOptions["Sender"].(map[string]string)["District"],
+				Settlement: newSendingOptions["Sender"].(map[string]string)["Settlement"],
+				Street:     newSendingOptions["Sender"].(map[string]string)["Street"],
+				Building:   newSendingOptions["Sender"].(map[string]string)["Building"],
+				Apartment:  newSendingOptions["Sender"].(map[string]string)["Apartment"],
+			},
+		},
+		Receiver: Client{
+			Name:       newSendingOptions["Receiver"].(map[string]string)["Name"],
+			Surname:    newSendingOptions["Receiver"].(map[string]string)["Surname"],
+			MiddleName: newSendingOptions["Receiver"].(map[string]string)["MiddleName"],
+			Address: Address{
+				Postcode:   newSendingOptions["Receiver"].(map[string]string)["Postcode"],
+				Region:     newSendingOptions["Receiver"].(map[string]string)["Region"],
+				District:   newSendingOptions["Receiver"].(map[string]string)["District"],
+				Settlement: newSendingOptions["Receiver"].(map[string]string)["Settlement"],
+				Street:     newSendingOptions["Receiver"].(map[string]string)["Street"],
+				Building:   newSendingOptions["Receiver"].(map[string]string)["Building"],
+				Apartment:  newSendingOptions["Receiver"].(map[string]string)["Apartment"],
+			},
+		},
+		Type: newSendingOptions["Type"].(string),
+		Size: Size{
+			Length: newSendingOptions["Length"].(int64),
+			Width:  newSendingOptions["Width"].(int64),
+			Height: newSendingOptions["Height"].(int64),
+		},
+		Weight: newSendingOptions["Weight"].(int64),
+		Stages: []Stage{
+			{
+				Name:       "Принято в отделении связи",
+				Date:       time.Now(),
+				Postcode:   newSendingOptions["Sender"].(map[string]string)["Postcode"],
+				EmployeeID: employeeID,
+			},
+		},
+		Status: "В пути",
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	_, err = sendingCollection.InsertOne(ctx, newSending)
+	if err != nil {
+		return uuid.New(), fmt.Errorf("InsertSending: %v", err)
+	}
+
+	return newSending.OrderID, nil
 }

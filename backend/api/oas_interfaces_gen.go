@@ -4,3 +4,7 @@ package api
 type SendingGetRes interface {
 	sendingGetRes()
 }
+
+type SendingPostRes interface {
+	sendingPostRes()
+}

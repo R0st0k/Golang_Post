@@ -74,8 +74,10 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 					switch r.Method {
 					case "GET":
 						s.handleSendingGetRequest([0]string{}, w, r)
+					case "POST":
+						s.handleSendingPostRequest([0]string{}, w, r)
 					default:
-						s.notAllowed(w, r, "GET")
+						s.notAllowed(w, r, "GET,POST")
 					}
 
 					return
@@ -172,6 +174,13 @@ func (s *Server) FindRoute(method, path string) (r Route, _ bool) {
 					case "GET":
 						// Leaf: SendingGet
 						r.name = "SendingGet"
+						r.operationID = ""
+						r.args = args
+						r.count = 0
+						return r, true
+					case "POST":
+						// Leaf: SendingPost
+						r.name = "SendingPost"
 						r.operationID = ""
 						r.args = args
 						r.count = 0

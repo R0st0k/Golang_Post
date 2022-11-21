@@ -32,3 +32,13 @@ func (UnimplementedHandler) PostcodesBySettlementGet(ctx context.Context) (r Pos
 func (UnimplementedHandler) SendingGet(ctx context.Context, params SendingGetParams) (r SendingGetRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
+
+// SendingPost implements POST /sending operation.
+//
+// Registration of a new sending Require `type`, `sender`, `receiver`, `size`, `weight` Return
+// `order_id` of new sending.
+//
+// POST /sending
+func (UnimplementedHandler) SendingPost(ctx context.Context, req SendingPostReq) (r SendingPostRes, _ error) {
+	return r, ht.ErrNotImplemented
+}

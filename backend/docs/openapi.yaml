@@ -9,11 +9,11 @@ info:
   description: Information System "Post" API
   termsOfService: http://swagger.io/terms/
   title: Information System "Post"
-  version: 0.1.1
+  version: 0.2.0
 tags:
-  - name: getInformation
+  - name: Get Information
     description: Endpoints to get information
-  - name: updateInformation
+  - name: Update Information
     description: Endpoints to update information
 paths:
   /sending:
@@ -24,20 +24,31 @@ paths:
         Require a complete match of `order_id`.
         Return `type`, `status` and `stages`.
       tags:
-        - getInformation
+        - Get Information
       parameters:
-        - $ref: '#/components/parameters/OrderID'
+        - $ref: '#/components/parameters/SendingOrderID'
       responses:
         '200':
-          description: ok
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/SendingGetResponse'
+          $ref: '#/components/responses/SendingGetResponse'
         '400':
           $ref: '#/components/responses/BadRequest'
         '404':
           $ref: '#/components/responses/NotFound'
+    post:
+      summary: Registration of a new sending
+      description: >
+        Registration of a new sending
+        Require `type`, `sender`, `receiver`, `size`, `weight`
+        Return `order_id` of new sending
+      tags:
+        - Update Information
+      requestBody:
+        $ref: '#/components/requestBodies/Sending'
+      responses:
+        '200':
+          $ref: '#/components/responses/SendingPostResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
   /postcodes_by_settlement:
     get:
       summary: Get information about postcodes in cities
@@ -45,14 +56,10 @@ paths:
         Get information about postcodes in cities.
         Return map with `settlement` key and `postcode` array value
       tags:
-        - getInformation
+        - Get Information
       responses:
         '200':
-          description: ok
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PostcodesBySettlementGetResponse'
+          $ref: '#/components/responses/PostcodesBySettlementGetResponse'
 components:
   schemas:
     Error:
@@ -63,6 +70,10 @@ components:
         error_message:
           type: string
           example: You don't look at errors anyway
+    SendingOrderID:
+      type: string
+      format: uuid
+      example: 123e4567-e89b-12d3-a456-426655440000
     SendingType:
       type: string
       enum: [ Письмо, Посылка, Бандероль ]
@@ -71,10 +82,28 @@ components:
       type: string
       enum: [ В пути, Доставлено, Утеряно ]
       example: В пути
-    AddressPostcode:
-      type: string
-      pattern: '^\d{6}$'
-      example: 212017
+    SendingSize:
+      type: object
+      required:
+        - length
+        - width
+        - height
+      properties:
+        length:
+          type: integer
+          format: int64
+          minimum: 10
+          example: 100
+        width:
+          type: integer
+          format: int64
+          minimum: 10
+          example: 73
+        height:
+          type: integer
+          format: int64
+          minimum: 10
+          example: 42
     SendingStage:
       type: object
       required:
@@ -101,40 +130,92 @@ components:
         settlement:
           type: string
           example: Санкт-Петербург
-    SendingGetResponse:
+    Address:
       type: object
       required:
-        - type
-        - status
-        - stages
+        - postcode
+        - settlement
+        - street
+        - building
       properties:
-        type:
-          $ref: '#/components/schemas/SendingType'
-        status:
-          $ref: '#/components/schemas/SendingStatus'
-        stages:
-          type: array
-          items:
-            $ref: '#/components/schemas/SendingStage'
-    PostcodesBySettlementGetResponse:
-      type: object
-      additionalProperties:
-        type: array
-        items:
+        postcode:
           $ref: '#/components/schemas/AddressPostcode'
-      example:
-        Санкт-Петербург: [123001, 123002]
-        Москва: [124001]
+        region:
+          type: string
+          example: Республика Башкортостан
+        district:
+          type: string
+          example: Мелеузовский район
+        settlement:
+          type: string
+          example: пос. Нугуш
+        street:
+          type: string
+          example: ул. Ленина
+        building:
+          type: string
+          example: 42
+        apartment:
+          type: string
+          example: 1
+    AddressPostcode:
+      type: string
+      pattern: '^\d{6}$'
+      example: 212017
+    PostClient:
+      type: object
+      required:
+        - name
+        - surname
+        - address
+      properties:
+        name:
+          type: string
+          example: Налсур
+        surname:
+          type: string
+          example: Мулюков
+        middle_name:
+          type: string
+          example: Рустэмович
+        address:
+          $ref: '#/components/schemas/Address'
   parameters:
-    OrderID:
+    SendingOrderID:
       in: query
       name: order_id
-      schema:
-        type: string
-        format: uuid
-      required: true
       description: ID of sending
-      example: 123e4567-e89b-12d3-a456-426655440000
+      required: true
+      schema:
+        $ref: '#/components/schemas/SendingOrderID'
+  requestBodies:
+    Sending:
+      description: Information of sending
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - type
+              - sender
+              - receiver
+              - size
+              - weight
+            properties:
+              type:
+                $ref: '#/components/schemas/SendingType'
+              sender:
+                $ref: '#/components/schemas/PostClient'
+              receiver:
+                $ref: '#/components/schemas/PostClient'
+              size:
+                $ref: '#/components/schemas/SendingSize'
+              weight:
+                type: integer
+                format: int64
+                minimum: 10
+                example: 1000
   responses:
     BadRequest:
       description: Bad request
@@ -148,3 +229,46 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
+    SendingGetResponse:
+      description: ok
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - type
+              - status
+              - stages
+            properties:
+              type:
+                $ref: '#/components/schemas/SendingType'
+              status:
+                $ref: '#/components/schemas/SendingStatus'
+              stages:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SendingStage'
+    PostcodesBySettlementGetResponse:
+      description: ok
+      content:
+        application/json:
+          schema:
+            type: object
+            additionalProperties:
+              type: array
+              items:
+                $ref: '#/components/schemas/AddressPostcode'
+            example:
+              Санкт-Петербург: [ 123001, 123002 ]
+              Москва: [ 124001 ]
+    SendingPostResponse:
+      description: ok
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - order_id
+            properties:
+              order_id:
+                $ref: '#/components/schemas/SendingOrderID'

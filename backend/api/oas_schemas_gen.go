@@ -4,7 +4,90 @@ package api
 
 import (
 	"time"
+
+	"github.com/google/uuid"
 )
+
+// Ref: #/components/schemas/Address
+type Address struct {
+	Postcode   AddressPostcode `json:"postcode"`
+	Region     OptString       `json:"region"`
+	District   OptString       `json:"district"`
+	Settlement string          `json:"settlement"`
+	Street     string          `json:"street"`
+	Building   string          `json:"building"`
+	Apartment  OptString       `json:"apartment"`
+}
+
+// GetPostcode returns the value of Postcode.
+func (s Address) GetPostcode() AddressPostcode {
+	return s.Postcode
+}
+
+// GetRegion returns the value of Region.
+func (s Address) GetRegion() OptString {
+	return s.Region
+}
+
+// GetDistrict returns the value of District.
+func (s Address) GetDistrict() OptString {
+	return s.District
+}
+
+// GetSettlement returns the value of Settlement.
+func (s Address) GetSettlement() string {
+	return s.Settlement
+}
+
+// GetStreet returns the value of Street.
+func (s Address) GetStreet() string {
+	return s.Street
+}
+
+// GetBuilding returns the value of Building.
+func (s Address) GetBuilding() string {
+	return s.Building
+}
+
+// GetApartment returns the value of Apartment.
+func (s Address) GetApartment() OptString {
+	return s.Apartment
+}
+
+// SetPostcode sets the value of Postcode.
+func (s *Address) SetPostcode(val AddressPostcode) {
+	s.Postcode = val
+}
+
+// SetRegion sets the value of Region.
+func (s *Address) SetRegion(val OptString) {
+	s.Region = val
+}
+
+// SetDistrict sets the value of District.
+func (s *Address) SetDistrict(val OptString) {
+	s.District = val
+}
+
+// SetSettlement sets the value of Settlement.
+func (s *Address) SetSettlement(val string) {
+	s.Settlement = val
+}
+
+// SetStreet sets the value of Street.
+func (s *Address) SetStreet(val string) {
+	s.Street = val
+}
+
+// SetBuilding sets the value of Building.
+func (s *Address) SetBuilding(val string) {
+	s.Building = val
+}
+
+// SetApartment sets the value of Apartment.
+func (s *Address) SetApartment(val OptString) {
+	s.Apartment = val
+}
 
 type AddressPostcode string
 
@@ -23,7 +106,102 @@ func (s *Error) SetErrorMessage(val string) {
 	s.ErrorMessage = val
 }
 
-// Ref: #/components/schemas/PostcodesBySettlementGetResponse
+func (*Error) sendingPostRes() {}
+
+// NewOptString returns new OptString with value set to v.
+func NewOptString(v string) OptString {
+	return OptString{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptString is optional string.
+type OptString struct {
+	Value string
+	Set   bool
+}
+
+// IsSet returns true if OptString was set.
+func (o OptString) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptString) Reset() {
+	var v string
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptString) SetTo(v string) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptString) Get() (v string, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptString) Or(d string) string {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// Ref: #/components/schemas/PostClient
+type PostClient struct {
+	Name       string    `json:"name"`
+	Surname    string    `json:"surname"`
+	MiddleName OptString `json:"middle_name"`
+	Address    Address   `json:"address"`
+}
+
+// GetName returns the value of Name.
+func (s PostClient) GetName() string {
+	return s.Name
+}
+
+// GetSurname returns the value of Surname.
+func (s PostClient) GetSurname() string {
+	return s.Surname
+}
+
+// GetMiddleName returns the value of MiddleName.
+func (s PostClient) GetMiddleName() OptString {
+	return s.MiddleName
+}
+
+// GetAddress returns the value of Address.
+func (s PostClient) GetAddress() Address {
+	return s.Address
+}
+
+// SetName sets the value of Name.
+func (s *PostClient) SetName(val string) {
+	s.Name = val
+}
+
+// SetSurname sets the value of Surname.
+func (s *PostClient) SetSurname(val string) {
+	s.Surname = val
+}
+
+// SetMiddleName sets the value of MiddleName.
+func (s *PostClient) SetMiddleName(val OptString) {
+	s.MiddleName = val
+}
+
+// SetAddress sets the value of Address.
+func (s *PostClient) SetAddress(val Address) {
+	s.Address = val
+}
+
 type PostcodesBySettlementGetResponse map[string][]AddressPostcode
 
 func (s *PostcodesBySettlementGetResponse) init() PostcodesBySettlementGetResponse {
@@ -43,7 +221,6 @@ type SendingGetApplicationJSONNotFound Error
 
 func (*SendingGetApplicationJSONNotFound) sendingGetRes() {}
 
-// Ref: #/components/schemas/SendingGetResponse
 type SendingGetResponse struct {
 	Type   SendingType    `json:"type"`
 	Status SendingStatus  `json:"status"`
@@ -81,6 +258,119 @@ func (s *SendingGetResponse) SetStages(val []SendingStage) {
 }
 
 func (*SendingGetResponse) sendingGetRes() {}
+
+type SendingOrderID uuid.UUID
+
+type SendingPostReq struct {
+	Type     SendingType `json:"type"`
+	Sender   PostClient  `json:"sender"`
+	Receiver PostClient  `json:"receiver"`
+	Size     SendingSize `json:"size"`
+	Weight   int64       `json:"weight"`
+}
+
+// GetType returns the value of Type.
+func (s SendingPostReq) GetType() SendingType {
+	return s.Type
+}
+
+// GetSender returns the value of Sender.
+func (s SendingPostReq) GetSender() PostClient {
+	return s.Sender
+}
+
+// GetReceiver returns the value of Receiver.
+func (s SendingPostReq) GetReceiver() PostClient {
+	return s.Receiver
+}
+
+// GetSize returns the value of Size.
+func (s SendingPostReq) GetSize() SendingSize {
+	return s.Size
+}
+
+// GetWeight returns the value of Weight.
+func (s SendingPostReq) GetWeight() int64 {
+	return s.Weight
+}
+
+// SetType sets the value of Type.
+func (s *SendingPostReq) SetType(val SendingType) {
+	s.Type = val
+}
+
+// SetSender sets the value of Sender.
+func (s *SendingPostReq) SetSender(val PostClient) {
+	s.Sender = val
+}
+
+// SetReceiver sets the value of Receiver.
+func (s *SendingPostReq) SetReceiver(val PostClient) {
+	s.Receiver = val
+}
+
+// SetSize sets the value of Size.
+func (s *SendingPostReq) SetSize(val SendingSize) {
+	s.Size = val
+}
+
+// SetWeight sets the value of Weight.
+func (s *SendingPostReq) SetWeight(val int64) {
+	s.Weight = val
+}
+
+type SendingPostResponse struct {
+	OrderID SendingOrderID `json:"order_id"`
+}
+
+// GetOrderID returns the value of OrderID.
+func (s SendingPostResponse) GetOrderID() SendingOrderID {
+	return s.OrderID
+}
+
+// SetOrderID sets the value of OrderID.
+func (s *SendingPostResponse) SetOrderID(val SendingOrderID) {
+	s.OrderID = val
+}
+
+func (*SendingPostResponse) sendingPostRes() {}
+
+// Ref: #/components/schemas/SendingSize
+type SendingSize struct {
+	Length int64 `json:"length"`
+	Width  int64 `json:"width"`
+	Height int64 `json:"height"`
+}
+
+// GetLength returns the value of Length.
+func (s SendingSize) GetLength() int64 {
+	return s.Length
+}
+
+// GetWidth returns the value of Width.
+func (s SendingSize) GetWidth() int64 {
+	return s.Width
+}
+
+// GetHeight returns the value of Height.
+func (s SendingSize) GetHeight() int64 {
+	return s.Height
+}
+
+// SetLength sets the value of Length.
+func (s *SendingSize) SetLength(val int64) {
+	s.Length = val
+}
+
+// SetWidth sets the value of Width.
+func (s *SendingSize) SetWidth(val int64) {
+	s.Width = val
+}
+
+// SetHeight sets the value of Height.
+func (s *SendingSize) SetHeight(val int64) {
+	s.Height = val
+}
 
 // Ref: #/components/schemas/SendingStage
 type SendingStage struct {

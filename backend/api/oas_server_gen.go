@@ -22,6 +22,13 @@ type Handler interface {
 	//
 	// GET /sending
 	SendingGet(ctx context.Context, params SendingGetParams) (SendingGetRes, error)
+	// SendingPost implements POST /sending operation.
+	//
+	// Registration of a new sending Require `type`, `sender`, `receiver`, `size`, `weight` Return
+	// `order_id` of new sending.
+	//
+	// POST /sending
+	SendingPost(ctx context.Context, req SendingPostReq) (SendingPostRes, error)
 }
 
 // Server implements http server based on OpenAPI v3 specification and
