@@ -295,6 +295,12 @@ class PostGenerator {
                     "timestamp": sending.registration_date,
                     "postcode": sending.sender.address.postcode,
                     "employee_id": getEmployeeID(sending.sender.address.postcode, employeePosition.POST_OFFICE_STAFF),
+                },
+                {
+                    "name": stageName.LEFT_POST_OFFICE,
+                    "timestamp": addDays(sending.registration_date, 1),
+                    "postcode": sending.sender.address.postcode,
+                    "employee_id": getEmployeeID(sending.sender.address.postcode, employeePosition.POST_OFFICE_STAFF),
                 }
             ]
 
@@ -322,7 +328,8 @@ class PostGenerator {
                 })
             }
 
-            if (stages_buffer.length > 1) {
+            // Если отправление было хотя бы раз в сортировочном центре, то пробуем его доставить или потерять
+            if (stages_buffer.length > 2) {
                 let isDelivered = chance.bool()
                 if (isDelivered) {
                     let last_stage = stages_buffer[stages_buffer.length - 1]
@@ -359,12 +366,12 @@ class PostGenerator {
             }
         }
 
-        let year = chance.year({ min: 2010, max: 2021 });
+        let months = chance.month({ max: 10 });
         for (let i = 0; i < n; i++) {
             let sending = {
                 _id: this.#counter(),
                 order_id: uuidv4(),
-                registration_date: chance.date({ year: year }).toISOString(),
+                registration_date: chance.date({ year: 2022, months: months }).toISOString(),
                 sender: {
                     name: chance.first(),
                     surname: chance.last(),
@@ -412,12 +419,32 @@ class PostGenerator {
     }
 }
 
+function writeArrayElementsInFileByLine(filePath, array) {
+    const writeStream = fs.createWriteStream(filePath);
+
+    // write each value of the array on the file breaking line
+    array.forEach(value => writeStream.write(`${JSON.stringify(value)}\n`));
+
+    // the finish event is emitted when all data has been flushed from the stream
+    writeStream.on('finish', () => {
+        console.log(`wrote all the array data to file ${filePath}`);
+    });
+
+    // handle the errors on the write process
+    writeStream.on('error', (err) => {
+        console.error(`There is an error writing the file ${filePath} => ${err}`)
+    });
+
+    // close the stream
+    writeStream.end();
+}
+
+
 const args = process.argv.slice(2)
-console.log("args", args)
 
 let generator = new PostGenerator()
 generator.gen(args[0], args[1])
 
-fs.writeFileSync('./post_office.json', JSON.stringify(generator.post_offices, null, 2), 'utf-8');
-fs.writeFileSync('./employee.json', JSON.stringify(generator.employees, null, 2), 'utf-8');
-fs.writeFileSync('./sending.json', JSON.stringify(generator.sendings, null, 2), 'utf-8');
+writeArrayElementsInFileByLine('./post_office', generator.post_offices)
+writeArrayElementsInFileByLine('./employee', generator.employees)
+writeArrayElementsInFileByLine('./sending', generator.sendings)
