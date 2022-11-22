@@ -371,10 +371,9 @@ class PostGenerator {
 
         let months = chance.month({ max: 10 });
         for (let i = 0; i < n; i++) {
-            let order_id = new UUID(uuidv4())
             let sending = {
                 _id: new ObjectID(this.#counter()),
-                order_id: order_id.toBinary(),
+                order_id: new UUID(uuidv4()),
                 registration_date: chance.date({ year: 2022, months: months }).toISOString(),
                 sender: {
                     name: chance.first(),
