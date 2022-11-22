@@ -33,7 +33,7 @@ type Stage struct {
 
 type Sending struct {
 	ID               primitive.ObjectID `bson:"_id,omitempty" json:"_id,omitempty"`
-	OrderID          uuid.UUID          `bson:"order_id" json:"order_id"`
+	OrderID          string             `bson:"order_id" json:"order_id"`
 	RegistrationDate time.Time          `bson:"registration_date" json:"registration_date"`
 	Sender           Client             `bson:"sender" json:"sender"`
 	Receiver         Client             `bson:"receiver" json:"receiver"`
@@ -56,7 +56,7 @@ func (s *Sending) InsertExample() (string, error) {
 
 	sending := Sending{
 		RegistrationDate: time.Now(),
-		OrderID:          uuid.New(),
+		OrderID:          uuid.NewString(),
 		Sender: Client{
 			Name:       "Налсур",
 			Surname:    "Мулюков",
@@ -112,7 +112,7 @@ func (s *Sending) InsertExample() (string, error) {
 		return "", fmt.Errorf("InsertExample: %v", err)
 	}
 
-	return sending.OrderID.String(), nil
+	return sending.OrderID, nil
 }
 
 func (s *Sending) FindExample() ([]Sending, error) {
@@ -149,7 +149,7 @@ func (s *Sending) GetSendingByOrderID(orderID uuid.UUID) (Sending, error) {
 		{"stages", 1},
 		{"_id", 0}}
 	opts := options.FindOne().SetProjection(projection)
-	err := sendingCollection.FindOne(ctx, bson.D{{"order_id", orderID}}, opts).Decode(&sending)
+	err := sendingCollection.FindOne(ctx, bson.D{{"order_id", orderID.String()}}, opts).Decode(&sending)
 	if err != nil {
 		return sending, fmt.Errorf("FindSending: %v", err)
 	}
@@ -169,7 +169,7 @@ func (s *Sending) InsertNewSending(newSendingOptions map[string]interface{}) (uu
 
 	newSending := Sending{
 		RegistrationDate: time.Now(),
-		OrderID:          uuid.New(),
+		OrderID:          uuid.NewString(),
 		Sender: Client{
 			Name:       newSendingOptions["Sender"].(map[string]string)["Name"],
 			Surname:    newSendingOptions["Sender"].(map[string]string)["Surname"],
@@ -223,5 +223,5 @@ func (s *Sending) InsertNewSending(newSendingOptions map[string]interface{}) (uu
 		return uuid.New(), fmt.Errorf("InsertSending: %v", err)
 	}
 
-	return newSending.OrderID, nil
+	return uuid.MustParse(newSending.OrderID), nil
 }
