@@ -371,19 +371,21 @@ class PostGenerator {
 
         let months = chance.month({ max: 10 });
         for (let i = 0; i < n; i++) {
+            let senderFullName = this.#generateRussianFullName()
+            let receiverFullName = this.#generateRussianFullName()
             let sending = {
                 _id: new ObjectID(this.#counter()),
                 order_id: new UUID(uuidv4()),
                 registration_date: chance.date({ year: 2022, months: months }).toISOString(),
                 sender: {
-                    name: chance.first(),
-                    surname: chance.last(),
-                    middle_name: chance.first(),
+                    name: senderFullName.name,
+                    surname: senderFullName.surname,
+                    middle_name: senderFullName.middle_name,
                 },
                 receiver: {
-                    name: chance.first(),
-                    surname: chance.last(),
-                    middle_name: chance.first(),
+                    name: receiverFullName.name,
+                    surname: receiverFullName.surname,
+                    middle_name: receiverFullName.middle_name,
                 },
                 type: _.sample([
                     sendingsType.LETTER,
@@ -398,9 +400,13 @@ class PostGenerator {
                 weight: chance.integer({ min: 1, max: 100}),
             }
             let valid_postcodes = this.post_offices.filter(x => x.type === officeType.POST_OFFICE).map(x => x.address.postcode)
-            sending.sender.address = this.#generateAddress(_.sample(valid_postcodes, 1)[0], true)
+
+            let senderPostcode = getOneOf(valid_postcodes)
+            sending.sender.address = this.#generateAddress(senderPostcode, true)
             sending.sender.address.apartment = chance.integer({ min: 1, max: 100 }).toString()
-            sending.receiver.address = this.#generateAddress(_.sample(valid_postcodes, 1)[0], true)
+
+            valid_postcodes = valid_postcodes.filter(postcode => postcode !== senderPostcode)
+            sending.receiver.address = this.#generateAddress(getOneOf(valid_postcodes), true)
             sending.receiver.address.apartment = chance.integer({ min: 1, max: 100 }).toString()
 
             let stagesAndStatus = generateStagesAndStatus(sending, this.employees, this.post_offices)
@@ -413,7 +419,7 @@ class PostGenerator {
         return this.sendings.map(x => x._id)
     }
 
-    #generateRussianFullName(gender) {
+    #generateRussianFullName(gender = '') {
         function generateMaleFullName() {
             const name = [
                 "Руслан", "Ростислав", "Антон", "Даниил", "Данила", "Евгений",
@@ -455,6 +461,13 @@ class PostGenerator {
                 name: getOneOf(name),
                 surname: getOneOf(surname),
                 middle_name: getOneOf(middle_name)
+            }
+        }
+
+        if (gender === '') {
+            gender = 'male'
+            if (chance.bool()) {
+                gender = 'female'
             }
         }
 
