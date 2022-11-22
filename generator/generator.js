@@ -1,6 +1,7 @@
 import fs from 'fs'
 import {v4 as uuidv4} from 'uuid';
 import {default as _, isNull} from 'underscore'
+import { ObjectID, UUID } from 'bson'
 
 import Chance from 'chance'
 let chance = new Chance();
@@ -216,7 +217,7 @@ class PostGenerator {
             let year = chance.year({ min: 1960, max: 2001 });
             let fullName = this.#generateRussianFullName(gender)
             let employee = {
-                _id: this.#counter(),
+                _id: new ObjectID(this.#counter()),
                 surname: fullName.surname,
                 name: fullName.name,
                 gender: ((gender === 'male') ? 'М' : 'Ж'),
@@ -252,7 +253,7 @@ class PostGenerator {
             let current_employees = this.#generateEmployees(officeType)
             employees_buffer.push(...current_employees)
             post_offices_buffer.push({
-                _id: this.#counter(),
+                _id: new ObjectID(this.#counter()),
                 type: officeType,
                 address: this.#generateAddress(postcode),
                 employees: current_employees.map(x => x._id)
@@ -370,9 +371,10 @@ class PostGenerator {
 
         let months = chance.month({ max: 10 });
         for (let i = 0; i < n; i++) {
+            let order_id = new UUID(uuidv4())
             let sending = {
-                _id: this.#counter(),
-                order_id: uuidv4(),
+                _id: new ObjectID(this.#counter()),
+                order_id: order_id.toBinary(),
                 registration_date: chance.date({ year: 2022, months: months }).toISOString(),
                 sender: {
                     name: chance.first(),
