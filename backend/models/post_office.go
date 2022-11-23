@@ -28,39 +28,6 @@ type PostOffice struct {
 	Employees []primitive.ObjectID `bson:"employees" json:"employees"`
 }
 
-func (po *PostOffice) InsertExample() error {
-	e := new(Employee)
-	employees, err := e.FindExample()
-	if err != nil {
-		return fmt.Errorf("InsertExample: %v", err)
-	}
-
-	client := db.GetDB()
-	postOfficeCollection := client.Database("Post").Collection("PostOffice")
-
-	postOffice := PostOffice{
-		Type: "Отделение связи",
-		Address: Address{
-			Postcode:   "453870",
-			Region:     "Республика Башкортостан",
-			District:   "Мелеузовский район",
-			Settlement: "пос. Нугуш",
-			Street:     "ул. Ленина",
-			Building:   "42",
-		},
-		Employees: []primitive.ObjectID{employees[0].ID, employees[1].ID},
-	}
-
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-	_, err = postOfficeCollection.InsertOne(ctx, postOffice)
-	if err != nil {
-		return fmt.Errorf("InsertExample: %v", err)
-	}
-
-	return nil
-}
-
 func (po *PostOffice) FindExample() ([]PostOffice, error) {
 	client := db.GetDB()
 	postOfficeCollection := client.Database("Post").Collection("PostOffice")
