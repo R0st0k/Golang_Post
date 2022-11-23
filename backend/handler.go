@@ -29,35 +29,35 @@ func (p *postService) SendingGet(ctx context.Context, params post.SendingGetPara
 	}
 
 	response := new(post.SendingGetResponse)
-	response.Type = post.SendingType(sending.Type)
-	response.Status = post.SendingStatus(sending.Status)
+	response.SetType(post.SendingType(sending.Type))
+	response.SetStatus(post.SendingStatus(sending.Status))
 
 	stages := []post.SendingStage{}
 	for i := range sending.Stages {
-		new_stage := new(post.SendingStage)
-		new_stage.Name = post.SendingStageName(sending.Stages[i].Name)
-		new_stage.Date = sending.Stages[i].Date
-		new_stage.Postcode = post.AddressPostcode(sending.Stages[i].Postcode)
-		new_stage.Settlement = settlementByPostcode[sending.Stages[i].Postcode]
-		stages = append(stages, *new_stage)
+		newStage := new(post.SendingStage)
+		newStage.SetName(post.SendingStageName(sending.Stages[i].Name))
+		newStage.SetDate(sending.Stages[i].Date)
+		newStage.SetPostcode(post.AddressPostcode(sending.Stages[i].Postcode))
+		newStage.SetSettlement(settlementByPostcode[sending.Stages[i].Postcode])
+		stages = append(stages, *newStage)
 	}
-	response.Stages = stages
+	response.SetStages(stages)
 
 	return response, nil
 }
 
 func (p *postService) ExportClient(client post.PostClient) map[string]string {
 	newClient := make(map[string]string)
-	newClient["Name"] = client.Name
-	newClient["Surname"] = client.Surname
-	newClient["MiddleName"] = client.MiddleName.Value
-	newClient["Postcode"] = string(client.Address.Postcode)
-	newClient["Reqion"] = client.Address.Region.Value
-	newClient["District"] = client.Address.District.Value
-	newClient["Settlement"] = client.Address.Settlement
-	newClient["Street"] = client.Address.Street
-	newClient["Building"] = client.Address.Building
-	newClient["Apartment"] = client.Address.Apartment.Value
+	newClient["Name"] = client.GetName()
+	newClient["Surname"] = client.GetSurname()
+	newClient["MiddleName"], _ = client.MiddleName.Get()
+	newClient["Postcode"] = string(client.Address.GetPostcode())
+	newClient["Reqion"], _ = client.Address.Region.Get()
+	newClient["District"], _ = client.Address.District.Get()
+	newClient["Settlement"] = client.Address.GetSettlement()
+	newClient["Street"] = client.Address.GetStreet()
+	newClient["Building"] = client.Address.GetBuilding()
+	newClient["Apartment"], _ = client.Address.Apartment.Get()
 
 	return newClient
 }
@@ -82,7 +82,7 @@ func (p *postService) SendingPost(ctx context.Context, req post.SendingPostReq) 
 	}
 
 	response := new(post.SendingPostResponse)
-	response.OrderID = post.SendingOrderID(orderID)
+	response.SetOrderID(post.SendingOrderID(orderID))
 
 	return response, nil
 
@@ -204,8 +204,8 @@ func (p *postService) SendingFilterGet(ctx context.Context, params post.SendingF
 		result = append(result, item)
 	}
 
-	response.Result = result
-	response.Total = total
+	response.SetTotal(total)
+	response.SetResult(result)
 
 	return &response, nil
 }
