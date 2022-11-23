@@ -15,6 +15,13 @@ type Handler interface {
 	//
 	// GET /postcodes_by_settlement
 	PostcodesBySettlementGet(ctx context.Context) (PostcodesBySettlementGetResponse, error)
+	// SendingFilterGet implements GET /sending_filter operation.
+	//
+	// Get sendings that fit the filter. Require `page` and `elems_on_page`. Return amount of sendings
+	// that fit the filter and sendings on the selected page.
+	//
+	// GET /sending_filter
+	SendingFilterGet(ctx context.Context, params SendingFilterGetParams) (SendingFilterGetRes, error)
 	// SendingGet implements GET /sending operation.
 	//
 	// Get information about a sending by `order_id`. Require a complete match of `order_id`. Return
@@ -24,7 +31,7 @@ type Handler interface {
 	SendingGet(ctx context.Context, params SendingGetParams) (SendingGetRes, error)
 	// SendingPost implements POST /sending operation.
 	//
-	// Registration of a new sending Require `type`, `sender`, `receiver`, `size`, `weight` Return
+	// Registration of a new sending. Require `type`, `sender`, `receiver`, `size`, `weight`. Return
 	// `order_id` of new sending.
 	//
 	// POST /sending

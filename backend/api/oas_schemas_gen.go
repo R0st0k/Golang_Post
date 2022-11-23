@@ -91,6 +91,8 @@ func (s *Address) SetApartment(val OptString) {
 
 type AddressPostcode string
 
+type ElementsOnPage int64
+
 // Ref: #/components/schemas/Error
 type Error struct {
 	ErrorMessage string `json:"error_message"`
@@ -106,7 +108,330 @@ func (s *Error) SetErrorMessage(val string) {
 	s.ErrorMessage = val
 }
 
-func (*Error) sendingPostRes() {}
+func (*Error) sendingFilterGetRes() {}
+func (*Error) sendingPostRes()      {}
+
+// NewOptDate returns new OptDate with value set to v.
+func NewOptDate(v time.Time) OptDate {
+	return OptDate{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptDate is optional time.Time.
+type OptDate struct {
+	Value time.Time
+	Set   bool
+}
+
+// IsSet returns true if OptDate was set.
+func (o OptDate) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptDate) Reset() {
+	var v time.Time
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptDate) SetTo(v time.Time) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptDate) Get() (v time.Time, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptDate) Or(d time.Time) time.Time {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptInt64 returns new OptInt64 with value set to v.
+func NewOptInt64(v int64) OptInt64 {
+	return OptInt64{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptInt64 is optional int64.
+type OptInt64 struct {
+	Value int64
+	Set   bool
+}
+
+// IsSet returns true if OptInt64 was set.
+func (o OptInt64) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptInt64) Reset() {
+	var v int64
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptInt64) SetTo(v int64) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptInt64) Get() (v int64, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptInt64) Or(d int64) int64 {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptSendingSortSortField returns new OptSendingSortSortField with value set to v.
+func NewOptSendingSortSortField(v SendingSortSortField) OptSendingSortSortField {
+	return OptSendingSortSortField{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptSendingSortSortField is optional SendingSortSortField.
+type OptSendingSortSortField struct {
+	Value SendingSortSortField
+	Set   bool
+}
+
+// IsSet returns true if OptSendingSortSortField was set.
+func (o OptSendingSortSortField) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptSendingSortSortField) Reset() {
+	var v SendingSortSortField
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptSendingSortSortField) SetTo(v SendingSortSortField) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptSendingSortSortField) Get() (v SendingSortSortField, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptSendingSortSortField) Or(d SendingSortSortField) SendingSortSortField {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptSendingSortSortType returns new OptSendingSortSortType with value set to v.
+func NewOptSendingSortSortType(v SendingSortSortType) OptSendingSortSortType {
+	return OptSendingSortSortType{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptSendingSortSortType is optional SendingSortSortType.
+type OptSendingSortSortType struct {
+	Value SendingSortSortType
+	Set   bool
+}
+
+// IsSet returns true if OptSendingSortSortType was set.
+func (o OptSendingSortSortType) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptSendingSortSortType) Reset() {
+	var v SendingSortSortType
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptSendingSortSortType) SetTo(v SendingSortSortType) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptSendingSortSortType) Get() (v SendingSortSortType, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptSendingSortSortType) Or(d SendingSortSortType) SendingSortSortType {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptSendingStatus returns new OptSendingStatus with value set to v.
+func NewOptSendingStatus(v SendingStatus) OptSendingStatus {
+	return OptSendingStatus{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptSendingStatus is optional SendingStatus.
+type OptSendingStatus struct {
+	Value SendingStatus
+	Set   bool
+}
+
+// IsSet returns true if OptSendingStatus was set.
+func (o OptSendingStatus) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptSendingStatus) Reset() {
+	var v SendingStatus
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptSendingStatus) SetTo(v SendingStatus) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptSendingStatus) Get() (v SendingStatus, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptSendingStatus) Or(d SendingStatus) SendingStatus {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptSendingType returns new OptSendingType with value set to v.
+func NewOptSendingType(v SendingType) OptSendingType {
+	return OptSendingType{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptSendingType is optional SendingType.
+type OptSendingType struct {
+	Value SendingType
+	Set   bool
+}
+
+// IsSet returns true if OptSendingType was set.
+func (o OptSendingType) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptSendingType) Reset() {
+	var v SendingType
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptSendingType) SetTo(v SendingType) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptSendingType) Get() (v SendingType, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptSendingType) Or(d SendingType) SendingType {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptSendingWeight returns new OptSendingWeight with value set to v.
+func NewOptSendingWeight(v SendingWeight) OptSendingWeight {
+	return OptSendingWeight{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptSendingWeight is optional SendingWeight.
+type OptSendingWeight struct {
+	Value SendingWeight
+	Set   bool
+}
+
+// IsSet returns true if OptSendingWeight was set.
+func (o OptSendingWeight) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptSendingWeight) Reset() {
+	var v SendingWeight
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptSendingWeight) SetTo(v SendingWeight) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptSendingWeight) Get() (v SendingWeight, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptSendingWeight) Or(d SendingWeight) SendingWeight {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
 
 // NewOptString returns new OptString with value set to v.
 func NewOptString(v string) OptString {
@@ -153,6 +478,8 @@ func (o OptString) Or(d string) string {
 	}
 	return d
 }
+
+type Page int64
 
 // Ref: #/components/schemas/PostClient
 type PostClient struct {
@@ -213,6 +540,271 @@ func (s *PostcodesBySettlementGetResponse) init() PostcodesBySettlementGetRespon
 	return m
 }
 
+// Ref: #/components/schemas/SendingFilter
+type SendingFilter struct {
+	// UUID or a part of it.
+	OrderID OptString `json:"order_id"`
+	// Type of sending.
+	Type OptSendingType `json:"type"`
+	// Status of sending.
+	Status OptSendingStatus `json:"status"`
+	// Start of sending date range.
+	DateStart OptDate `json:"date_start"`
+	// Finish of sending date range.
+	DateFinish OptDate `json:"date_finish"`
+	// Sender's settlement or a part of it.
+	SenderSettlement OptString `json:"sender_settlement"`
+	// Receiver's settlement or a part of it.
+	ReceiverSettlement OptString `json:"receiver_settlement"`
+	Length             OptInt64  `json:"length"`
+	Width              OptInt64  `json:"width"`
+	Height             OptInt64  `json:"height"`
+	// Weight of sending.
+	Weight OptSendingWeight `json:"weight"`
+}
+
+// GetOrderID returns the value of OrderID.
+func (s SendingFilter) GetOrderID() OptString {
+	return s.OrderID
+}
+
+// GetType returns the value of Type.
+func (s SendingFilter) GetType() OptSendingType {
+	return s.Type
+}
+
+// GetStatus returns the value of Status.
+func (s SendingFilter) GetStatus() OptSendingStatus {
+	return s.Status
+}
+
+// GetDateStart returns the value of DateStart.
+func (s SendingFilter) GetDateStart() OptDate {
+	return s.DateStart
+}
+
+// GetDateFinish returns the value of DateFinish.
+func (s SendingFilter) GetDateFinish() OptDate {
+	return s.DateFinish
+}
+
+// GetSenderSettlement returns the value of SenderSettlement.
+func (s SendingFilter) GetSenderSettlement() OptString {
+	return s.SenderSettlement
+}
+
+// GetReceiverSettlement returns the value of ReceiverSettlement.
+func (s SendingFilter) GetReceiverSettlement() OptString {
+	return s.ReceiverSettlement
+}
+
+// GetLength returns the value of Length.
+func (s SendingFilter) GetLength() OptInt64 {
+	return s.Length
+}
+
+// GetWidth returns the value of Width.
+func (s SendingFilter) GetWidth() OptInt64 {
+	return s.Width
+}
+
+// GetHeight returns the value of Height.
+func (s SendingFilter) GetHeight() OptInt64 {
+	return s.Height
+}
+
+// GetWeight returns the value of Weight.
+func (s SendingFilter) GetWeight() OptSendingWeight {
+	return s.Weight
+}
+
+// SetOrderID sets the value of OrderID.
+func (s *SendingFilter) SetOrderID(val OptString) {
+	s.OrderID = val
+}
+
+// SetType sets the value of Type.
+func (s *SendingFilter) SetType(val OptSendingType) {
+	s.Type = val
+}
+
+// SetStatus sets the value of Status.
+func (s *SendingFilter) SetStatus(val OptSendingStatus) {
+	s.Status = val
+}
+
+// SetDateStart sets the value of DateStart.
+func (s *SendingFilter) SetDateStart(val OptDate) {
+	s.DateStart = val
+}
+
+// SetDateFinish sets the value of DateFinish.
+func (s *SendingFilter) SetDateFinish(val OptDate) {
+	s.DateFinish = val
+}
+
+// SetSenderSettlement sets the value of SenderSettlement.
+func (s *SendingFilter) SetSenderSettlement(val OptString) {
+	s.SenderSettlement = val
+}
+
+// SetReceiverSettlement sets the value of ReceiverSettlement.
+func (s *SendingFilter) SetReceiverSettlement(val OptString) {
+	s.ReceiverSettlement = val
+}
+
+// SetLength sets the value of Length.
+func (s *SendingFilter) SetLength(val OptInt64) {
+	s.Length = val
+}
+
+// SetWidth sets the value of Width.
+func (s *SendingFilter) SetWidth(val OptInt64) {
+	s.Width = val
+}
+
+// SetHeight sets the value of Height.
+func (s *SendingFilter) SetHeight(val OptInt64) {
+	s.Height = val
+}
+
+// SetWeight sets the value of Weight.
+func (s *SendingFilter) SetWeight(val OptSendingWeight) {
+	s.Weight = val
+}
+
+type SendingFilterGetResponse struct {
+	Total  int64                                `json:"total"`
+	Result []SendingFilterGetResponseResultItem `json:"result"`
+}
+
+// GetTotal returns the value of Total.
+func (s SendingFilterGetResponse) GetTotal() int64 {
+	return s.Total
+}
+
+// GetResult returns the value of Result.
+func (s SendingFilterGetResponse) GetResult() []SendingFilterGetResponseResultItem {
+	return s.Result
+}
+
+// SetTotal sets the value of Total.
+func (s *SendingFilterGetResponse) SetTotal(val int64) {
+	s.Total = val
+}
+
+// SetResult sets the value of Result.
+func (s *SendingFilterGetResponse) SetResult(val []SendingFilterGetResponseResultItem) {
+	s.Result = val
+}
+
+func (*SendingFilterGetResponse) sendingFilterGetRes() {}
+
+type SendingFilterGetResponseResultItem struct {
+	OrderID    SendingOrderID                               `json:"order_id"`
+	Type       SendingType                                  `json:"type"`
+	Date       time.Time                                    `json:"date"`
+	Settlement SendingFilterGetResponseResultItemSettlement `json:"settlement"`
+	Weight     SendingWeight                                `json:"weight"`
+	Size       SendingSize                                  `json:"size"`
+	Status     SendingStatus                                `json:"status"`
+}
+
+// GetOrderID returns the value of OrderID.
+func (s SendingFilterGetResponseResultItem) GetOrderID() SendingOrderID {
+	return s.OrderID
+}
+
+// GetType returns the value of Type.
+func (s SendingFilterGetResponseResultItem) GetType() SendingType {
+	return s.Type
+}
+
+// GetDate returns the value of Date.
+func (s SendingFilterGetResponseResultItem) GetDate() time.Time {
+	return s.Date
+}
+
+// GetSettlement returns the value of Settlement.
+func (s SendingFilterGetResponseResultItem) GetSettlement() SendingFilterGetResponseResultItemSettlement {
+	return s.Settlement
+}
+
+// GetWeight returns the value of Weight.
+func (s SendingFilterGetResponseResultItem) GetWeight() SendingWeight {
+	return s.Weight
+}
+
+// GetSize returns the value of Size.
+func (s SendingFilterGetResponseResultItem) GetSize() SendingSize {
+	return s.Size
+}
+
+// GetStatus returns the value of Status.
+func (s SendingFilterGetResponseResultItem) GetStatus() SendingStatus {
+	return s.Status
+}
+
+// SetOrderID sets the value of OrderID.
+func (s *SendingFilterGetResponseResultItem) SetOrderID(val SendingOrderID) {
+	s.OrderID = val
+}
+
+// SetType sets the value of Type.
+func (s *SendingFilterGetResponseResultItem) SetType(val SendingType) {
+	s.Type = val
+}
+
+// SetDate sets the value of Date.
+func (s *SendingFilterGetResponseResultItem) SetDate(val time.Time) {
+	s.Date = val
+}
+
+// SetSettlement sets the value of Settlement.
+func (s *SendingFilterGetResponseResultItem) SetSettlement(val SendingFilterGetResponseResultItemSettlement) {
+	s.Settlement = val
+}
+
+// SetWeight sets the value of Weight.
+func (s *SendingFilterGetResponseResultItem) SetWeight(val SendingWeight) {
+	s.Weight = val
+}
+
+// SetSize sets the value of Size.
+func (s *SendingFilterGetResponseResultItem) SetSize(val SendingSize) {
+	s.Size = val
+}
+
+// SetStatus sets the value of Status.
+func (s *SendingFilterGetResponseResultItem) SetStatus(val SendingStatus) {
+	s.Status = val
+}
+
+type SendingFilterGetResponseResultItemSettlement struct {
+	Sender   string `json:"sender"`
+	Receiver string `json:"receiver"`
+}
+
+// GetSender returns the value of Sender.
+func (s SendingFilterGetResponseResultItemSettlement) GetSender() string {
+	return s.Sender
+}
+
+// GetReceiver returns the value of Receiver.
+func (s SendingFilterGetResponseResultItemSettlement) GetReceiver() string {
+	return s.Receiver
+}
+
+// SetSender sets the value of Sender.
+func (s *SendingFilterGetResponseResultItemSettlement) SetSender(val string) {
+	s.Sender = val
+}
+
+// SetReceiver sets the value of Receiver.
+func (s *SendingFilterGetResponseResultItemSettlement) SetReceiver(val string) {
+	s.Receiver = val
+}
+
 type SendingGetApplicationJSONBadRequest Error
 
 func (*SendingGetApplicationJSONBadRequest) sendingGetRes() {}
@@ -262,11 +854,11 @@ func (*SendingGetResponse) sendingGetRes() {}
 type SendingOrderID uuid.UUID
 
 type SendingPostReq struct {
-	Type     SendingType `json:"type"`
-	Sender   PostClient  `json:"sender"`
-	Receiver PostClient  `json:"receiver"`
-	Size     SendingSize `json:"size"`
-	Weight   int64       `json:"weight"`
+	Type     SendingType   `json:"type"`
+	Sender   PostClient    `json:"sender"`
+	Receiver PostClient    `json:"receiver"`
+	Size     SendingSize   `json:"size"`
+	Weight   SendingWeight `json:"weight"`
 }
 
 // GetType returns the value of Type.
@@ -290,7 +882,7 @@ func (s SendingPostReq) GetSize() SendingSize {
 }
 
 // GetWeight returns the value of Weight.
-func (s SendingPostReq) GetWeight() int64 {
+func (s SendingPostReq) GetWeight() SendingWeight {
 	return s.Weight
 }
 
@@ -315,7 +907,7 @@ func (s *SendingPostReq) SetSize(val SendingSize) {
 }
 
 // SetWeight sets the value of Weight.
-func (s *SendingPostReq) SetWeight(val int64) {
+func (s *SendingPostReq) SetWeight(val SendingWeight) {
 	s.Weight = val
 }
 
@@ -371,6 +963,51 @@ func (s *SendingSize) SetWidth(val int64) {
 func (s *SendingSize) SetHeight(val int64) {
 	s.Height = val
 }
+
+// Ref: #/components/schemas/SendingSort
+type SendingSort struct {
+	SortType  OptSendingSortSortType  `json:"sort_type"`
+	SortField OptSendingSortSortField `json:"sort_field"`
+}
+
+// GetSortType returns the value of SortType.
+func (s SendingSort) GetSortType() OptSendingSortSortType {
+	return s.SortType
+}
+
+// GetSortField returns the value of SortField.
+func (s SendingSort) GetSortField() OptSendingSortSortField {
+	return s.SortField
+}
+
+// SetSortType sets the value of SortType.
+func (s *SendingSort) SetSortType(val OptSendingSortSortType) {
+	s.SortType = val
+}
+
+// SetSortField sets the value of SortField.
+func (s *SendingSort) SetSortField(val OptSendingSortSortField) {
+	s.SortField = val
+}
+
+type SendingSortSortField string
+
+const (
+	SendingSortSortFieldOrderID            SendingSortSortField = "order_id"
+	SendingSortSortFieldType               SendingSortSortField = "type"
+	SendingSortSortFieldStatus             SendingSortSortField = "status"
+	SendingSortSortFieldDate               SendingSortSortField = "date"
+	SendingSortSortFieldSenderSettlement   SendingSortSortField = "sender_settlement"
+	SendingSortSortFieldReceiverSettlement SendingSortSortField = "receiver_settlement"
+	SendingSortSortFieldWeight             SendingSortSortField = "weight"
+)
+
+type SendingSortSortType string
+
+const (
+	SendingSortSortTypeAsc  SendingSortSortType = "asc"
+	SendingSortSortTypeDesc SendingSortSortType = "desc"
+)
 
 // Ref: #/components/schemas/SendingStage
 type SendingStage struct {
@@ -448,3 +1085,5 @@ const (
 	SendingType_1 SendingType = "Посылка"
 	SendingType_2 SendingType = "Бандероль"
 )
+
+type SendingWeight int64

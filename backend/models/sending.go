@@ -7,7 +7,9 @@ import (
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"regexp"
 	"time"
 )
 
@@ -224,4 +226,209 @@ func (s *Sending) InsertNewSending(newSendingOptions map[string]interface{}) (uu
 	}
 
 	return uuid.MustParse(newSending.OrderID), nil
+}
+
+func (s *Sending) FilterSending(sendingFilter map[string]interface{}) (int64, []Sending, error) {
+	client := db.GetDB()
+	sendingCollection := client.Database("Post").Collection("Sending")
+
+	pagePipeline := mongo.Pipeline{}
+	matchPipeline := mongo.Pipeline{}
+	sortPipeline := mongo.Pipeline{}
+
+	if page := sendingFilter["page"].(int64); page > 1 {
+		skip := bson.D{{
+			"$skip", (page - 1) * sendingFilter["elems"].(int64),
+		}}
+		pagePipeline = append(pagePipeline, skip)
+	}
+	{
+		limit := bson.D{{
+			"$limit", sendingFilter["elems"].(int64),
+		}}
+		pagePipeline = append(pagePipeline, limit)
+	}
+	if filter, ok := sendingFilter["order_id"]; ok {
+		match := bson.D{{
+			"$match", bson.D{{
+				"order_id", bson.D{{
+					"$regex", regexp.QuoteMeta(filter.(string)),
+				},
+					{
+						"$options", "",
+					}},
+			}},
+		}}
+		matchPipeline = append(matchPipeline, match)
+	}
+	if filter, ok := sendingFilter["type"]; ok {
+		match := bson.D{{
+			"$match", bson.D{{
+				"type", filter.(string),
+			}},
+		}}
+		matchPipeline = append(matchPipeline, match)
+	}
+	if filter, ok := sendingFilter["status"]; ok {
+		match := bson.D{{
+			"$match", bson.D{{
+				"status", filter.(string),
+			}},
+		}}
+		matchPipeline = append(matchPipeline, match)
+	}
+	if filter, ok := sendingFilter["date_start"]; ok {
+		match := bson.D{{
+			"$match", bson.D{{
+				"registration_date", bson.D{{
+					"$gte", filter.(time.Time).Format(time.RFC3339),
+				}},
+			}},
+		}}
+		matchPipeline = append(matchPipeline, match)
+	}
+	if filter, ok := sendingFilter["date_finish"]; ok {
+		match := bson.D{{
+			"$match", bson.D{{
+				"registration_date", bson.D{{
+					"$lte", filter.(time.Time).Format(time.RFC3339),
+				}},
+			}},
+		}}
+		matchPipeline = append(matchPipeline, match)
+	}
+	if filter, ok := sendingFilter["sender_settlement"]; ok {
+		match := bson.D{{
+			"$match", bson.D{{
+				"sender.address.settlement", bson.D{{
+					"$regex", regexp.QuoteMeta(filter.(string)),
+				},
+					{
+						"$options", "i",
+					}},
+			}},
+		}}
+		matchPipeline = append(matchPipeline, match)
+	}
+	if filter, ok := sendingFilter["receiver_settlement"]; ok {
+		match := bson.D{{
+			"$match", bson.D{{
+				"receiver.address.settlement", bson.D{{
+					"$regex", regexp.QuoteMeta(filter.(string)),
+				},
+					{
+						"$options", "i",
+					}},
+			}},
+		}}
+		matchPipeline = append(matchPipeline, match)
+	}
+	if filter, ok := sendingFilter["length"]; ok {
+		match := bson.D{{
+			"$match", bson.D{{
+				"size.length", filter.(int64),
+			}},
+		}}
+		matchPipeline = append(matchPipeline, match)
+	}
+	if filter, ok := sendingFilter["width"]; ok {
+		match := bson.D{{
+			"$match", bson.D{{
+				"size.width", filter.(int64),
+			}},
+		}}
+		matchPipeline = append(matchPipeline, match)
+	}
+	if filter, ok := sendingFilter["height"]; ok {
+		match := bson.D{{
+			"$match", bson.D{{
+				"size.height", filter.(int64),
+			}},
+		}}
+		matchPipeline = append(matchPipeline, match)
+	}
+	if filter, ok := sendingFilter["weight"]; ok {
+		match := bson.D{{
+			"$match", bson.D{{
+				"weight", filter.(int64),
+			}},
+		}}
+		matchPipeline = append(matchPipeline, match)
+	}
+	{
+		sortTypeInMap, okType := sendingFilter["sort_type"]
+		sortFieldInMap, okField := sendingFilter["sort_field"]
+		if okType && okField {
+			sortType := 0
+			switch sortTypeInMap.(string) {
+			case "asc":
+				sortType = 1
+			case "desc":
+				sortType = -1
+			}
+			sortField := ""
+			switch sortFieldInMap.(string) {
+			case "order_id":
+				sortField = "order_id"
+			case "type":
+				sortField = "type"
+			case "status":
+				sortField = "status"
+			case "date":
+				sortField = "registration_date"
+			case "sender_settlement":
+				sortField = "sender.address.settlement"
+			case "receiver_settlement":
+				sortField = "receiver.address.settlement"
+			case "weight":
+				sortField = "weight"
+			}
+			sort := bson.D{{
+				"$sort", bson.D{{
+					sortField, sortType,
+				},
+					{
+						"_id", 1,
+					}},
+			}}
+			sortPipeline = append(sortPipeline, sort)
+		}
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	countPipeline := mongo.Pipeline{}
+	countStage := bson.D{{"$count", "order_id"}}
+	countPipeline = append(countPipeline, matchPipeline...)
+	countPipeline = append(countPipeline, countStage)
+
+	cursor, err := sendingCollection.Aggregate(ctx, countPipeline)
+	if err != nil {
+		return 0, nil, fmt.Errorf("FindSendings: %v", err)
+	}
+	var count []bson.D
+	if err = cursor.All(ctx, &count); err != nil {
+		return 0, nil, fmt.Errorf("FindSendings: %v", err)
+	}
+	total := int64(0)
+	if len(count) > 0 {
+		total = int64(count[0][0].Value.(int32))
+	}
+
+	resultPipeline := mongo.Pipeline{}
+	resultPipeline = append(resultPipeline, matchPipeline...)
+	resultPipeline = append(resultPipeline, sortPipeline...)
+	resultPipeline = append(resultPipeline, pagePipeline...)
+
+	cursor, err = sendingCollection.Aggregate(ctx, resultPipeline)
+	if err != nil {
+		return 0, nil, fmt.Errorf("FindSendings: %v", err)
+	}
+	var results []Sending
+	if err = cursor.All(ctx, &results); err != nil {
+		return 0, nil, fmt.Errorf("FindSendings: %v", err)
+	}
+
+	return total, results, nil
 }

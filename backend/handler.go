@@ -73,7 +73,7 @@ func (p *postService) SendingPost(ctx context.Context, req post.SendingPostReq) 
 	newSending["Length"] = req.Size.Length
 	newSending["Width"] = req.Size.Width
 	newSending["Height"] = req.Size.Height
-	newSending["Weight"] = req.Weight
+	newSending["Weight"] = int64(req.Weight)
 
 	s := new(models.Sending)
 	orderID, err := s.InsertNewSending(newSending)
@@ -109,4 +109,103 @@ func (p *postService) PostcodesBySettlementGet(ctx context.Context) (post.Postco
 	}
 
 	return response, nil
+}
+
+func (p *postService) ExportSendingFilter(params post.SendingFilterGetParams) map[string]interface{} {
+	sendingFilter := make(map[string]interface{})
+	sendingFilter["page"] = int64(params.Page)
+	sendingFilter["elems"] = int64(params.ElemsOnPage)
+
+	if OrderID, ok := params.Filter.OrderID.Get(); ok {
+		sendingFilter["order_id"] = OrderID
+	}
+	if Type, ok := params.Filter.Type.Get(); ok {
+		sendingFilter["type"] = string(Type)
+	}
+	if Status, ok := params.Filter.Status.Get(); ok {
+		sendingFilter["status"] = string(Status)
+	}
+	if DateStart, ok := params.Filter.DateStart.Get(); ok {
+		sendingFilter["date_start"] = DateStart
+	}
+	if DateFinish, ok := params.Filter.DateFinish.Get(); ok {
+		sendingFilter["date_finish"] = DateFinish
+	}
+	if SenderSettlement, ok := params.Filter.SenderSettlement.Get(); ok {
+		sendingFilter["sender_settlement"] = SenderSettlement
+	}
+	if ReceiverSettlement, ok := params.Filter.ReceiverSettlement.Get(); ok {
+		sendingFilter["receiver_settlement"] = ReceiverSettlement
+	}
+	if Length, ok := params.Filter.Length.Get(); ok {
+		sendingFilter["length"] = Length
+	}
+	if Width, ok := params.Filter.Width.Get(); ok {
+		sendingFilter["width"] = Width
+	}
+	if Height, ok := params.Filter.Height.Get(); ok {
+		sendingFilter["height"] = Height
+	}
+	if Weight, ok := params.Filter.Weight.Get(); ok {
+		sendingFilter["weight"] = int64(Weight)
+	}
+	if SortType, ok := params.Sort.SortType.Get(); ok {
+		sendingFilter["sort_type"] = string(SortType)
+	}
+	if SortField, ok := params.Sort.SortField.Get(); ok {
+		sendingFilter["sort_field"] = string(SortField)
+	}
+
+	return sendingFilter
+}
+
+func (p *postService) ModelToSendingFilterGetResponseResultItem(sending models.Sending) (post.SendingFilterGetResponseResultItem, error) {
+	var sendingItem post.SendingFilterGetResponseResultItem
+
+	uuid, err := uuid.Parse(sending.OrderID)
+	if err != nil {
+		return post.SendingFilterGetResponseResultItem{}, err
+	}
+	sendingItem.OrderID = post.SendingOrderID(uuid)
+
+	sendingItem.Type = post.SendingType(sending.Type)
+	sendingItem.Date = sending.RegistrationDate
+	sendingItem.Settlement.Sender = sending.Sender.Address.Settlement
+	sendingItem.Settlement.Receiver = sending.Receiver.Address.Settlement
+	sendingItem.Weight = post.SendingWeight(sending.Weight)
+	sendingItem.Size.Length = sending.Size.Length
+	sendingItem.Size.Width = sending.Size.Width
+	sendingItem.Size.Height = sending.Size.Height
+	sendingItem.Status = post.SendingStatus(sending.Status)
+
+	return sendingItem, nil
+}
+
+func (p *postService) SendingFilterGet(ctx context.Context, params post.SendingFilterGetParams) (post.SendingFilterGetRes, error) {
+	p.mux.Lock()
+	defer p.mux.Unlock()
+
+	sendingFilter := p.ExportSendingFilter(params)
+
+	s := new(models.Sending)
+	total, resultSending, err := s.FilterSending(sendingFilter)
+	if err != nil {
+		return nil, err
+	}
+
+	var response post.SendingFilterGetResponse
+	result := []post.SendingFilterGetResponseResultItem{}
+
+	for i := range resultSending {
+		item, err := p.ModelToSendingFilterGetResponseResultItem(resultSending[i])
+		if err != nil {
+			return nil, err
+		}
+		result = append(result, item)
+	}
+
+	response.Result = result
+	response.Total = total
+
+	return &response, nil
 }

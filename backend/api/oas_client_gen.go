@@ -118,6 +118,132 @@ func (c *Client) PostcodesBySettlementGet(ctx context.Context) (res PostcodesByS
 	return result, nil
 }
 
+// SendingFilterGet invokes GET /sending_filter operation.
+//
+// Get sendings that fit the filter. Require `page` and `elems_on_page`. Return amount of sendings
+// that fit the filter and sendings on the selected page.
+//
+// GET /sending_filter
+func (c *Client) SendingFilterGet(ctx context.Context, params SendingFilterGetParams) (res SendingFilterGetRes, err error) {
+	var otelAttrs []attribute.KeyValue
+
+	// Run stopwatch.
+	startTime := time.Now()
+	defer func() {
+		elapsedDuration := time.Since(startTime)
+		c.duration.Record(ctx, elapsedDuration.Microseconds(), otelAttrs...)
+	}()
+
+	// Increment request counter.
+	c.requests.Add(ctx, 1, otelAttrs...)
+
+	// Start a span for this request.
+	ctx, span := c.cfg.Tracer.Start(ctx, "SendingFilterGet",
+		clientSpanKind,
+	)
+	// Track stage for error reporting.
+	var stage string
+	defer func() {
+		if err != nil {
+			span.RecordError(err)
+			span.SetStatus(codes.Error, stage)
+			c.errors.Add(ctx, 1, otelAttrs...)
+		}
+		span.End()
+	}()
+
+	stage = "BuildURL"
+	u := uri.Clone(c.requestURL(ctx))
+	u.Path += "/sending_filter"
+
+	stage = "EncodeQueryParams"
+	q := uri.NewQueryEncoder()
+	{
+		// Encode "page" parameter.
+		cfg := uri.QueryParameterEncodingConfig{
+			Name:    "page",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
+			if unwrapped := int64(params.Page); true {
+				return e.EncodeValue(conv.Int64ToString(unwrapped))
+			}
+			return nil
+		}); err != nil {
+			return res, errors.Wrap(err, "encode query")
+		}
+	}
+	{
+		// Encode "elems_on_page" parameter.
+		cfg := uri.QueryParameterEncodingConfig{
+			Name:    "elems_on_page",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
+			if unwrapped := int64(params.ElemsOnPage); true {
+				return e.EncodeValue(conv.Int64ToString(unwrapped))
+			}
+			return nil
+		}); err != nil {
+			return res, errors.Wrap(err, "encode query")
+		}
+	}
+	{
+		// Encode "filter" parameter.
+		cfg := uri.QueryParameterEncodingConfig{
+			Name:    "filter",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
+			return params.Filter.EncodeURI(e)
+		}); err != nil {
+			return res, errors.Wrap(err, "encode query")
+		}
+	}
+	{
+		// Encode "sort" parameter.
+		cfg := uri.QueryParameterEncodingConfig{
+			Name:    "sort",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
+			return params.Sort.EncodeURI(e)
+		}); err != nil {
+			return res, errors.Wrap(err, "encode query")
+		}
+	}
+	u.RawQuery = q.Values().Encode()
+
+	stage = "EncodeRequest"
+	r, err := ht.NewRequest(ctx, "GET", u, nil)
+	if err != nil {
+		return res, errors.Wrap(err, "create request")
+	}
+
+	stage = "SendRequest"
+	resp, err := c.cfg.Client.Do(r)
+	if err != nil {
+		return res, errors.Wrap(err, "do request")
+	}
+	defer resp.Body.Close()
+
+	stage = "DecodeResponse"
+	result, err := decodeSendingFilterGetResponse(resp)
+	if err != nil {
+		return res, errors.Wrap(err, "decode response")
+	}
+
+	return result, nil
+}
+
 // SendingGet invokes GET /sending operation.
 //
 // Get information about a sending by `order_id`. Require a complete match of `order_id`. Return
@@ -201,7 +327,7 @@ func (c *Client) SendingGet(ctx context.Context, params SendingGetParams) (res S
 
 // SendingPost invokes POST /sending operation.
 //
-// Registration of a new sending Require `type`, `sender`, `receiver`, `size`, `weight` Return
+// Registration of a new sending. Require `type`, `sender`, `receiver`, `size`, `weight`. Return
 // `order_id` of new sending.
 //
 // POST /sending

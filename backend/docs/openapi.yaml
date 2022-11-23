@@ -9,7 +9,7 @@ info:
   description: Information System "Post" API
   termsOfService: http://swagger.io/terms/
   title: Information System "Post"
-  version: 0.2.1
+  version: 0.3.0
 tags:
   - name: Get Information
     description: Endpoints to get information
@@ -37,9 +37,9 @@ paths:
     post:
       summary: Registration of a new sending
       description: >
-        Registration of a new sending
-        Require `type`, `sender`, `receiver`, `size`, `weight`
-        Return `order_id` of new sending
+        Registration of a new sending.
+        Require `type`, `sender`, `receiver`, `size`, `weight`.
+        Return `order_id` of new sending.
       tags:
         - Update Information
       requestBody:
@@ -54,12 +54,31 @@ paths:
       summary: Get information about postcodes in cities
       description: >
         Get information about postcodes in cities.
-        Return map with `settlement` key and `postcode` array value
+        Return map with `settlement` key and `postcode` array value.
       tags:
         - Get Information
       responses:
         '200':
           $ref: '#/components/responses/PostcodesBySettlementGetResponse'
+  /sending_filter:
+    get:
+      summary: Get sendings that fit the filter
+      description: >
+        Get sendings that fit the filter.
+        Require `page` and `elems_on_page`.
+        Return amount of sendings that fit the filter and sendings on the selected page.
+      tags:
+        - Get Information
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/ElementsOnPage'
+        - $ref: '#/components/parameters/SendingFilter'
+        - $ref: '#/components/parameters/SendingSort'
+      responses:
+        '200':
+          $ref: '#/components/responses/SendingFilterGetResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
 components:
   schemas:
     Error:
@@ -104,6 +123,11 @@ components:
           format: int64
           minimum: 10
           example: 42
+    SendingWeight:
+      type: integer
+      format: int64
+      minimum: 10
+      example: 1000
     SendingStage:
       type: object
       required:
@@ -180,6 +204,80 @@ components:
           example: Рустэмович
         address:
           $ref: '#/components/schemas/Address'
+    Page:
+      type: integer
+      format: int64
+      minimum: 1
+      example: 1
+    ElementsOnPage:
+      type: integer
+      format: int64
+      minimum: 1
+      example: 5
+    SendingFilter:
+      type: object
+      properties:
+        order_id:
+          description: UUID or a part of it
+          type: string
+          minLength: 1
+          maxLength: 36
+          example: 123e4567-e89b-12d3-a456-426655440000
+        type:
+          description: Type of sending
+          $ref: '#/components/schemas/SendingType'
+        status:
+          description: Status of sending
+          $ref: '#/components/schemas/SendingStatus'
+        date_start:
+          description: Start of sending date range
+          type: string
+          format: date
+          example: 2022-11-20
+        date_finish:
+          description: Finish of sending date range
+          type: string
+          format: date
+          example: 2022-11-23
+        sender_settlement:
+          description: Sender's settlement or a part of it
+          type: string
+          minLength: 1
+          example: Москва
+        receiver_settlement:
+          description: Receiver's settlement or a part of it
+          type: string
+          minLength: 1
+          example: Санкт-Петербург
+        length:
+          type: integer
+          format: int64
+          minimum: 10
+          example: 100
+        width:
+          type: integer
+          format: int64
+          minimum: 10
+          example: 73
+        height:
+          type: integer
+          format: int64
+          minimum: 10
+          example: 42
+        weight:
+          description: Weight of sending
+          $ref: '#/components/schemas/SendingWeight'
+    SendingSort:
+      type: object
+      properties:
+        sort_type:
+          type: string
+          enum: [ asc, desc ]
+          example: asc
+        sort_field:
+          type: string
+          enum: [ order_id, type, status, date, sender_settlement, receiver_settlement, weight ]
+          example: order_id
   parameters:
     SendingOrderID:
       in: query
@@ -188,6 +286,34 @@ components:
       required: true
       schema:
         $ref: '#/components/schemas/SendingOrderID'
+    Page:
+      in: query
+      name: page
+      description: Current page
+      required: true
+      schema:
+        $ref: '#/components/schemas/Page'
+    ElementsOnPage:
+      in: query
+      name: elems_on_page
+      description: The number of items displayed on the page
+      required: true
+      schema:
+        $ref: '#/components/schemas/ElementsOnPage'
+    SendingFilter:
+      in: query
+      name: filter
+      description: Sending filter
+      required: true
+      schema:
+        $ref: '#/components/schemas/SendingFilter'
+    SendingSort:
+      in: query
+      name: sort
+      description: Sending sort
+      required: true
+      schema:
+        $ref: '#/components/schemas/SendingSort'
   requestBodies:
     Sending:
       description: Information of sending
@@ -212,10 +338,7 @@ components:
               size:
                 $ref: '#/components/schemas/SendingSize'
               weight:
-                type: integer
-                format: int64
-                minimum: 10
-                example: 1000
+                $ref: '#/components/schemas/SendingWeight'
   responses:
     BadRequest:
       description: Bad request
@@ -272,3 +395,57 @@ components:
             properties:
               order_id:
                 $ref: '#/components/schemas/SendingOrderID'
+    SendingFilterGetResponse:
+      description: ok
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - total
+              - result
+            properties:
+              total:
+                type: integer
+                format: int64
+                minimum: 0
+                example: 1
+              result:
+                type: array
+                items:
+                  type: object
+                  required:
+                    - order_id
+                    - type
+                    - date
+                    - settlement
+                    - weight
+                    - size
+                    - status
+                  properties:
+                    order_id:
+                      $ref: '#/components/schemas/SendingOrderID'
+                    type:
+                      $ref: '#/components/schemas/SendingType'
+                    date:
+                      type: string
+                      format: date
+                      example: 2022-11-23
+                    settlement:
+                      type: object
+                      required:
+                        - sender
+                        - receiver
+                      properties:
+                        sender:
+                          type: string
+                          example: Москва
+                        receiver:
+                          type: string
+                          example: Санкт-петербург
+                    weight:
+                      $ref: '#/components/schemas/SendingWeight'
+                    size:
+                      $ref: '#/components/schemas/SendingSize'
+                    status:
+                      $ref: '#/components/schemas/SendingStatus'

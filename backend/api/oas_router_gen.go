@@ -70,7 +70,6 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				}
 
 				if len(elem) == 0 {
-					// Leaf node.
 					switch r.Method {
 					case "GET":
 						s.handleSendingGetRequest([0]string{}, w, r)
@@ -81,6 +80,26 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 					}
 
 					return
+				}
+				switch elem[0] {
+				case '_': // Prefix: "_filter"
+					if l := len("_filter"); len(elem) >= l && elem[0:l] == "_filter" {
+						elem = elem[l:]
+					} else {
+						break
+					}
+
+					if len(elem) == 0 {
+						// Leaf node.
+						switch r.Method {
+						case "GET":
+							s.handleSendingFilterGetRequest([0]string{}, w, r)
+						default:
+							s.notAllowed(w, r, "GET")
+						}
+
+						return
+					}
 				}
 			}
 		}
@@ -172,14 +191,12 @@ func (s *Server) FindRoute(method, path string) (r Route, _ bool) {
 				if len(elem) == 0 {
 					switch method {
 					case "GET":
-						// Leaf: SendingGet
 						r.name = "SendingGet"
 						r.operationID = ""
 						r.args = args
 						r.count = 0
 						return r, true
 					case "POST":
-						// Leaf: SendingPost
 						r.name = "SendingPost"
 						r.operationID = ""
 						r.args = args
@@ -187,6 +204,28 @@ func (s *Server) FindRoute(method, path string) (r Route, _ bool) {
 						return r, true
 					default:
 						return
+					}
+				}
+				switch elem[0] {
+				case '_': // Prefix: "_filter"
+					if l := len("_filter"); len(elem) >= l && elem[0:l] == "_filter" {
+						elem = elem[l:]
+					} else {
+						break
+					}
+
+					if len(elem) == 0 {
+						switch method {
+						case "GET":
+							// Leaf: SendingFilterGet
+							r.name = "SendingFilterGet"
+							r.operationID = ""
+							r.args = args
+							r.count = 0
+							return r, true
+						default:
+							return
+						}
 					}
 				}
 			}
