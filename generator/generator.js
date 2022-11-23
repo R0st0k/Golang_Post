@@ -393,11 +393,11 @@ class PostGenerator {
                     sendingsType.PACKAGE,
                 ], 1)[0],
                 size: {
-                    length: chance.integer({ min: 1, max: 100}),
-                    width: chance.integer({ min: 1, max: 100}),
-                    height: chance.integer({ min: 1, max: 100}),
+                    length: chance.integer({ min: 10, max: 100}),
+                    width: chance.integer({ min: 10, max: 100}),
+                    height: chance.integer({ min: 10, max: 100}),
                 },
-                weight: chance.integer({ min: 1, max: 100}),
+                weight: chance.integer({ min: 10, max: 100}),
             }
             let valid_postcodes = this.post_offices.filter(x => x.type === officeType.POST_OFFICE).map(x => x.address.postcode)
 
