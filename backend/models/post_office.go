@@ -28,25 +28,6 @@ type PostOffice struct {
 	Employees []primitive.ObjectID `bson:"employees" json:"employees"`
 }
 
-func (po *PostOffice) FindExample() ([]PostOffice, error) {
-	client := db.GetDB()
-	postOfficeCollection := client.Database("Post").Collection("PostOffice")
-
-	var postOffices []PostOffice
-
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-	cursor, err := postOfficeCollection.Find(ctx, bson.D{{"type", "Отделение связи"}})
-	if err != nil {
-		return nil, fmt.Errorf("FindExample: %v", err)
-	}
-	if err = cursor.All(ctx, &postOffices); err != nil {
-		return nil, fmt.Errorf("FindExample: %v", err)
-	}
-
-	return postOffices, nil
-}
-
 func (po *PostOffice) GetSettlementByPostcode() (map[string]string, error) {
 	client := db.GetDB()
 	postOfficeCollection := client.Database("Post").Collection("PostOffice")

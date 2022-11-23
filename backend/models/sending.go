@@ -46,25 +46,6 @@ type Sending struct {
 	Status           string             `bson:"status" json:"status" example:"Доставлено"`
 }
 
-func (s *Sending) FindExample() ([]Sending, error) {
-	client := db.GetDB()
-	sendingCollection := client.Database("Post").Collection("Sending")
-
-	var sendings []Sending
-
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-	cursor, err := sendingCollection.Find(ctx, bson.M{"registration_date": bson.D{{"$lt", time.Now()}}})
-	if err != nil {
-		return nil, fmt.Errorf("FindExample: %v", err)
-	}
-	if err = cursor.All(ctx, &sendings); err != nil {
-		return nil, fmt.Errorf("FindExample: %v", err)
-	}
-
-	return sendings, nil
-}
-
 func (s *Sending) GetSendingByOrderID(orderID uuid.UUID) (Sending, error) {
 	client := db.GetDB()
 	sendingCollection := client.Database("Post").Collection("Sending")
