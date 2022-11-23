@@ -36,7 +36,7 @@ func (p *postService) SendingGet(ctx context.Context, params post.SendingGetPara
 	for i := range sending.Stages {
 		newStage := new(post.SendingStage)
 		newStage.SetName(post.SendingStageName(sending.Stages[i].Name))
-		newStage.SetDate(sending.Stages[i].Date)
+		newStage.SetDate(sending.Stages[i].Timestamp)
 		newStage.SetPostcode(post.AddressPostcode(sending.Stages[i].Postcode))
 		newStage.SetSettlement(settlementByPostcode[sending.Stages[i].Postcode])
 		stages = append(stages, *newStage)

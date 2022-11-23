@@ -28,7 +28,7 @@ type Size struct {
 
 type Stage struct {
 	Name       string             `bson:"name" json:"name" example:"Принято в отделении связи"`
-	Date       time.Time          `bson:"date" json:"date"`
+	Timestamp  time.Time          `bson:"timestamp" json:"timestamp"`
 	Postcode   string             `bson:"postcode" json:"postcode" example:"453870"`
 	EmployeeID primitive.ObjectID `bson:"employee_id" json:"employee_id"`
 }
@@ -120,7 +120,7 @@ func (s *Sending) InsertNewSending(newSendingOptions map[string]interface{}) (uu
 		Stages: []Stage{
 			{
 				Name:       "Принято в отделении связи",
-				Date:       time.Now(),
+				Timestamp:  time.Now(),
 				Postcode:   newSendingOptions["Sender"].(map[string]string)["Postcode"],
 				EmployeeID: employeeID,
 			},
