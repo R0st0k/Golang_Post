@@ -9,7 +9,7 @@ info:
   description: Information System "Post" API
   termsOfService: http://swagger.io/terms/
   title: Information System "Post"
-  version: 0.3.2
+  version: 0.3.3
 tags:
   - name: Get Information
     description: Endpoints to get information

@@ -166,17 +166,17 @@ func (p *postService) ModelToSendingFilterGetResponseResultItem(sending models.S
 	if err != nil {
 		return post.SendingFilterGetResponseResultItem{}, err
 	}
-	sendingItem.OrderID = post.SendingOrderID(uuid)
 
-	sendingItem.Type = post.SendingType(sending.Type)
-	sendingItem.Date = sending.RegistrationDate
-	sendingItem.Settlement.Sender = sending.Sender.Address.Settlement
-	sendingItem.Settlement.Receiver = sending.Receiver.Address.Settlement
-	sendingItem.Weight = post.SendingWeight(sending.Weight)
-	sendingItem.Size.Length = sending.Size.Length
-	sendingItem.Size.Width = sending.Size.Width
-	sendingItem.Size.Height = sending.Size.Height
-	sendingItem.Status = post.SendingStatus(sending.Status)
+	sendingItem.SetOrderID(post.SendingOrderID(uuid))
+	sendingItem.SetType(post.SendingType(sending.Type))
+	sendingItem.SetDate(sending.RegistrationDate)
+	sendingItem.Settlement.SetSender(sending.Sender.Address.Settlement)
+	sendingItem.Settlement.SetReceiver(sending.Receiver.Address.Settlement)
+	sendingItem.SetWeight(post.SendingWeight(sending.Weight))
+	sendingItem.Size.SetLength(sending.Size.Length)
+	sendingItem.Size.SetWidth(sending.Size.Width)
+	sendingItem.Size.SetHeight(sending.Size.Height)
+	sendingItem.SetStatus(post.SendingStatus(sending.Status))
 
 	return sendingItem, nil
 }
