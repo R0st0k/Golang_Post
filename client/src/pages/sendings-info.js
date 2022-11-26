@@ -18,7 +18,8 @@ export default class SendingsInfo extends React.Component {
             orderID: "",
             advanced_search: {
                 type: "",
-                date: "",
+                date_start: "",
+                date_end: "",
                 status: "",
                 departure_city: "",
                 arrival_city: "",
@@ -39,7 +40,7 @@ export default class SendingsInfo extends React.Component {
         const name = target.name;
         this.setState({
             [name]: value
-        })
+        });
     }
 
     handleChangeAdvanceSearch(event){
@@ -83,7 +84,11 @@ export default class SendingsInfo extends React.Component {
                                 </Box>
                                 <CustomAccordion
                                     label={"Расширенный поиск"}
-                                    element={<AdvancedSearchSendings values={this.state.advanced_search} onChange={this.handleChangeAdvanceSearch}/>}
+                                    element={
+                                        <AdvancedSearchSendings
+                                            values={this.state.advanced_search}
+                                            onChange={this.handleChangeAdvanceSearch}
+                                    />}
                                 />
                             </form>
                         </CardContent>
