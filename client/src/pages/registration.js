@@ -10,6 +10,7 @@ import {Typography} from "@mui/material";
 import {Grid} from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
 import Button from '@mui/material/Button';
+import Autocomplete from '@mui/material/Autocomplete';
 
 import GetOrderIDDialog from "../components/getOrderIDDialog";
 
@@ -23,39 +24,50 @@ export default class Registration extends React.Component{
             sender: {
                 name: "",
                 surname: "",
-                second_name: "",
-                city: "",
-                address: "",
+                middle_name: "",
+                settlement: "",
                 postcode: "",
+                region: "",
+                district: "",
+                street: "",
+                building: "",
+                apartment: "",
                 postcodes: []
             },
             receiver: {
                 name: "",
                 surname: "",
-                second_name: "",
-                city: "",
-                address: "",
+                middle_name: "",
+                settlement: "",
                 postcode: "",
+                region: "",
+                district: "",
+                street: "",
+                building: "",
+                apartment: "",
                 postcodes: []
             },
-            shape: {
+            size: {
                 length: "",
                 width: "",
                 height: ""
 
             },
             weight: "",
-            citysAndPostcodes: [
-                {city: "Москва", postcodes: [345123, 125234, 677521]},
-                {city: "Питер",  postcodes: [235232, 235619]}
-            ],
+            cityAndPostcodes: {
+                "Санкт-Петербург": [
+                    123001,
+                    123002
+                ],
+                "Москва": [
+                    124001
+                ]
+            },
             openOrderIDDialog: false
         }
 
-
         this.handleChange = this.handleChange.bind(this);
         this.handleChangeDefault= this.handleChangeDefault.bind(this);
-        this.generateCitys = this.generateCitys.bind(this);
         this.handleSubmitButton = this.handleSubmitButton.bind(this);
         this.handleCloseDialog = this.handleCloseDialog.bind(this);
     }
@@ -95,25 +107,16 @@ export default class Registration extends React.Component{
         })
     }
 
-    handleChangeCity = typeOfInfo => event => {
-        const target = event.target;
-        const value = target.value;
-        let object = this.state.citysAndPostcodes.find(element => element.city === value)
+    handleChangeCity = typeOfInfo => (event, value) => {
+        const postcodes = this.state.cityAndPostcodes[value];
+        if (typeof postcodes === 'undefined') return;
         this.setState((prevState)=>({
             [typeOfInfo]: Object.assign({}, prevState[typeOfInfo], {
-                city: object.city,
-                postcodes: object.postcodes
+                settlement: value,
+                postcodes: postcodes
             })
         }))
     }
-
-    generateCitys() {
-        return this.state.citysAndPostcodes.map((data) => {
-            return <MenuItem key={data.city} value={data.city}>{data.city}</MenuItem>
-        });
-    }
-
-
 
 
     render() {
@@ -177,34 +180,23 @@ export default class Registration extends React.Component{
                                 </Grid>
                                 <Grid item xs={3}>
                                     <TextField
-                                        name="second_name"
+                                        name="middle_name"
                                         label="Отчество"
                                         fullWidth
-                                        value={this.state.sender.second_name}
+                                        value={this.state.sender.middle_name}
                                         onChange={this.handleChange('sender')}
                                     />
                                 </Grid>
                                 <Grid item xs={3}/>
                                 <Grid item xs={3}>
-                                    <TextField
-                                        required
+                                    <Autocomplete
                                         name="city"
-                                        label="Город"
-                                        select
-                                        fullWidth
-                                        value={this.state.sender.city}
+                                        renderInput={(params => <TextField
+                                            {...params}
+                                            label={"Поселение"}
+                                        />)}
                                         onChange={this.handleChangeCity('sender')}
-                                    >
-                                        {this.generateCitys()}
-                                    </TextField>
-                                </Grid>
-                                <Grid item xs={6}>
-                                    <TextField
-                                        label="Улица/дом/корпус/квартира"
-                                        fullWidth
-                                        name="address"
-                                        value={this.state.sender.address}
-                                        onChange={this.handleChange('sender')}
+                                        options={Object.keys(this.state.cityAndPostcodes)}
                                     />
                                 </Grid>
                                 <Grid item xs={3}>
@@ -223,6 +215,53 @@ export default class Registration extends React.Component{
                                         ))
                                     }
                                     </TextField>
+                                </Grid>
+                                <Grid item xs={3}>
+                                    <TextField
+                                        label="Регион"
+                                        fullWidth
+                                        name="region"
+                                        value={this.state.sender.region}
+                                        onChange={this.handleChange('sender')}
+                                    />
+                                </Grid>
+                                <Grid item xs={3}>
+                                    <TextField
+                                        label="Округ"
+                                        fullWidth
+                                        name="district"
+                                        value={this.state.sender.district}
+                                        onChange={this.handleChange('sender')}
+                                    />
+                                </Grid>
+                                <Grid item xs={3}>
+                                    <TextField
+                                        label="Улица"
+                                        fullWidth
+                                        name="street"
+                                        value={this.state.sender.street}
+                                        onChange={this.handleChange('sender')}
+                                    />
+                                </Grid>
+                                <Grid item xs={3}>
+                                    <TextField
+                                        label="Корпус"
+                                        fullWidth
+                                        name="building"
+                                        value={this.state.sender.building}
+                                        onChange={this.handleChange('sender')}
+                                        inputProps={{ inputMode: 'numeric', pattern: '^[0-9]+$' }}
+                                    />
+                                </Grid>
+                                <Grid item xs={3}>
+                                    <TextField
+                                        label="Квартира"
+                                        fullWidth
+                                        name="apartment"
+                                        value={this.state.sender.apartment}
+                                        onChange={this.handleChange('sender')}
+                                        inputProps={{ inputMode: 'numeric', pattern: '^[0-9]+$' }}
+                                    />
                                 </Grid>
                             </Grid>
                             <Typography>
@@ -252,32 +291,22 @@ export default class Registration extends React.Component{
                                 <Grid item xs={3}>
                                     <TextField
                                         label="Отчество"
-                                        name="second_name"
+                                        name="middle_name"
                                         fullWidth
-                                        value={this.state.receiver.second_name}
+                                        value={this.state.receiver.middle_name}
                                         onChange={this.handleChange('receiver')}
                                     />
                                 </Grid>
                                 <Grid item xs={3}/>
                                 <Grid item xs={3}>
-                                    <TextField
-                                        required
-                                        select
-                                        label="Город"
-                                        fullWidth
-                                        value={this.state.receiver.city}
+                                    <Autocomplete
+                                        name="city"
+                                        renderInput={(params => <TextField
+                                            {...params}
+                                            label={"Поселение"}
+                                        />)}
                                         onChange={this.handleChangeCity('receiver')}
-                                    >
-                                        {this.generateCitys()}
-                                    </TextField>
-                                </Grid>
-                                <Grid item xs={6}>
-                                    <TextField
-                                        label="Улица/дом/корпус/квартира"
-                                        name="address"
-                                        fullWidth
-                                        value={this.state.receiver.address}
-                                        onChange={this.handleChange('receiver')}
+                                        options={Object.keys(this.state.cityAndPostcodes)}
                                     />
                                 </Grid>
                                 <Grid item xs={3}>
@@ -297,6 +326,53 @@ export default class Registration extends React.Component{
                                     }
                                     </TextField>
                                 </Grid>
+                                <Grid item xs={3}>
+                                    <TextField
+                                        label="Регион"
+                                        fullWidth
+                                        name="region"
+                                        value={this.state.receiver.region}
+                                        onChange={this.handleChange('receiver')}
+                                    />
+                                </Grid>
+                                <Grid item xs={3}>
+                                    <TextField
+                                        label="Округ"
+                                        fullWidth
+                                        name="district"
+                                        value={this.state.receiver.district}
+                                        onChange={this.handleChange('receiver')}
+                                    />
+                                </Grid>
+                                <Grid item xs={3}>
+                                    <TextField
+                                        label="Улица"
+                                        fullWidth
+                                        name="street"
+                                        value={this.state.receiver.street}
+                                        onChange={this.handleChange('receiver')}
+                                    />
+                                </Grid>
+                                <Grid item xs={3}>
+                                    <TextField
+                                        label="Корпус"
+                                        fullWidth
+                                        name="building"
+                                        value={this.state.receiver.building}
+                                        onChange={this.handleChange('receiver')}
+                                        inputProps={{ inputMode: 'numeric', pattern: '^[0-9]+$' }}
+                                    />
+                                </Grid>
+                                <Grid item xs={3}>
+                                    <TextField
+                                        label="Квартира"
+                                        fullWidth
+                                        name="apartment"
+                                        value={this.state.receiver.apartment}
+                                        onChange={this.handleChange('receiver')}
+                                        inputProps={{ inputMode: 'numeric', pattern: '^[0-9]+$' }}
+                                    />
+                                </Grid>
                             </Grid>
                         <Typography>
                             4. Характеристики
@@ -305,13 +381,13 @@ export default class Registration extends React.Component{
                             <Grid item xs={3}>
                                 <Stack direction="row">
                                     <TextField
-                                        inputProps={{ inputMode: 'numeric', pattern: '^[0-9]+(\\.[0-9]+)?$' }}
+                                        inputProps={{ inputMode: 'numeric', pattern: '^[0-9]{2,}$' }}
                                         required
                                         name="length"
                                         label="Длина"
                                         fullWidth
-                                        value={this.state.shape.length}
-                                        onChange={this.handleChange('shape')}
+                                        value={this.state.size.length}
+                                        onChange={this.handleChange('size')}
                                     />
                                     <Typography mt={2} color={'#9F9B9B'}>
                                         мм
@@ -324,13 +400,13 @@ export default class Registration extends React.Component{
                             <Grid item xs={3}>
                                 <Stack direction="row">
                                     <TextField
-                                        inputProps={{ inputMode: 'numeric', pattern: '^[0-9]+(\\.[0-9]+)?$' }}
+                                        inputProps={{ inputMode: 'numeric', pattern: '^[0-9]{2,}$' }}
                                         required
                                         name="width"
                                         label="Ширина"
                                         fullWidth
-                                        value={this.state.shape.width}
-                                        onChange={this.handleChange('shape')}
+                                        value={this.state.size.width}
+                                        onChange={this.handleChange('size')}
                                     />
                                     <Typography mt={2} color={'#9F9B9B'}>
                                         мм
@@ -343,13 +419,13 @@ export default class Registration extends React.Component{
                             <Grid item xs={3}>
                                 <Stack direction="row">
                                     <TextField
-                                        inputProps={{ inputMode: 'numeric', pattern: '^[0-9]+(\\.[0-9]+)?$' }}
+                                        inputProps={{ inputMode: 'numeric', pattern: '^[0-9]{2,}$' }}
                                         required
                                         name="height"
                                         label="Высота"
                                         fullWidth
-                                        value={this.state.shape.height}
-                                        onChange={this.handleChange('shape')}
+                                        value={this.state.size.height}
+                                        onChange={this.handleChange('size')}
                                     />
                                     <Typography mt={2} color={'#9F9B9B'}>
                                         мм
@@ -360,7 +436,7 @@ export default class Registration extends React.Component{
                             <Grid item xs={3}>
                                 <Stack direction="row">
                                     <TextField
-                                        inputProps={{ inputMode: 'numeric', pattern: '^[0-9]+(\\.[0-9]+)?$' }}
+                                        inputProps={{ inputMode: 'numeric', pattern: '^[0-9]{2,}$' }}
                                         required
                                         name="weight"
                                         label="Вес"
