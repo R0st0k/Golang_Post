@@ -487,27 +487,6 @@ class PostGenerator {
     }
 }
 
-function writeArrayElementsInFileByLine(filePath, array) {
-    const writeStream = fs.createWriteStream(filePath);
-
-    // write each value of the array on the file breaking line
-    array.forEach(value => writeStream.write(`${JSON.stringify(value)}\n`));
-
-    // the finish event is emitted when all data has been flushed from the stream
-    writeStream.on('finish', () => {
-        console.log(`wrote all the array data to file ${filePath}`);
-    });
-
-    // handle the errors on the write process
-    writeStream.on('error', (err) => {
-        console.error(`There is an error writing the file ${filePath} => ${err}`)
-    });
-
-    // close the stream
-    writeStream.end();
-}
-
-
 const args = process.argv.slice(2)
 
 let generator = new PostGenerator()
@@ -518,6 +497,6 @@ try {
     process.exit()
 }
 
-writeArrayElementsInFileByLine('./post_office', generator.post_offices)
-writeArrayElementsInFileByLine('./employee', generator.employees)
-writeArrayElementsInFileByLine('./sending', generator.sendings)
+fs.writeFileSync('./samples/post_offices.json', JSON.stringify(generator.post_offices, null, 2), 'utf-8');
+fs.writeFileSync('./samples/employees.json', JSON.stringify(generator.employees, null, 2), 'utf-8');
+fs.writeFileSync('./samples/sendings.json', JSON.stringify(generator.sendings, null, 2), 'utf-8');

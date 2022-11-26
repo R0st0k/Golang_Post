@@ -2,9 +2,9 @@
   "name": "generator",
   "version": "0.1.0",
   "description": "Dataset generator for Post Information System",
-  "main": "generator.js",
+  "main": "",
   "scripts": {
-    "gen": "node generator.js"
+    "gen": "node "
   },
   "keywords": [
     "generator"

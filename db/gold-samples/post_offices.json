@@ -1,0 +1,166 @@
+[
+  {
+    "_id": "00000004779bfa1e5da4f5f3",
+    "type": "Отделение связи",
+    "address": {
+      "postcode": "193998",
+      "region": "г. Санкт-Петербург",
+      "settlement": "г. Санкт-Петербург",
+      "street": "ул. Ленина",
+      "building": "33"
+    },
+    "employees": [
+      "00000001779bfa1e5da4f5f0",
+      "00000002779bfa1e5da4f5f1",
+      "00000003779bfa1e5da4f5f2"
+    ]
+  },
+  {
+    "_id": "00000008779bfa1e5da4f5f7",
+    "type": "Отделение связи",
+    "address": {
+      "postcode": "450124",
+      "region": "Республика Башкортостан",
+      "district": "Уфимский р-н",
+      "settlement": "г. Сибай",
+      "street": "пр-кт Силы",
+      "building": "69"
+    },
+    "employees": [
+      "00000005779bfa1e5da4f5f4",
+      "00000006779bfa1e5da4f5f5",
+      "00000007779bfa1e5da4f5f6"
+    ]
+  },
+  {
+    "_id": "0000000c779bfa1e5da4f5fb",
+    "type": "Отделение связи",
+    "address": {
+      "postcode": "421769",
+      "region": "Республика Татарстан",
+      "district": "Менделеевский р-н",
+      "settlement": "с. Сарлы",
+      "street": "ул. Мажита Гафури",
+      "building": "72"
+    },
+    "employees": [
+      "00000009779bfa1e5da4f5f8",
+      "0000000a779bfa1e5da4f5f9",
+      "0000000b779bfa1e5da4f5fa"
+    ]
+  },
+  {
+    "_id": "0000000f779bfa1e5da4f5fe",
+    "type": "Сортировочный центр",
+    "address": {
+      "postcode": "452136",
+      "region": "Республика Башкортостан",
+      "district": "Туймазинский р-н",
+      "settlement": "г. Кумертау",
+      "street": "ул. Губкина",
+      "building": "89"
+    },
+    "employees": [
+      "0000000d779bfa1e5da4f5fc",
+      "0000000e779bfa1e5da4f5fd"
+    ]
+  },
+  {
+    "_id": "00000012779bfa1e5da4f601",
+    "type": "Сортировочный центр",
+    "address": {
+      "postcode": "422359",
+      "region": "Республика Татарстан",
+      "district": "Азнакаевский р-н",
+      "settlement": "г. Набережные Челны",
+      "street": "пр-кт Космонавтов",
+      "building": "54"
+    },
+    "employees": [
+      "00000010779bfa1e5da4f5ff",
+      "00000011779bfa1e5da4f600"
+    ]
+  },
+  {
+    "_id": "00000016779bfa1e5da4f605",
+    "type": "Отделение связи",
+    "address": {
+      "postcode": "422704",
+      "region": "Республика Татарстан",
+      "district": "Нурлатский р-н",
+      "settlement": "с. Мальбагуш",
+      "street": "ул. Мира",
+      "building": "40"
+    },
+    "employees": [
+      "00000013779bfa1e5da4f602",
+      "00000014779bfa1e5da4f603",
+      "00000015779bfa1e5da4f604"
+    ]
+  },
+  {
+    "_id": "0000001a779bfa1e5da4f609",
+    "type": "Отделение связи",
+    "address": {
+      "postcode": "190191",
+      "region": "г. Санкт-Петербург",
+      "settlement": "г. Зеленогорск",
+      "street": "бул. Заки Валиди",
+      "building": "96"
+    },
+    "employees": [
+      "00000017779bfa1e5da4f606",
+      "00000018779bfa1e5da4f607",
+      "00000019779bfa1e5da4f608"
+    ]
+  },
+  {
+    "_id": "0000001e779bfa1e5da4f60d",
+    "type": "Отделение связи",
+    "address": {
+      "postcode": "193731",
+      "region": "г. Санкт-Петербург",
+      "settlement": "г. Петергоф",
+      "street": "пр-кт Силы",
+      "building": "5"
+    },
+    "employees": [
+      "0000001b779bfa1e5da4f60a",
+      "0000001c779bfa1e5da4f60b",
+      "0000001d779bfa1e5da4f60c"
+    ]
+  },
+  {
+    "_id": "00000021779bfa1e5da4f610",
+    "type": "Сортировочный центр",
+    "address": {
+      "postcode": "452072",
+      "region": "Республика Башкортостан",
+      "district": "Буздякский р-н",
+      "settlement": "г. Кумертау",
+      "street": "ал. Губкина",
+      "building": "37"
+    },
+    "employees": [
+      "0000001f779bfa1e5da4f60e",
+      "00000020779bfa1e5da4f60f"
+    ]
+  },
+  {
+    "_id": "00000025779bfa1e5da4f614",
+    "type": "Отделение связи",
+    "address": {
+      "postcode": "452099",
+      "region": "Республика Башкортостан",
+      "district": "Мелеузосвский р-н",
+      "settlement": "г. Уфа",
+      "street": "ул. ЛЭТИ",
+      "building": "9"
+    },
+    "employees": [
+      "00000022779bfa1e5da4f611",
+      "00000023779bfa1e5da4f612",
+      "00000024779bfa1e5da4f613"
+    ]
+  }
+]
