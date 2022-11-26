@@ -29,8 +29,11 @@ services:
     restart: unless-stopped
     volumes:
       - mongo_data:/data/db
+      - ./db/init.sh:/docker-entrypoint-initdb.d/init.sh
+      - ./db/gold-samples:/samples
 
   swagger-ui:
+    container_name: "post_swagger_ui"
     build:
       context: ./backend
       dockerfile: Dockerfile.spec
