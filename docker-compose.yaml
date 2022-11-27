@@ -5,10 +5,10 @@ services:
     container_name: "post_client"
     build:
       context: ./client
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
     restart: unless-stopped
     ports:
-      - "3000:3000"
+      - "80:80"
     depends_on:
       - backend
 
@@ -30,25 +30,10 @@ services:
     container_name: "post_db"
     image: mongo:6.0.3
     restart: unless-stopped
-    ports:
-      - "27017:27017"
     volumes:
       - mongo_data:/data/db
       - ./db/init.sh:/docker-entrypoint-initdb.d/init.sh
       - ./db/gold-samples:/samples
-
-  swagger-ui:
-    container_name: "post_swagger_ui"
-    build:
-      context: ./backend
-      dockerfile: Dockerfile.spec
-    ports:
-      - "80:8080"
-    environment:
-      - SWAGGER_JSON=/spec/openapi.yaml
-      - BASE_URL=/swagger
-    depends_on:
-      - backend
 
 volumes:
   mongo_data:

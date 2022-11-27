@@ -497,6 +497,10 @@ try {
     process.exit()
 }
 
+let dir = './samples'
+if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir)
+}
 fs.writeFileSync('./samples/post_offices.json', JSON.stringify(generator.post_offices, null, 2), 'utf-8');
 fs.writeFileSync('./samples/employees.json', JSON.stringify(generator.employees, null, 2), 'utf-8');
 fs.writeFileSync('./samples/sendings.json', JSON.stringify(generator.sendings, null, 2), 'utf-8');

@@ -33,6 +33,9 @@ COPY --from=builder /usr/local/bin/app /app
 
 EXPOSE 8080
 
+ENV DB_HOST=localhost
+ENV DB_PORT=27017
+
 # Use an unprivileged user.
 USER $USER:$USER
 
