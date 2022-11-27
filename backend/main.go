@@ -3,6 +3,7 @@ package main
 import (
 	post "backend/api"
 	"backend/db"
+	"github.com/rs/cors"
 	"log"
 	"net/http"
 )
@@ -20,9 +21,22 @@ func main() {
 	}
 
 	mux := http.NewServeMux()
+
+	cors := cors.New(cors.Options{
+		AllowedOrigins: []string{"*"},
+		AllowedMethods: []string{
+			http.MethodPost,
+			http.MethodGet,
+		},
+		AllowedHeaders:   []string{"*"},
+		AllowCredentials: false,
+	})
+
 	mux.Handle("/api/v1/", http.StripPrefix("/api/v1", srv))
 
-	if err := http.ListenAndServe(":8080", mux); err != nil {
+	handler := cors.Handler(mux)
+
+	if err := http.ListenAndServe(":8080", handler); err != nil {
 		log.Fatal(err)
 	}
 }
