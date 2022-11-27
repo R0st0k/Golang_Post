@@ -48,7 +48,7 @@ type Sending struct {
 
 func (s *Sending) GetSendingByOrderID(orderID uuid.UUID) (Sending, error) {
 	client := db.GetDB()
-	sendingCollection := client.Database("Post").Collection("Sending")
+	sendingCollection := client.Database("post").Collection("sendings")
 
 	var sending Sending
 
@@ -77,7 +77,7 @@ func (s *Sending) InsertNewSending(newSendingOptions map[string]interface{}) (uu
 	}
 
 	client := db.GetDB()
-	sendingCollection := client.Database("Post").Collection("Sending")
+	sendingCollection := client.Database("post").Collection("sendings")
 
 	newSending := Sending{
 		RegistrationDate: time.Now(),
@@ -140,7 +140,7 @@ func (s *Sending) InsertNewSending(newSendingOptions map[string]interface{}) (uu
 
 func (s *Sending) FilterSending(sendingFilter map[string]interface{}) (int64, []Sending, error) {
 	client := db.GetDB()
-	sendingCollection := client.Database("Post").Collection("Sending")
+	sendingCollection := client.Database("post").Collection("sendings")
 
 	pagePipeline := mongo.Pipeline{}
 	matchPipeline := mongo.Pipeline{}

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"os"
 	"time"
 
 	"go.mongodb.org/mongo-driver/mongo"
@@ -17,11 +18,20 @@ func Init() {
 	client = ConnectMongo()
 }
 
+func GetEnv(key, fallback string) string {
+	if value, ok := os.LookupEnv(key); ok {
+		return value
+	}
+	return fallback
+}
+
 func ConnectMongo() *mongo.Client {
 	// Create connect
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://localhost:27017"))
+	DBHost := GetEnv("DB_HOST", "localhost")
+	DBPort := GetEnv("DB_PORT", "27017")
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://"+DBHost+":"+DBPort))
 	if err != nil {
 		log.Fatal(err)
 	}

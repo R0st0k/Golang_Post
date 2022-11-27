@@ -30,7 +30,7 @@ type PostOffice struct {
 
 func (po *PostOffice) GetSettlementByPostcode() (map[string]string, error) {
 	client := db.GetDB()
-	postOfficeCollection := client.Database("Post").Collection("PostOffice")
+	postOfficeCollection := client.Database("post").Collection("postOffices")
 
 	var postOffices []PostOffice
 
@@ -61,7 +61,7 @@ func (po *PostOffice) GetSettlementByPostcode() (map[string]string, error) {
 
 func (po *PostOffice) GetPostcodesBySettlement() (map[string][]string, error) {
 	client := db.GetDB()
-	postOfficeCollection := client.Database("Post").Collection("PostOffice")
+	postOfficeCollection := client.Database("post").Collection("postOffices")
 
 	var postOffices []PostOffice
 
@@ -97,7 +97,7 @@ func (po *PostOffice) GetPostcodesBySettlement() (map[string][]string, error) {
 
 func (po *PostOffice) GetPostWorkerByPostcode(postcode string) (primitive.ObjectID, error) {
 	client := db.GetDB()
-	employeesCollection := client.Database("Post").Collection("PostOffice")
+	employeesCollection := client.Database("post").Collection("postOffices")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -114,7 +114,7 @@ func (po *PostOffice) GetPostWorkerByPostcode(postcode string) (primitive.Object
 	}}
 	lookupStage := bson.D{{
 		"$lookup", bson.D{{
-			"from", "Employee",
+			"from", "employees",
 		},
 			{
 				"localField", "employees",
