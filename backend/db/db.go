@@ -29,9 +29,9 @@ func ConnectMongo() *mongo.Client {
 	// Create connect
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-	DBHost := GetEnv("DB_HOST", "localhost")
-	DBPort := GetEnv("DB_PORT", "27017")
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://"+DBHost+":"+DBPort))
+	dbHost := GetEnv("DB_HOST", "localhost")
+	dbPort := GetEnv("DB_PORT", "27017")
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI(fmt.Sprintf("mongodb://%s:%s", dbHost, dbPort)))
 	if err != nil {
 		log.Fatal(err)
 	}
