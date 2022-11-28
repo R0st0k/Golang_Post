@@ -6,9 +6,7 @@ import DialogContentText from '@mui/material/DialogContentText';
 import Button from '@mui/material/Button';
 
 export default function GetOrderIDDialog(props) {
-    const { onClose, open } = props;
-
-    const orderId = 123123;
+    const { onClose, open, order_id } = props;
 
     return (
         <Dialog open={open} onClose={onClose}>
@@ -16,7 +14,7 @@ export default function GetOrderIDDialog(props) {
                 <DialogContentText textAlign={'center'}>
                     Отправление было успешно зарегистрировано.
                     <br/>
-                    order-id: {orderId}
+                    order-id: {order_id}
                 </DialogContentText>
             </DialogContent>
             <DialogActions>

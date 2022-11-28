@@ -8,30 +8,38 @@ import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
 import * as React from "react";
+import {useEffect, useState} from "react";
+import axios from "axios";
 
 export default function AdvancedSearchSendings(props){
+    const [cityAndPostcodes, setCityAndPostcodes] = useState([]);
 
-    const cityAndPostcodes = {
-        "Санкт-Петербург": [
-            123001,
-            123002
-        ],
-        "Москва": [
-            124001
-        ]
-    }
-    const citys = Object.keys(cityAndPostcodes);
+    useEffect(() => {
+        axios.get('http://localhost:8080/api/v1/postcodes_by_settlement')
+            .then(
+                (response) => {
+                    setCityAndPostcodes(response.data);
+                }
+            )
+    }, []);
+
+    /*const handleChangeCity = name => (event, value) => {
+        let my_event = {};
+        const target = {name: name, value: value};
+        my_event.target = target;
+        props.onChange(my_event);
+    }*/
 
     const handleDateStartChange = value =>{
         let event = {};
-        const target = {name: "date_start", value: value};
+        const target = {name: "date_start", value: value.format('YYYY-M-DD')};
         event.target = target;
         props.onChange(event);
     }
 
     const handleDateEndChange = value =>{
         let event = {};
-        const target = {name: "date_end", value: value};
+        const target = {name: "date_finish", value: value.format('YYYY-M-DD')};
         event.target = target;
         props.onChange(event);
     }
@@ -48,6 +56,9 @@ export default function AdvancedSearchSendings(props){
                         value={props.values.type}
                         onChange={props.onChange}
                     >
+                        <MenuItem value="">
+                            Не выбрано
+                        </MenuItem>
                         <MenuItem value={'Письмо'}>Письмо</MenuItem>
                         <MenuItem value={'Посылка'}>Посылка</MenuItem>
                         <MenuItem value={'Бандероль'}>Бандероль</MenuItem>
@@ -70,7 +81,7 @@ export default function AdvancedSearchSendings(props){
                         <DesktopDatePicker
                             name="date_end"
                             onChange={handleDateEndChange}
-                            value={props.values.date_end}
+                            value={props.values.date_finish}
                             label={"Дата регистрации По"}
                             inputFormat="DD/MM/YYYY"
                             renderInput={(params) => <TextField fullWidth {...params} />}
@@ -86,41 +97,46 @@ export default function AdvancedSearchSendings(props){
                         value={props.values.status}
                         onChange={props.onChange}
                     >
-                        <MenuItem value={'inProgress'}>В пути</MenuItem>
-                        <MenuItem value={'delivered'}>Доставлено</MenuItem>
+                        <MenuItem value="">
+                            Не выбрано
+                        </MenuItem>
+                        <MenuItem value={'В пути'}>В пути</MenuItem>
+                        <MenuItem value={'Доставлено'}>Доставлено</MenuItem>
                     </TextField>
                 </Grid>
                 <Grid item xs={4.5}>
                     <TextField
-                        select
                         fullWidth
-                        name="departure_city"
-                        label="Откуда"
-                        value={props.values.departure_city}
+                        name={"sender_settlement"}
+                        label={"Откуда"}
+                        value={props.values.sender_settlement}
                         onChange={props.onChange}
-                    >
-                        {
-                            citys.map((city) =>{
-                                return <MenuItem value={city}>{city}</MenuItem>
-                            })
-                        }
-                    </TextField>
+                    />
+                    {/*<Autocomplete
+                        renderInput={(params => <TextField
+                            {...params}
+                            label={"Откуда"}
+                        />)}
+                        onChange={handleChangeCity("sender_settlement")}
+                        options={Object.keys(cityAndPostcodes)}
+                    />*/}
                 </Grid>
                 <Grid item xs={4.5}>
                     <TextField
-                        select
                         fullWidth
-                        name="arrival_city"
-                        label="Куда"
-                        value={props.values.arrival_city}
+                        name={"receiver_settlement"}
+                        label={"Куда"}
+                        value={props.values.receiver_settlement}
                         onChange={props.onChange}
-                    >
-                        {
-                            citys.map((city) =>{
-                                return <MenuItem value={city}>{city}</MenuItem>
-                            })
-                        }
-                    </TextField>
+                    />
+                    {/*<Autocomplete
+                        renderInput={(params => <TextField
+                            {...params}
+                            label={"Куда"}
+                        />)}
+                        onChange={handleChangeCity("receiver_settlement")}
+                        options={Object.keys(cityAndPostcodes)}
+                    />*/}
                 </Grid>
                 <Grid item xs={3}>
                     <Stack direction="row">

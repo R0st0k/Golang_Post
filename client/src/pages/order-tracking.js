@@ -1,48 +1,45 @@
 import * as React from 'react';
-import { Routes, Route, useParams } from 'react-router-dom';
+import {useParams } from 'react-router-dom';
+import {useState} from "react";
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import {Grid} from "@mui/material";
-
+import axios from 'axios';
 import Head from "../components/head";
 
 import CheckIcon from '@mui/icons-material/Check';
 
 import "../styles/order-tracking.css"
+import {useEffect} from "react";
 
 function OrderTracking() {
     let {orderId} = useParams();
+    const [dataTracking, setDataTracking] = useState({
+        type: "",
+        status: "",
+        stages: []
+    });
 
-    const dataTracking = {
-        order_id: "123e4567-e89b-12d3-a456-426655440000",
-        type: "Письмо",
-        status: "Доставлено",
-        stages: [
-            {
-                name: "Принято в отделении",
-                postcode: "123456",
-                timestamp: "2012-07-14T01:00:00+01:00"
-            },
-            {
-                name: "Покинуло место приёма",
-                postcode: "234531",
-                timestamp: "2014-07-14T01:00:00+01:00"
-            },
-            {
-                name: "Прибыло в сортировочный центр",
-                postcode: "236445",
-                timestamp: "2013-07-14T01:00:00+02:00"
-            },
-        ]
-    }
+    useEffect(() => {
+        axios.get("http://localhost:8080/api/v1/sending", {
+            params: {
+                order_id: orderId
+            }
+        })
+        .then(
+            (response) => {
+                setDataTracking(response.data);
+            }
+        )
+    }, [])
 
     function generateTrack(stages) {
         return stages.map((stage) => {
-            return <ListItem key={stage.timestampe}>
+            return <ListItem key={stage.timestamp}>
                         <ListItemText
                             primary={stage.name}
-                            secondary={dateFormat(stage.timestamp) + ", " + stage.postcode}
+                            secondary={/*dateFormat(*/stage.date + ", " + stage.postcode}
                         />
                     </ListItem>
         });
@@ -57,17 +54,17 @@ function OrderTracking() {
 
     function trackIsComplete(status, stage){
         if(status === "Доставлено"){
-            return <p style={{color: '#6C6D6F'}}>{"Вручено " + dateFormat(stage.timestamp)}</p>;
+            return <p style={{color: '#6C6D6F'}}>{"Вручено " + /*dateFormat(*/stage.date}</p>;
         }
         return null;
     }
 
-    function dateFormat(dateString){
+    /*function dateFormat(dateString){
         const date = new Date(dateString);
         const options = {day: 'numeric', month: 'long', year: 'numeric'};
         return date.toLocaleDateString('ru-RU', options) + ", "+ date.toLocaleTimeString('ru-RU');
 
-    }
+    }*/
 
     return (
         <div>
@@ -85,7 +82,7 @@ function OrderTracking() {
                             {trackIsComplete(dataTracking.status, dataTracking.stages[0])}
                         </Grid>
                         <Grid item xs={8}>
-                            <p style={{float: 'right'}}>{dataTracking.order_id}</p>
+                            <p style={{float: 'right'}}>{orderId}</p>
                         </Grid>
                     </Grid>
                 </div>

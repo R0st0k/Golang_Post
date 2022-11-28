@@ -18,9 +18,9 @@ export default function FadeMenu() {
     const handleClose = () => {
         setAnchorEl(null);
     };
-    const handleRegistration = useCallback(() => navigate('/registration', {replace: true}), [navigate]);
-    const handleStatics = useCallback(() => navigate('/', {replace: true}), [navigate]);
-    const handleTable = useCallback(() => navigate('/sendings-info', {replace: true}), [navigate]);
+    const handleRegistration = useCallback(() => navigate('/registration', {replace: false}), [navigate]);
+    const handleStatics = useCallback(() => navigate('/', {replace: false}), [navigate]);
+    const handleTable = useCallback(() => navigate('/sendings-info', {replace: false}), [navigate]);
 
     return (
         <div>

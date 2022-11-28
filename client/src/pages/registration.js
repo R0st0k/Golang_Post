@@ -11,6 +11,7 @@ import {Grid} from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
 import Button from '@mui/material/Button';
 import Autocomplete from '@mui/material/Autocomplete';
+import axios from 'axios';
 
 import GetOrderIDDialog from "../components/getOrderIDDialog";
 
@@ -63,6 +64,7 @@ export default class Registration extends React.Component{
                     124001
                 ]
             },
+            new_order_id: "",
             openOrderIDDialog: false
         }
 
@@ -70,6 +72,17 @@ export default class Registration extends React.Component{
         this.handleChangeDefault= this.handleChangeDefault.bind(this);
         this.handleSubmitButton = this.handleSubmitButton.bind(this);
         this.handleCloseDialog = this.handleCloseDialog.bind(this);
+    }
+
+    componentDidMount() {
+        axios.get('http://localhost:8080/api/v1/postcodes_by_settlement')
+            .then(
+                (response) => {
+                    this.setState({
+                        cityAndPostcodes: response.data
+                    })
+                }
+            )
     }
 
     handleChange = typeOfInfo => event =>{
@@ -85,10 +98,53 @@ export default class Registration extends React.Component{
     }
 
     handleSubmitButton(event) {
-        event.preventDefault()
-        this.setState({
-            openOrderIDDialog: true
+        event.preventDefault();
+        axios.post('http://localhost:8080/api/v1/sending', {
+            type: this.state.type,
+            sender: {
+                name: this.state.sender.name,
+                surname: this.state.sender.surname,
+                middle_name: this.state.sender.middle_name,
+                address: {
+                    postcode: this.state.sender.postcode,
+                    district: this.state.sender.district,
+                    settlement: this.state.sender.settlement,
+                    street: this.state.sender.street,
+                    building: this.state.sender.building,
+                    apartment: this.state.sender.apartment
+                }
+            },
+            receiver: {
+                name: this.state.receiver.name,
+                surname: this.state.receiver.surname,
+                middle_name: this.state.receiver.middle_name,
+                address: {
+                    postcode: this.state.receiver.postcode,
+                    district: this.state.receiver.district,
+                    settlement: this.state.receiver.settlement,
+                    street: this.state.receiver.street,
+                    building: this.state.receiver.building,
+                    apartment: this.state.receiver.apartment
+                }
+            },
+            size: {
+                length: parseInt(this.state.size.length, 10),
+                width: parseInt(this.state.size.width, 10),
+                height: parseInt(this.state.size.height, 10),
+            },
+            weight: parseInt(this.state.weight, 10)
         })
+            .then(
+                (response) => {
+                    this.setState({
+                        new_order_id: response.data.order_id
+                    }, () => {
+                        this.setState({
+                            openOrderIDDialog: true
+                        })
+                    })
+                }
+            )
     }
 
     handleCloseDialog(){
@@ -193,7 +249,7 @@ export default class Registration extends React.Component{
                                         name="city"
                                         renderInput={(params => <TextField
                                             {...params}
-                                            label={"Поселение"}
+                                            label={"Населенный пункт"}
                                         />)}
                                         onChange={this.handleChangeCity('sender')}
                                         options={Object.keys(this.state.cityAndPostcodes)}
@@ -303,7 +359,7 @@ export default class Registration extends React.Component{
                                         name="city"
                                         renderInput={(params => <TextField
                                             {...params}
-                                            label={"Поселение"}
+                                            label={"Населенный пункт"}
                                         />)}
                                         onChange={this.handleChangeCity('receiver')}
                                         options={Object.keys(this.state.cityAndPostcodes)}
@@ -464,7 +520,7 @@ export default class Registration extends React.Component{
                     </CardContent>
                 </Card>
                 </Box>
-                <GetOrderIDDialog open={this.state.openOrderIDDialog} onClose={this.handleCloseDialog}/>
+                <GetOrderIDDialog open={this.state.openOrderIDDialog} onClose={this.handleCloseDialog} order_id={this.state.new_order_id}/>
             </>
         )
     }

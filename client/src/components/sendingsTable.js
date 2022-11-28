@@ -10,72 +10,55 @@ import TableRow from '@mui/material/TableRow';
 import TableSortLabel from '@mui/material/TableSortLabel';
 import {Paper} from "@mui/material";
 import {Typography} from "@mui/material";
-
-function createData(orderID,type,date,departure_city, arrival_city,weight, shape,status) {
-    return {
-        orderID,
-        type,
-        date,
-        departure_city,
-        arrival_city,
-        weight,
-        shape,
-        status
-    };
-}
-
-const rows = [
-    createData('1203884', 'Посылка', "5.10.22", "Санкт-Петербург", "Москва", 6000, "500x200x180", "В пути"),
-    createData('2334745', 'Бандероль', "1.10.22", "Санкт-Петербург", "Оренбург", 300, "500x20x180", "Доставлено"),
-];
+import {useNavigate} from "react-router-dom";
 
 const headCells = [
     {
-        id: 'orderID',
+        id: 'order_id',
         numeric: false,
-        disablePadding: false,
+        disableSort: false,
         label: 'order-id',
     },
     {
         id: 'type',
         numeric: false,
-        disablePadding: false,
+        disableSort: false,
         label: 'Тип',
     },
     {
         id: 'date',
         numeric: false,
-        disablePadding: false,
+        disableSort: false,
         label: 'Дата регистрации отправления',
     },
     {
-        id: 'departure_city',
+        id: 'sender_settlement',
         numeric: false,
-        disablePadding: false,
+        disableSort: false,
         label: 'Откуда',
     },
     {
-        id: 'arrival_city',
+        id: 'receiver_settlement',
         numeric: false,
-        disablePadding: false,
+        disableSort: false,
         label: 'Куда',
     },
     {
         id: 'weight',
         numeric: true,
-        disablePadding: false,
+        disableSort: false,
         label: 'Вес',
     },
     {
-        id: 'shape',
+        id: 'size',
         numeric: false,
-        disablePadding: false,
+        disableSort: true,
         label: 'Габариты',
     },
     {
         id: 'status',
         numeric: false,
-        disablePadding: false,
+        disableSort: false,
         label: 'Статус',
     }
 ];
@@ -97,14 +80,16 @@ function EnhancedTableHead(props) {
                         padding='normal'
                         sortDirection={orderBy === headCell.id ? order : false}
                     >
-                        <TableSortLabel
+                        {headCell.disableSort ? headCell.label :
+                            <TableSortLabel
                             active={orderBy === headCell.id}
                             direction={orderBy === headCell.id ? order : 'asc'}
                             onClick={createSortHandler(headCell.id)}
                         >
                             {headCell.label}
 
-                        </TableSortLabel>
+                            </TableSortLabel>
+                        }
                     </TableCell>
                 ))}
             </TableRow>
@@ -113,31 +98,40 @@ function EnhancedTableHead(props) {
 }
 
 
-export default function SendingsTable() {
-    const [order, setOrder] = React.useState('asc');
-    const [orderBy, setOrderBy] = React.useState('calories');
+export default function SendingsTable(props) {
+
     const [selected, setSelected] = React.useState([]);
-    const [page, setPage] = React.useState(0);
-    const [rowsPerPage, setRowsPerPage] = React.useState(5);
+
+    const order = props.order;
+    const orderBy = props.orderBy;
+    const page = props.page;
+    const rowsPerPage = props.rowsPerPage;
+    const rows = props.data;
+    const total = props.total;
+
+    const navigate = useNavigate();
 
     const isSelected = (name) => selected.indexOf(name) !== -1;
 
-    const handleChangePage = () => {
-        console.log('a')
+    const handleChangePage = (event, value) => {
+        const target = {name: "page", value: value};
+        props.handleChangeTable(target);
     }
 
-    const handleChangeRowsPerPage = () => {
-        console.log('b')
+    const handleChangeRowsPerPage = (event) => {
+        props.onChangeRowsPerPage(event.target.value);
     }
 
-    const handleClick = (event, name) => {
-        console.log('c')
+    const handleClick = (event, order_id) => {
+        navigate('/orders/' + order_id, {replace: false})
     }
 
     const handleRequestSort = (event, property) => {
         const isAsc = orderBy === property && order === 'asc';
-        setOrder(isAsc ? 'desc' : 'asc');
-        setOrderBy(property);
+        const target_1 = {name:  'order', value: isAsc ? 'desc' : 'asc'};
+        const target_2 = {name:  'orderBy', value: property};
+        props.handleChangeTable(target_1);
+        props.handleChangeTable(target_2);
     }
 
     return (
@@ -157,15 +151,13 @@ export default function SendingsTable() {
                             rows.slice(0, rowsPerPage)
                                 .map((row) => {
                                 const isItemSelected = isSelected(row.name);
-
                                 return (
                                     <TableRow
                                         hover
-                                        onClick={(event) => handleClick(event, row.name)}
-                                        role="checkbox"
+                                        onClick={(event) => handleClick(event, row.order_id)}
                                         aria-checked={isItemSelected}
                                         tabIndex={-1}
-                                        key={row.orderID}
+                                        key={row.order_id}
                                         selected={isItemSelected}
                                     >
                                         <TableCell
@@ -174,14 +166,14 @@ export default function SendingsTable() {
                                             padding="normal"
                                             align="center"
                                         >
-                                            {row.orderID}
+                                            {row.order_id}
                                         </TableCell>
                                         <TableCell align="center">{row.type}</TableCell>
                                         <TableCell align="center">{row.date}</TableCell>
-                                        <TableCell align="center">{row.departure_city}</TableCell>
-                                        <TableCell align="center">{row.arrival_city}</TableCell>
+                                        <TableCell align="center">{row.settlement.sender}</TableCell>
+                                        <TableCell align="center">{row.settlement.receiver}</TableCell>
                                         <TableCell align="center">{row.weight}</TableCell>
-                                        <TableCell align="center">{row.shape}</TableCell>
+                                        <TableCell align="center">{row.size.length}x{row.size.width}x{row.size.height}</TableCell>
                                         <TableCell align="center">
                                             {
                                                 row.status === "В пути" ? <Typography color="#ED8000">{row.status}</Typography> :  <Typography color="#6FD600">{row.status}</Typography>
@@ -197,7 +189,7 @@ export default function SendingsTable() {
                 <TablePagination
                     rowsPerPageOptions={[5, 10, 25]}
                     component="div"
-                    count={rows.length}
+                    count={total}
                     rowsPerPage={rowsPerPage}
                     page={page}
                     onPageChange={handleChangePage}
