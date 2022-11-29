@@ -59,6 +59,8 @@ func (po *PostOffice) GetSettlementByPostcode() (map[string]string, error) {
 	return settlementByPostcode, nil
 }
 
+// Return ONLY post offices with "Communication department" type
+
 func (po *PostOffice) GetPostcodesBySettlement() (map[string][]string, error) {
 	client := db.GetDB()
 	postOfficeCollection := client.Database("post").Collection("postOffices")
@@ -73,7 +75,7 @@ func (po *PostOffice) GetPostcodesBySettlement() (map[string][]string, error) {
 		{"address.settlement", 1},
 		{"_id", 0}}
 	opts := options.Find().SetProjection(projection)
-	cursor, err := postOfficeCollection.Find(ctx, bson.D{{}}, opts)
+	cursor, err := postOfficeCollection.Find(ctx, bson.D{{"type", "Отделение связи"}}, opts)
 	if err != nil {
 		return nil, fmt.Errorf("GetPostOffices: %v", err)
 	}
