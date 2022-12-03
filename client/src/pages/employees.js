@@ -10,6 +10,7 @@ import axios from 'axios';
 
 import CustomAccordion from "../components/customAccordion";
 import AdvancedSearchEmployees from "../components/advancedSearchEmployees";
+import EmployeesTable from "../components/employeesTable";
 
 
 export default class Employees extends React.Component {
@@ -30,7 +31,7 @@ export default class Employees extends React.Component {
             },
             data: [],
             filter: {},
-            total: 0,
+            total: 1,
             page: 0,
             rowsPerPage: 5,
             order: "asc",
@@ -39,6 +40,8 @@ export default class Employees extends React.Component {
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmitButton = this.handleSubmitButton.bind(this);
         this.handleChangeAdvanceSearch = this.handleChangeAdvanceSearch.bind(this);
+        this.handleChangeTable = this.handleChangeTable.bind(this);
+        this.handleChangeRowsPerPage = this.handleChangeRowsPerPage.bind(this);
     }
 
     handleChange(event){
@@ -71,6 +74,30 @@ export default class Employees extends React.Component {
         })
     }
 
+    handleChangeTable(target){
+        const name = target.name;
+        const value = target.value;
+        this.setState({
+            [name]: value
+        }, () =>{
+            //this.refreshTable();
+        })
+    }
+
+    handleChangeRowsPerPage(value){
+        let page = this.state.page;
+        const total = this.state.total;
+        if(value * page >= total){
+            page = Math.ceil(total / value) - 1;
+        }
+        this.setState({
+            page: page,
+            rowsPerPage: value
+        }, () => {
+            //this.refreshTable();
+        })
+    }
+
     render(){
         return(
             <>
@@ -87,6 +114,7 @@ export default class Employees extends React.Component {
                                 <Grid container spacing={2}>
                                     <Grid item xs={3}>
                                         <TextField
+                                            fullWidth
                                             name="surname"
                                             label="Фамилия"
                                             value={this.state.surname}
@@ -95,6 +123,7 @@ export default class Employees extends React.Component {
                                     </Grid>
                                     <Grid item xs={3}>
                                         <TextField
+                                            fullWidth
                                             name="name"
                                             label="Имя"
                                             value={this.state.name}
@@ -103,6 +132,7 @@ export default class Employees extends React.Component {
                                     </Grid>
                                     <Grid item xs={3}>
                                         <TextField
+                                            fullWidth
                                             name="middle_name"
                                             label="Фамилия"
                                             value={this.state.middle_name}
@@ -127,7 +157,16 @@ export default class Employees extends React.Component {
                         </CardContent>
                     </Card>
                 </Box>
-
+                <EmployeesTable
+                    total={this.state.total}
+                    data={this.state.data}
+                    page={this.state.page}
+                    rowsPerPage={this.state.rowsPerPage}
+                    order={this.state.order}
+                    orderBy={this.state.orderBy}
+                    handleChangeTable={this.handleChangeTable}
+                    onChangeRowsPerPage={this.handleChangeRowsPerPage}
+                />
             </>
         )
     }
