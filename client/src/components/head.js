@@ -20,7 +20,7 @@ export default function Head() {
                 </Grid>
                 <Grid xs={2}>
                     <Button
-                        href={'/'}
+                        href={'/employees'}
                         className="fadeLink"
                     >
                         Сотрудники

@@ -59,7 +59,7 @@ function Main() {
                     <Grid xs={2}>
                         <Box mt={2}>
                         <Button
-                            href={'/'}
+                            href={'/employees'}
                             className="fadeLink"
                         >
                             Сотрудники
