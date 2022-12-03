@@ -9,6 +9,7 @@ import {Grid} from "@mui/material";
 import axios from 'axios';
 
 import CustomAccordion from "../components/customAccordion";
+import AdvancedSearchEmployees from "../components/advancedSearchEmployees";
 
 
 export default class Employees extends React.Component {
@@ -116,7 +117,11 @@ export default class Employees extends React.Component {
                                 </Grid>
                                 <CustomAccordion
                                     label={"Расширенный поиск"}
-
+                                    element={
+                                        <AdvancedSearchEmployees
+                                            values={this.state.advanced_search}
+                                            onChange={this.handleChangeAdvanceSearch}
+                                        />}
                                 />
                             </form>
                         </CardContent>
