@@ -9,7 +9,7 @@ info:
   description: Information System "Post" API
   termsOfService: http://swagger.io/terms/
   title: Information System "Post"
-  version: 0.3.9
+  version: 0.4.0
 tags:
   - name: Get Information
     description: Endpoints to get information
@@ -72,7 +72,15 @@ paths:
       parameters:
         - $ref: '#/components/parameters/Page'
         - $ref: '#/components/parameters/ElementsOnPage'
-        - $ref: '#/components/parameters/SendingFilter'
+        - $ref: '#/components/parameters/SendingFilterOrderID'
+        - $ref: '#/components/parameters/SendingFilterType'
+        - $ref: '#/components/parameters/SendingFilterStatus'
+        - $ref: '#/components/parameters/SendingFilterDate'
+        - $ref: '#/components/parameters/SendingFilterSettlements'
+        - $ref: '#/components/parameters/SendingFilterLength'
+        - $ref: '#/components/parameters/SendingFilterWidth'
+        - $ref: '#/components/parameters/SendingFilterHeight'
+        - $ref: '#/components/parameters/SendingFilterWeight'
         - $ref: '#/components/parameters/SendingSort'
       responses:
         '200':
@@ -214,59 +222,6 @@ components:
       format: int64
       minimum: 1
       example: 5
-    SendingFilter:
-      type: object
-      properties:
-        order_id:
-          description: UUID or a part of it
-          type: string
-          minLength: 1
-          maxLength: 36
-          example: 123e4567-e89b-12d3-a456-426655440000
-        type:
-          description: Type of sending
-          $ref: '#/components/schemas/SendingType'
-        status:
-          description: Status of sending
-          $ref: '#/components/schemas/SendingStatus'
-        date_start:
-          description: Start of sending date range
-          type: string
-          format: date
-          example: 2022-11-20
-        date_finish:
-          description: Finish of sending date range
-          type: string
-          format: date
-          example: 2022-11-23
-        sender_settlement:
-          description: Sender's settlement or a part of it
-          type: string
-          minLength: 1
-          example: Москва
-        receiver_settlement:
-          description: Receiver's settlement or a part of it
-          type: string
-          minLength: 1
-          example: Санкт-Петербург
-        length:
-          type: integer
-          format: int64
-          minimum: 10
-          example: 100
-        width:
-          type: integer
-          format: int64
-          minimum: 10
-          example: 73
-        height:
-          type: integer
-          format: int64
-          minimum: 10
-          example: 42
-        weight:
-          description: Weight of sending
-          $ref: '#/components/schemas/SendingWeight'
     SendingSort:
       type: object
       properties:
@@ -300,18 +255,139 @@ components:
       required: true
       schema:
         $ref: '#/components/schemas/ElementsOnPage'
-    SendingFilter:
+    SendingFilterOrderID:
       in: query
-      name: filter
-      description: Sending filter
-      required: true
+      name: order_id
+      description: UUID or a part of it
       schema:
-        $ref: '#/components/schemas/SendingFilter'
+        type: string
+        minLength: 1
+        maxLength: 36
+        example: 123e4567-e89b-12d3-a456-426655440000
+    SendingFilterType:
+      in: query
+      name: type
+      description: Array of filtered type of sending
+      explode: false
+      schema:
+        type: array
+        uniqueItems: true
+        items:
+          $ref: '#/components/schemas/SendingType'
+        minItems: 1
+        example: [ Письмо, Бандероль ]
+    SendingFilterStatus:
+      in: query
+      name: status
+      description: Array of filtered status of sending
+      explode: false
+      schema:
+        type: array
+        uniqueItems: true
+        items:
+          $ref: '#/components/schemas/SendingStatus'
+        minItems: 1
+        example: [ В пути, Доставлено ]
+    SendingFilterDate:
+      in: query
+      name: date
+      description: Sending registration date range
+      schema:
+        type: object
+        properties:
+          date_start:
+            description: Start of sending date range
+            type: string
+            format: date
+            example: 2022-11-20
+          date_finish:
+            description: Finish of sending date range
+            type: string
+            format: date
+            example: 2022-11-23
+    SendingFilterSettlements:
+      in: query
+      name: settlements
+      description: Sender's or/and receiver's settlements or a part of them
+      schema:
+        type: object
+        properties:
+          sender_settlement:
+            description: Sender's settlement or a part of it
+            type: string
+            minLength: 1
+            example: Москва
+          receiver_settlement:
+            description: Receiver's settlement or a part of it
+            type: string
+            minLength: 1
+            example: Санкт-Петербург
+    SendingFilterLength:
+      in: query
+      name: length
+      description: Sending length range or a part of range
+      schema:
+        type: object
+        properties:
+          length_min:
+            type: integer
+            format: int64
+            minimum: 10
+            example: 20
+          length_max:
+            type: integer
+            format: int64
+            minimum: 10
+            example: 30
+    SendingFilterWidth:
+      in: query
+      name: width
+      description: Sending width range or a part of range
+      schema:
+        type: object
+        properties:
+          width_min:
+            type: integer
+            format: int64
+            minimum: 10
+            example: 20
+          width_max:
+            type: integer
+            format: int64
+            minimum: 10
+            example: 30
+    SendingFilterHeight:
+      in: query
+      name: height
+      description: Sending height range or a part of range
+      schema:
+        type: object
+        properties:
+          height_min:
+            type: integer
+            format: int64
+            minimum: 10
+            example: 20
+          height_max:
+            type: integer
+            format: int64
+            minimum: 10
+            example: 30
+    SendingFilterWeight:
+      in: query
+      name: weight
+      description: Sending weight range or a part of range
+      schema:
+        type: object
+        properties:
+          weight_min:
+            $ref: '#/components/schemas/SendingWeight'
+          weight_max:
+            $ref: '#/components/schemas/SendingWeight'
     SendingSort:
       in: query
       name: sort
       description: Sending sort
-      required: true
       schema:
         $ref: '#/components/schemas/SendingSort'
   requestBodies:

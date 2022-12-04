@@ -116,44 +116,78 @@ func (p *postService) ExportSendingFilter(params post.SendingFilterGetParams) ma
 	sendingFilter["page"] = int64(params.Page)
 	sendingFilter["elems"] = int64(params.ElemsOnPage)
 
-	if OrderID, ok := params.Filter.OrderID.Get(); ok {
+	if OrderID, ok := params.OrderID.Get(); ok {
 		sendingFilter["order_id"] = OrderID
 	}
-	if Type, ok := params.Filter.Type.Get(); ok {
-		sendingFilter["type"] = string(Type)
+	if len(params.Type) > 0 {
+		result := []string{}
+		for _, data := range params.Type {
+			result = append(result, string(data))
+		}
+		sendingFilter["type"] = result
 	}
-	if Status, ok := params.Filter.Status.Get(); ok {
-		sendingFilter["status"] = string(Status)
+	if len(params.Status) > 0 {
+		result := []string{}
+		for _, data := range params.Status {
+			result = append(result, string(data))
+		}
+		sendingFilter["status"] = result
 	}
-	if DateStart, ok := params.Filter.DateStart.Get(); ok {
-		sendingFilter["date_start"] = DateStart
+	if Date, ok := params.Date.Get(); ok {
+		if DateStart, ok := Date.GetDateStart().Get(); ok {
+			sendingFilter["date_start"] = DateStart
+		}
+		if DateFinish, ok := Date.GetDateFinish().Get(); ok {
+			sendingFilter["date_finish"] = DateFinish
+		}
 	}
-	if DateFinish, ok := params.Filter.DateFinish.Get(); ok {
-		sendingFilter["date_finish"] = DateFinish
+	if Settlements, ok := params.Settlements.Get(); ok {
+		if SenderSettlement, ok := Settlements.GetSenderSettlement().Get(); ok {
+			sendingFilter["sender_settlement"] = SenderSettlement
+		}
+		if ReceiverSettlement, ok := Settlements.GetReceiverSettlement().Get(); ok {
+			sendingFilter["receiver_settlement"] = ReceiverSettlement
+		}
 	}
-	if SenderSettlement, ok := params.Filter.SenderSettlement.Get(); ok {
-		sendingFilter["sender_settlement"] = SenderSettlement
+	if Length, ok := params.Length.Get(); ok {
+		if LengthMin, ok := Length.GetLengthMin().Get(); ok {
+			sendingFilter["length_min"] = LengthMin
+		}
+		if LengthMax, ok := Length.GetLengthMax().Get(); ok {
+			sendingFilter["length_max"] = LengthMax
+		}
 	}
-	if ReceiverSettlement, ok := params.Filter.ReceiverSettlement.Get(); ok {
-		sendingFilter["receiver_settlement"] = ReceiverSettlement
+	if Width, ok := params.Width.Get(); ok {
+		if WidthMin, ok := Width.GetWidthMin().Get(); ok {
+			sendingFilter["width_min"] = WidthMin
+		}
+		if WidthMax, ok := Width.GetWidthMax().Get(); ok {
+			sendingFilter["width_max"] = WidthMax
+		}
 	}
-	if Length, ok := params.Filter.Length.Get(); ok {
-		sendingFilter["length"] = Length
+	if Height, ok := params.Height.Get(); ok {
+		if HeightMin, ok := Height.GetHeightMin().Get(); ok {
+			sendingFilter["height_min"] = HeightMin
+		}
+		if HeightMax, ok := Height.GetHeightMax().Get(); ok {
+			sendingFilter["height_max"] = HeightMax
+		}
 	}
-	if Width, ok := params.Filter.Width.Get(); ok {
-		sendingFilter["width"] = Width
+	if Weight, ok := params.Weight.Get(); ok {
+		if WeightMin, ok := Weight.GetWeightMin().Get(); ok {
+			sendingFilter["weight_min"] = int64(WeightMin)
+		}
+		if WeightMax, ok := Weight.GetWeightMax().Get(); ok {
+			sendingFilter["weight_max"] = int64(WeightMax)
+		}
 	}
-	if Height, ok := params.Filter.Height.Get(); ok {
-		sendingFilter["height"] = Height
-	}
-	if Weight, ok := params.Filter.Weight.Get(); ok {
-		sendingFilter["weight"] = int64(Weight)
-	}
-	if SortType, ok := params.Sort.SortType.Get(); ok {
-		sendingFilter["sort_type"] = string(SortType)
-	}
-	if SortField, ok := params.Sort.SortField.Get(); ok {
-		sendingFilter["sort_field"] = string(SortField)
+	if Sort, ok := params.Sort.Get(); ok {
+		if SortType, ok := Sort.GetSortType().Get(); ok {
+			sendingFilter["sort_type"] = string(SortType)
+		}
+		if SortField, ok := Sort.GetSortField().Get(); ok {
+			sendingFilter["sort_field"] = string(SortField)
+		}
 	}
 
 	return sendingFilter

@@ -129,124 +129,10 @@ func (s PostcodesBySettlementGetResponse) Validate() error {
 	}
 	return nil
 }
-func (s SendingFilter) Validate() error {
+func (s SendingFilterGetHeight) Validate() error {
 	var failures []validate.FieldError
 	if err := func() error {
-		if s.OrderID.Set {
-			if err := func() error {
-				if err := (validate.String{
-					MinLength:    1,
-					MinLengthSet: true,
-					MaxLength:    36,
-					MaxLengthSet: true,
-					Email:        false,
-					Hostname:     false,
-					Regex:        nil,
-				}).Validate(string(s.OrderID.Value)); err != nil {
-					return errors.Wrap(err, "string")
-				}
-				return nil
-			}(); err != nil {
-				return err
-			}
-		}
-		return nil
-	}(); err != nil {
-		failures = append(failures, validate.FieldError{
-			Name:  "order_id",
-			Error: err,
-		})
-	}
-	if err := func() error {
-		if s.Type.Set {
-			if err := func() error {
-				if err := s.Type.Value.Validate(); err != nil {
-					return err
-				}
-				return nil
-			}(); err != nil {
-				return err
-			}
-		}
-		return nil
-	}(); err != nil {
-		failures = append(failures, validate.FieldError{
-			Name:  "type",
-			Error: err,
-		})
-	}
-	if err := func() error {
-		if s.Status.Set {
-			if err := func() error {
-				if err := s.Status.Value.Validate(); err != nil {
-					return err
-				}
-				return nil
-			}(); err != nil {
-				return err
-			}
-		}
-		return nil
-	}(); err != nil {
-		failures = append(failures, validate.FieldError{
-			Name:  "status",
-			Error: err,
-		})
-	}
-	if err := func() error {
-		if s.SenderSettlement.Set {
-			if err := func() error {
-				if err := (validate.String{
-					MinLength:    1,
-					MinLengthSet: true,
-					MaxLength:    0,
-					MaxLengthSet: false,
-					Email:        false,
-					Hostname:     false,
-					Regex:        nil,
-				}).Validate(string(s.SenderSettlement.Value)); err != nil {
-					return errors.Wrap(err, "string")
-				}
-				return nil
-			}(); err != nil {
-				return err
-			}
-		}
-		return nil
-	}(); err != nil {
-		failures = append(failures, validate.FieldError{
-			Name:  "sender_settlement",
-			Error: err,
-		})
-	}
-	if err := func() error {
-		if s.ReceiverSettlement.Set {
-			if err := func() error {
-				if err := (validate.String{
-					MinLength:    1,
-					MinLengthSet: true,
-					MaxLength:    0,
-					MaxLengthSet: false,
-					Email:        false,
-					Hostname:     false,
-					Regex:        nil,
-				}).Validate(string(s.ReceiverSettlement.Value)); err != nil {
-					return errors.Wrap(err, "string")
-				}
-				return nil
-			}(); err != nil {
-				return err
-			}
-		}
-		return nil
-	}(); err != nil {
-		failures = append(failures, validate.FieldError{
-			Name:  "receiver_settlement",
-			Error: err,
-		})
-	}
-	if err := func() error {
-		if s.Length.Set {
+		if s.HeightMin.Set {
 			if err := func() error {
 				if err := (validate.Int{
 					MinSet:        true,
@@ -257,7 +143,7 @@ func (s SendingFilter) Validate() error {
 					MaxExclusive:  false,
 					MultipleOfSet: false,
 					MultipleOf:    0,
-				}).Validate(int64(s.Length.Value)); err != nil {
+				}).Validate(int64(s.HeightMin.Value)); err != nil {
 					return errors.Wrap(err, "int")
 				}
 				return nil
@@ -268,12 +154,12 @@ func (s SendingFilter) Validate() error {
 		return nil
 	}(); err != nil {
 		failures = append(failures, validate.FieldError{
-			Name:  "length",
+			Name:  "height_min",
 			Error: err,
 		})
 	}
 	if err := func() error {
-		if s.Width.Set {
+		if s.HeightMax.Set {
 			if err := func() error {
 				if err := (validate.Int{
 					MinSet:        true,
@@ -284,7 +170,7 @@ func (s SendingFilter) Validate() error {
 					MaxExclusive:  false,
 					MultipleOfSet: false,
 					MultipleOf:    0,
-				}).Validate(int64(s.Width.Value)); err != nil {
+				}).Validate(int64(s.HeightMax.Value)); err != nil {
 					return errors.Wrap(err, "int")
 				}
 				return nil
@@ -295,12 +181,19 @@ func (s SendingFilter) Validate() error {
 		return nil
 	}(); err != nil {
 		failures = append(failures, validate.FieldError{
-			Name:  "width",
+			Name:  "height_max",
 			Error: err,
 		})
 	}
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
+	}
+	return nil
+}
+func (s SendingFilterGetLength) Validate() error {
+	var failures []validate.FieldError
 	if err := func() error {
-		if s.Height.Set {
+		if s.LengthMin.Set {
 			if err := func() error {
 				if err := (validate.Int{
 					MinSet:        true,
@@ -311,7 +204,7 @@ func (s SendingFilter) Validate() error {
 					MaxExclusive:  false,
 					MultipleOfSet: false,
 					MultipleOf:    0,
-				}).Validate(int64(s.Height.Value)); err != nil {
+				}).Validate(int64(s.LengthMin.Value)); err != nil {
 					return errors.Wrap(err, "int")
 				}
 				return nil
@@ -322,15 +215,24 @@ func (s SendingFilter) Validate() error {
 		return nil
 	}(); err != nil {
 		failures = append(failures, validate.FieldError{
-			Name:  "height",
+			Name:  "length_min",
 			Error: err,
 		})
 	}
 	if err := func() error {
-		if s.Weight.Set {
+		if s.LengthMax.Set {
 			if err := func() error {
-				if err := s.Weight.Value.Validate(); err != nil {
-					return err
+				if err := (validate.Int{
+					MinSet:        true,
+					Min:           10,
+					MaxSet:        false,
+					Max:           0,
+					MinExclusive:  false,
+					MaxExclusive:  false,
+					MultipleOfSet: false,
+					MultipleOf:    0,
+				}).Validate(int64(s.LengthMax.Value)); err != nil {
+					return errors.Wrap(err, "int")
 				}
 				return nil
 			}(); err != nil {
@@ -340,7 +242,7 @@ func (s SendingFilter) Validate() error {
 		return nil
 	}(); err != nil {
 		failures = append(failures, validate.FieldError{
-			Name:  "weight",
+			Name:  "length_max",
 			Error: err,
 		})
 	}
@@ -447,6 +349,169 @@ func (s SendingFilterGetResponseResultItem) Validate() error {
 	}(); err != nil {
 		failures = append(failures, validate.FieldError{
 			Name:  "status",
+			Error: err,
+		})
+	}
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
+	}
+	return nil
+}
+func (s SendingFilterGetSettlements) Validate() error {
+	var failures []validate.FieldError
+	if err := func() error {
+		if s.SenderSettlement.Set {
+			if err := func() error {
+				if err := (validate.String{
+					MinLength:    1,
+					MinLengthSet: true,
+					MaxLength:    0,
+					MaxLengthSet: false,
+					Email:        false,
+					Hostname:     false,
+					Regex:        nil,
+				}).Validate(string(s.SenderSettlement.Value)); err != nil {
+					return errors.Wrap(err, "string")
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "sender_settlement",
+			Error: err,
+		})
+	}
+	if err := func() error {
+		if s.ReceiverSettlement.Set {
+			if err := func() error {
+				if err := (validate.String{
+					MinLength:    1,
+					MinLengthSet: true,
+					MaxLength:    0,
+					MaxLengthSet: false,
+					Email:        false,
+					Hostname:     false,
+					Regex:        nil,
+				}).Validate(string(s.ReceiverSettlement.Value)); err != nil {
+					return errors.Wrap(err, "string")
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "receiver_settlement",
+			Error: err,
+		})
+	}
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
+	}
+	return nil
+}
+func (s SendingFilterGetWeight) Validate() error {
+	var failures []validate.FieldError
+	if err := func() error {
+		if s.WeightMin.Set {
+			if err := func() error {
+				if err := s.WeightMin.Value.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "weight_min",
+			Error: err,
+		})
+	}
+	if err := func() error {
+		if s.WeightMax.Set {
+			if err := func() error {
+				if err := s.WeightMax.Value.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "weight_max",
+			Error: err,
+		})
+	}
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
+	}
+	return nil
+}
+func (s SendingFilterGetWidth) Validate() error {
+	var failures []validate.FieldError
+	if err := func() error {
+		if s.WidthMin.Set {
+			if err := func() error {
+				if err := (validate.Int{
+					MinSet:        true,
+					Min:           10,
+					MaxSet:        false,
+					Max:           0,
+					MinExclusive:  false,
+					MaxExclusive:  false,
+					MultipleOfSet: false,
+					MultipleOf:    0,
+				}).Validate(int64(s.WidthMin.Value)); err != nil {
+					return errors.Wrap(err, "int")
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "width_min",
+			Error: err,
+		})
+	}
+	if err := func() error {
+		if s.WidthMax.Set {
+			if err := func() error {
+				if err := (validate.Int{
+					MinSet:        true,
+					Min:           10,
+					MaxSet:        false,
+					Max:           0,
+					MinExclusive:  false,
+					MaxExclusive:  false,
+					MultipleOfSet: false,
+					MultipleOf:    0,
+				}).Validate(int64(s.WidthMax.Value)); err != nil {
+					return errors.Wrap(err, "int")
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "width_max",
 			Error: err,
 		})
 	}

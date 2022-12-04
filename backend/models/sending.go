@@ -165,24 +165,36 @@ func (s *Sending) FilterSending(sendingFilter map[string]interface{}) (int64, []
 					"$regex", regexp.QuoteMeta(filter.(string)),
 				},
 					{
-						"$options", "",
+						"$options", "i",
 					}},
 			}},
 		}}
 		matchPipeline = append(matchPipeline, match)
 	}
 	if filter, ok := sendingFilter["type"]; ok {
+		result := bson.A{}
+		for _, data := range filter.([]string) {
+			result = append(result, data)
+		}
 		match := bson.D{{
 			"$match", bson.D{{
-				"type", filter.(string),
+				"type", bson.D{{
+					"$in", result,
+				}},
 			}},
 		}}
 		matchPipeline = append(matchPipeline, match)
 	}
 	if filter, ok := sendingFilter["status"]; ok {
+		result := bson.A{}
+		for _, data := range filter.([]string) {
+			result = append(result, data)
+		}
 		match := bson.D{{
 			"$match", bson.D{{
-				"status", filter.(string),
+				"status", bson.D{{
+					"$in", result,
+				}},
 			}},
 		}}
 		matchPipeline = append(matchPipeline, match)
@@ -233,34 +245,82 @@ func (s *Sending) FilterSending(sendingFilter map[string]interface{}) (int64, []
 		}}
 		matchPipeline = append(matchPipeline, match)
 	}
-	if filter, ok := sendingFilter["length"]; ok {
+	if filter, ok := sendingFilter["length_min"]; ok {
 		match := bson.D{{
 			"$match", bson.D{{
-				"size.length", filter.(int64),
+				"size.length", bson.D{{
+					"$gte", filter.(int64),
+				}},
 			}},
 		}}
 		matchPipeline = append(matchPipeline, match)
 	}
-	if filter, ok := sendingFilter["width"]; ok {
+	if filter, ok := sendingFilter["length_max"]; ok {
 		match := bson.D{{
 			"$match", bson.D{{
-				"size.width", filter.(int64),
+				"size.length", bson.D{{
+					"$lte", filter.(int64),
+				}},
 			}},
 		}}
 		matchPipeline = append(matchPipeline, match)
 	}
-	if filter, ok := sendingFilter["height"]; ok {
+	if filter, ok := sendingFilter["width_min"]; ok {
 		match := bson.D{{
 			"$match", bson.D{{
-				"size.height", filter.(int64),
+				"size.width", bson.D{{
+					"$gte", filter.(int64),
+				}},
 			}},
 		}}
 		matchPipeline = append(matchPipeline, match)
 	}
-	if filter, ok := sendingFilter["weight"]; ok {
+	if filter, ok := sendingFilter["width_max"]; ok {
 		match := bson.D{{
 			"$match", bson.D{{
-				"weight", filter.(int64),
+				"size.width", bson.D{{
+					"$lte", filter.(int64),
+				}},
+			}},
+		}}
+		matchPipeline = append(matchPipeline, match)
+	}
+	if filter, ok := sendingFilter["height_min"]; ok {
+		match := bson.D{{
+			"$match", bson.D{{
+				"size.height", bson.D{{
+					"$gte", filter.(int64),
+				}},
+			}},
+		}}
+		matchPipeline = append(matchPipeline, match)
+	}
+	if filter, ok := sendingFilter["height_max"]; ok {
+		match := bson.D{{
+			"$match", bson.D{{
+				"size.height", bson.D{{
+					"$lte", filter.(int64),
+				}},
+			}},
+		}}
+		matchPipeline = append(matchPipeline, match)
+	}
+	if filter, ok := sendingFilter["weight_min"]; ok {
+		match := bson.D{{
+			"$match", bson.D{{
+				"weight", bson.D{{
+					"$gte", filter.(int64),
+				}},
+			}},
+		}}
+		matchPipeline = append(matchPipeline, match)
+	}
+	if filter, ok := sendingFilter["weight_max"]; ok {
+		match := bson.D{{
+			"$match", bson.D{{
+				"weight", bson.D{{
+					"$lte", filter.(int64),
+				}},
 			}},
 		}}
 		matchPipeline = append(matchPipeline, match)
