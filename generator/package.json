@@ -4,7 +4,7 @@
   "description": "Dataset generator for Post Information System",
   "main": "",
   "scripts": {
-    "gen": "node "
+    "gen": "node generator.js"
   },
   "keywords": [
     "generator"
