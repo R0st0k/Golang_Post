@@ -1,6 +1,6 @@
 import fs from 'fs'
 import {v4 as uuidv4} from 'uuid';
-import {default as _, get, isNull} from 'underscore'
+import {default as _} from 'underscore'
 import { ObjectID, UUID } from 'bson'
 
 import Chance from 'chance'
@@ -86,31 +86,48 @@ class PostGenerator {
         }
     }
 
-    #generateAddress(postcode = "", savePostcode = false) {
-        function generateStreet() {
-            let streetPrefixes = ["ул.", "бул.", "пр-кт", "ал."]
-            let streetNames = [
-                "Мира", "Кефира", "Эчпочмака",
-                "Татаров", "Победы", "Силы",
-                "Ленина", "ЛЭТИ", "Космонавтов",
-                "Заки Валиди", "Габдуллы Тукая", "Мусы Джалиля",
-                "Салавата Юлаева", "Мажита Гафури", "Губкина"
-            ]
-            return `${getOneOf(streetPrefixes)} ${getOneOf(streetNames)}`
-        }
+    #generateStreet() {
+        let streetPrefixes = ["ул.", "бул.", "пр-кт", "ал."]
+        let streetNames = [
+            "Мира", "Кефира", "Эчпочмака",
+            "Татаров", "Победы", "Силы",
+            "Ленина", "ЛЭТИ", "Космонавтов",
+            "Заки Валиди", "Габдуллы Тукая", "Мусы Джалиля",
+            "Салавата Юлаева", "Мажита Гафури", "Губкина"
+        ]
+        return `${getOneOf(streetPrefixes)} ${getOneOf(streetNames)}`
+    }
 
-        function generateBuilding() {
-            return chance.integer({ min: 1, max: 100 }).toString()
-        }
+    #generateBuilding() {
+        return chance.integer({ min: 1, max: 100 }).toString()
+    }
 
+    #generateApartment() {
+        return chance.integer({ min: 1, max: 100 }).toString()
+    }
+
+    #generateClientAddressByOfficeAddress(office_address) {
+        let result = Object.assign({}, office_address)
+        Object.assign(result, {
+            "street": this.#generateStreet(),
+            "building": this.#generateBuilding(),
+            "apartment": this.#generateApartment(),
+        })
+        return result
+    }
+
+    #generateAddress(postcode = "") {
         let postcode_prefix = postcode.slice(0, 3)
+        let address = {
+            "postcode": postcode_prefix + chance.string({ length: 3, numeric: true })
+        }
+        let settlement_address
         switch (postcode_prefix) {
             case "450":
             case "451":
             case "452":
             case "453":
-                return {
-                    postcode: (savePostcode) ? postcode : postcode_prefix + chance.string({ length: 3, numeric: true }),
+                settlement_address = {
                     region: "Республика Башкортостан",
                     district: getOneOf([
                         "Стерлитамакский р-н",
@@ -131,15 +148,13 @@ class PostGenerator {
                         "г. Уфа",
                         "п. Нугуш"
                     ]),
-                    street: generateStreet(),
-                    building: generateBuilding()
                 }
+                break
             case "420":
             case "421":
             case "422":
             case "423":
-                return {
-                    postcode: (savePostcode) ? postcode : postcode_prefix + chance.string({ length: 3, numeric: true }),
+                settlement_address = {
                     region: "Республика Татарстан",
                     district: getOneOf([
                         "Азнакаевский р-н",
@@ -157,14 +172,12 @@ class PostGenerator {
                         "с. Сарлы",
                         "п. Тырыш",
                     ]),
-                    street: generateStreet(),
-                    building: generateBuilding()
                 }
+                break
             case "460":
             case "461":
             case "462":
-                return {
-                    postcode: (savePostcode) ? postcode : postcode_prefix + chance.string({ length: 3, numeric: true }),
+                settlement_address = {
                     region: "Оренбургаская область",
                     district: getOneOf([
                         "Абдулинский р-н",
@@ -183,16 +196,14 @@ class PostGenerator {
                         "п. Искра",
                         "с. Лоховка",
                     ]),
-                    street: generateStreet(),
-                    building: generateBuilding()
                 }
+                break
             case "190":
             case "191":
             case "192":
             case "193":
             case "194":
-                return {
-                    postcode: (savePostcode) ? postcode : postcode_prefix + chance.string({ length: 3, numeric: true }),
+                settlement_address = {
                     region: "г. Санкт-Петербург",
                     settlement: getOneOf([
                         "г. Санкт-Петербург",
@@ -203,10 +214,15 @@ class PostGenerator {
                         "г. Красное Село",
                         "г. Сестрорецк",
                     ]),
-                    street: generateStreet(),
-                    building: generateBuilding()
                 }
+                break
         }
+        Object.assign(address, settlement_address)
+        Object.assign(address, {
+            "street": this.#generateStreet(),
+            "building": this.#generateBuilding(),
+        })
+        return address
     }
 
     #generateEmployees(postOfficeType) {
@@ -416,15 +432,13 @@ class PostGenerator {
                 },
                 weight: chance.integer({ min: 10, max: 100}),
             }
-            let valid_postcodes = this.post_offices.filter(x => x.type === officeType.POST_OFFICE).map(x => x.address.postcode)
+            let valid_offices = this.post_offices.filter(x => x.type === officeType.POST_OFFICE)
+            let sender_post_office = getOneOf(valid_offices)
+            sending.sender.address = this.#generateClientAddressByOfficeAddress(sender_post_office.address)
 
-            let senderPostcode = getOneOf(valid_postcodes)
-            sending.sender.address = this.#generateAddress(senderPostcode, true)
-            sending.sender.address.apartment = chance.integer({ min: 1, max: 100 }).toString()
-
-            valid_postcodes = valid_postcodes.filter(postcode => postcode !== senderPostcode)
-            sending.receiver.address = this.#generateAddress(getOneOf(valid_postcodes), true)
-            sending.receiver.address.apartment = chance.integer({ min: 1, max: 100 }).toString()
+            valid_offices = valid_offices.filter(office => office.postcode !== sending.sender.address.postcode)
+            let receiver_post_office = getOneOf(valid_offices)
+            sending.receiver.address = this.#generateClientAddressByOfficeAddress(receiver_post_office.address)
 
             let stagesAndStatus = generateStagesAndStatus(sending, this.employees, this.post_offices)
             sending.stages = stagesAndStatus.stages
