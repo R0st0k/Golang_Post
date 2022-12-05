@@ -203,6 +203,328 @@ func (o OptInt64) Or(d int64) int64 {
 	return d
 }
 
+// NewOptSendingFilterGetDate returns new OptSendingFilterGetDate with value set to v.
+func NewOptSendingFilterGetDate(v SendingFilterGetDate) OptSendingFilterGetDate {
+	return OptSendingFilterGetDate{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptSendingFilterGetDate is optional SendingFilterGetDate.
+type OptSendingFilterGetDate struct {
+	Value SendingFilterGetDate
+	Set   bool
+}
+
+// IsSet returns true if OptSendingFilterGetDate was set.
+func (o OptSendingFilterGetDate) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptSendingFilterGetDate) Reset() {
+	var v SendingFilterGetDate
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptSendingFilterGetDate) SetTo(v SendingFilterGetDate) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptSendingFilterGetDate) Get() (v SendingFilterGetDate, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptSendingFilterGetDate) Or(d SendingFilterGetDate) SendingFilterGetDate {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptSendingFilterGetHeight returns new OptSendingFilterGetHeight with value set to v.
+func NewOptSendingFilterGetHeight(v SendingFilterGetHeight) OptSendingFilterGetHeight {
+	return OptSendingFilterGetHeight{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptSendingFilterGetHeight is optional SendingFilterGetHeight.
+type OptSendingFilterGetHeight struct {
+	Value SendingFilterGetHeight
+	Set   bool
+}
+
+// IsSet returns true if OptSendingFilterGetHeight was set.
+func (o OptSendingFilterGetHeight) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptSendingFilterGetHeight) Reset() {
+	var v SendingFilterGetHeight
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptSendingFilterGetHeight) SetTo(v SendingFilterGetHeight) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptSendingFilterGetHeight) Get() (v SendingFilterGetHeight, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptSendingFilterGetHeight) Or(d SendingFilterGetHeight) SendingFilterGetHeight {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptSendingFilterGetLength returns new OptSendingFilterGetLength with value set to v.
+func NewOptSendingFilterGetLength(v SendingFilterGetLength) OptSendingFilterGetLength {
+	return OptSendingFilterGetLength{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptSendingFilterGetLength is optional SendingFilterGetLength.
+type OptSendingFilterGetLength struct {
+	Value SendingFilterGetLength
+	Set   bool
+}
+
+// IsSet returns true if OptSendingFilterGetLength was set.
+func (o OptSendingFilterGetLength) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptSendingFilterGetLength) Reset() {
+	var v SendingFilterGetLength
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptSendingFilterGetLength) SetTo(v SendingFilterGetLength) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptSendingFilterGetLength) Get() (v SendingFilterGetLength, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptSendingFilterGetLength) Or(d SendingFilterGetLength) SendingFilterGetLength {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptSendingFilterGetSettlements returns new OptSendingFilterGetSettlements with value set to v.
+func NewOptSendingFilterGetSettlements(v SendingFilterGetSettlements) OptSendingFilterGetSettlements {
+	return OptSendingFilterGetSettlements{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptSendingFilterGetSettlements is optional SendingFilterGetSettlements.
+type OptSendingFilterGetSettlements struct {
+	Value SendingFilterGetSettlements
+	Set   bool
+}
+
+// IsSet returns true if OptSendingFilterGetSettlements was set.
+func (o OptSendingFilterGetSettlements) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptSendingFilterGetSettlements) Reset() {
+	var v SendingFilterGetSettlements
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptSendingFilterGetSettlements) SetTo(v SendingFilterGetSettlements) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptSendingFilterGetSettlements) Get() (v SendingFilterGetSettlements, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptSendingFilterGetSettlements) Or(d SendingFilterGetSettlements) SendingFilterGetSettlements {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptSendingFilterGetWeight returns new OptSendingFilterGetWeight with value set to v.
+func NewOptSendingFilterGetWeight(v SendingFilterGetWeight) OptSendingFilterGetWeight {
+	return OptSendingFilterGetWeight{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptSendingFilterGetWeight is optional SendingFilterGetWeight.
+type OptSendingFilterGetWeight struct {
+	Value SendingFilterGetWeight
+	Set   bool
+}
+
+// IsSet returns true if OptSendingFilterGetWeight was set.
+func (o OptSendingFilterGetWeight) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptSendingFilterGetWeight) Reset() {
+	var v SendingFilterGetWeight
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptSendingFilterGetWeight) SetTo(v SendingFilterGetWeight) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptSendingFilterGetWeight) Get() (v SendingFilterGetWeight, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptSendingFilterGetWeight) Or(d SendingFilterGetWeight) SendingFilterGetWeight {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptSendingFilterGetWidth returns new OptSendingFilterGetWidth with value set to v.
+func NewOptSendingFilterGetWidth(v SendingFilterGetWidth) OptSendingFilterGetWidth {
+	return OptSendingFilterGetWidth{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptSendingFilterGetWidth is optional SendingFilterGetWidth.
+type OptSendingFilterGetWidth struct {
+	Value SendingFilterGetWidth
+	Set   bool
+}
+
+// IsSet returns true if OptSendingFilterGetWidth was set.
+func (o OptSendingFilterGetWidth) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptSendingFilterGetWidth) Reset() {
+	var v SendingFilterGetWidth
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptSendingFilterGetWidth) SetTo(v SendingFilterGetWidth) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptSendingFilterGetWidth) Get() (v SendingFilterGetWidth, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptSendingFilterGetWidth) Or(d SendingFilterGetWidth) SendingFilterGetWidth {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptSendingSort returns new OptSendingSort with value set to v.
+func NewOptSendingSort(v SendingSort) OptSendingSort {
+	return OptSendingSort{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptSendingSort is optional SendingSort.
+type OptSendingSort struct {
+	Value SendingSort
+	Set   bool
+}
+
+// IsSet returns true if OptSendingSort was set.
+func (o OptSendingSort) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptSendingSort) Reset() {
+	var v SendingSort
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptSendingSort) SetTo(v SendingSort) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptSendingSort) Get() (v SendingSort, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptSendingSort) Or(d SendingSort) SendingSort {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
 // NewOptSendingSortSortField returns new OptSendingSortSortField with value set to v.
 func NewOptSendingSortSortField(v SendingSortSortField) OptSendingSortSortField {
 	return OptSendingSortSortField{
@@ -289,98 +611,6 @@ func (o OptSendingSortSortType) Get() (v SendingSortSortType, ok bool) {
 
 // Or returns value if set, or given parameter if does not.
 func (o OptSendingSortSortType) Or(d SendingSortSortType) SendingSortSortType {
-	if v, ok := o.Get(); ok {
-		return v
-	}
-	return d
-}
-
-// NewOptSendingStatus returns new OptSendingStatus with value set to v.
-func NewOptSendingStatus(v SendingStatus) OptSendingStatus {
-	return OptSendingStatus{
-		Value: v,
-		Set:   true,
-	}
-}
-
-// OptSendingStatus is optional SendingStatus.
-type OptSendingStatus struct {
-	Value SendingStatus
-	Set   bool
-}
-
-// IsSet returns true if OptSendingStatus was set.
-func (o OptSendingStatus) IsSet() bool { return o.Set }
-
-// Reset unsets value.
-func (o *OptSendingStatus) Reset() {
-	var v SendingStatus
-	o.Value = v
-	o.Set = false
-}
-
-// SetTo sets value to v.
-func (o *OptSendingStatus) SetTo(v SendingStatus) {
-	o.Set = true
-	o.Value = v
-}
-
-// Get returns value and boolean that denotes whether value was set.
-func (o OptSendingStatus) Get() (v SendingStatus, ok bool) {
-	if !o.Set {
-		return v, false
-	}
-	return o.Value, true
-}
-
-// Or returns value if set, or given parameter if does not.
-func (o OptSendingStatus) Or(d SendingStatus) SendingStatus {
-	if v, ok := o.Get(); ok {
-		return v
-	}
-	return d
-}
-
-// NewOptSendingType returns new OptSendingType with value set to v.
-func NewOptSendingType(v SendingType) OptSendingType {
-	return OptSendingType{
-		Value: v,
-		Set:   true,
-	}
-}
-
-// OptSendingType is optional SendingType.
-type OptSendingType struct {
-	Value SendingType
-	Set   bool
-}
-
-// IsSet returns true if OptSendingType was set.
-func (o OptSendingType) IsSet() bool { return o.Set }
-
-// Reset unsets value.
-func (o *OptSendingType) Reset() {
-	var v SendingType
-	o.Value = v
-	o.Set = false
-}
-
-// SetTo sets value to v.
-func (o *OptSendingType) SetTo(v SendingType) {
-	o.Set = true
-	o.Value = v
-}
-
-// Get returns value and boolean that denotes whether value was set.
-func (o OptSendingType) Get() (v SendingType, ok bool) {
-	if !o.Set {
-		return v, false
-	}
-	return o.Value, true
-}
-
-// Or returns value if set, or given parameter if does not.
-func (o OptSendingType) Or(d SendingType) SendingType {
 	if v, ok := o.Get(); ok {
 		return v
 	}
@@ -540,137 +770,81 @@ func (s *PostcodesBySettlementGetResponse) init() PostcodesBySettlementGetRespon
 	return m
 }
 
-// Ref: #/components/schemas/SendingFilter
-type SendingFilter struct {
-	// UUID or a part of it.
-	OrderID OptString `json:"order_id"`
-	// Type of sending.
-	Type OptSendingType `json:"type"`
-	// Status of sending.
-	Status OptSendingStatus `json:"status"`
+type SendingFilterGetDate struct {
 	// Start of sending date range.
 	DateStart OptDate `json:"date_start"`
 	// Finish of sending date range.
 	DateFinish OptDate `json:"date_finish"`
-	// Sender's settlement or a part of it.
-	SenderSettlement OptString `json:"sender_settlement"`
-	// Receiver's settlement or a part of it.
-	ReceiverSettlement OptString `json:"receiver_settlement"`
-	Length             OptInt64  `json:"length"`
-	Width              OptInt64  `json:"width"`
-	Height             OptInt64  `json:"height"`
-	// Weight of sending.
-	Weight OptSendingWeight `json:"weight"`
-}
-
-// GetOrderID returns the value of OrderID.
-func (s SendingFilter) GetOrderID() OptString {
-	return s.OrderID
-}
-
-// GetType returns the value of Type.
-func (s SendingFilter) GetType() OptSendingType {
-	return s.Type
-}
-
-// GetStatus returns the value of Status.
-func (s SendingFilter) GetStatus() OptSendingStatus {
-	return s.Status
 }
 
 // GetDateStart returns the value of DateStart.
-func (s SendingFilter) GetDateStart() OptDate {
+func (s SendingFilterGetDate) GetDateStart() OptDate {
 	return s.DateStart
 }
 
 // GetDateFinish returns the value of DateFinish.
-func (s SendingFilter) GetDateFinish() OptDate {
+func (s SendingFilterGetDate) GetDateFinish() OptDate {
 	return s.DateFinish
 }
 
-// GetSenderSettlement returns the value of SenderSettlement.
-func (s SendingFilter) GetSenderSettlement() OptString {
-	return s.SenderSettlement
-}
-
-// GetReceiverSettlement returns the value of ReceiverSettlement.
-func (s SendingFilter) GetReceiverSettlement() OptString {
-	return s.ReceiverSettlement
-}
-
-// GetLength returns the value of Length.
-func (s SendingFilter) GetLength() OptInt64 {
-	return s.Length
-}
-
-// GetWidth returns the value of Width.
-func (s SendingFilter) GetWidth() OptInt64 {
-	return s.Width
-}
-
-// GetHeight returns the value of Height.
-func (s SendingFilter) GetHeight() OptInt64 {
-	return s.Height
-}
-
-// GetWeight returns the value of Weight.
-func (s SendingFilter) GetWeight() OptSendingWeight {
-	return s.Weight
-}
-
-// SetOrderID sets the value of OrderID.
-func (s *SendingFilter) SetOrderID(val OptString) {
-	s.OrderID = val
-}
-
-// SetType sets the value of Type.
-func (s *SendingFilter) SetType(val OptSendingType) {
-	s.Type = val
-}
-
-// SetStatus sets the value of Status.
-func (s *SendingFilter) SetStatus(val OptSendingStatus) {
-	s.Status = val
-}
-
 // SetDateStart sets the value of DateStart.
-func (s *SendingFilter) SetDateStart(val OptDate) {
+func (s *SendingFilterGetDate) SetDateStart(val OptDate) {
 	s.DateStart = val
 }
 
 // SetDateFinish sets the value of DateFinish.
-func (s *SendingFilter) SetDateFinish(val OptDate) {
+func (s *SendingFilterGetDate) SetDateFinish(val OptDate) {
 	s.DateFinish = val
 }
 
-// SetSenderSettlement sets the value of SenderSettlement.
-func (s *SendingFilter) SetSenderSettlement(val OptString) {
-	s.SenderSettlement = val
+type SendingFilterGetHeight struct {
+	HeightMin OptInt64 `json:"height_min"`
+	HeightMax OptInt64 `json:"height_max"`
 }
 
-// SetReceiverSettlement sets the value of ReceiverSettlement.
-func (s *SendingFilter) SetReceiverSettlement(val OptString) {
-	s.ReceiverSettlement = val
+// GetHeightMin returns the value of HeightMin.
+func (s SendingFilterGetHeight) GetHeightMin() OptInt64 {
+	return s.HeightMin
 }
 
-// SetLength sets the value of Length.
-func (s *SendingFilter) SetLength(val OptInt64) {
-	s.Length = val
+// GetHeightMax returns the value of HeightMax.
+func (s SendingFilterGetHeight) GetHeightMax() OptInt64 {
+	return s.HeightMax
 }
 
-// SetWidth sets the value of Width.
-func (s *SendingFilter) SetWidth(val OptInt64) {
-	s.Width = val
+// SetHeightMin sets the value of HeightMin.
+func (s *SendingFilterGetHeight) SetHeightMin(val OptInt64) {
+	s.HeightMin = val
 }
 
-// SetHeight sets the value of Height.
-func (s *SendingFilter) SetHeight(val OptInt64) {
-	s.Height = val
+// SetHeightMax sets the value of HeightMax.
+func (s *SendingFilterGetHeight) SetHeightMax(val OptInt64) {
+	s.HeightMax = val
 }
 
-// SetWeight sets the value of Weight.
-func (s *SendingFilter) SetWeight(val OptSendingWeight) {
-	s.Weight = val
+type SendingFilterGetLength struct {
+	LengthMin OptInt64 `json:"length_min"`
+	LengthMax OptInt64 `json:"length_max"`
+}
+
+// GetLengthMin returns the value of LengthMin.
+func (s SendingFilterGetLength) GetLengthMin() OptInt64 {
+	return s.LengthMin
+}
+
+// GetLengthMax returns the value of LengthMax.
+func (s SendingFilterGetLength) GetLengthMax() OptInt64 {
+	return s.LengthMax
+}
+
+// SetLengthMin sets the value of LengthMin.
+func (s *SendingFilterGetLength) SetLengthMin(val OptInt64) {
+	s.LengthMin = val
+}
+
+// SetLengthMax sets the value of LengthMax.
+func (s *SendingFilterGetLength) SetLengthMax(val OptInt64) {
+	s.LengthMax = val
 }
 
 type SendingFilterGetResponse struct {
@@ -803,6 +977,83 @@ func (s *SendingFilterGetResponseResultItemSettlement) SetSender(val string) {
 // SetReceiver sets the value of Receiver.
 func (s *SendingFilterGetResponseResultItemSettlement) SetReceiver(val string) {
 	s.Receiver = val
+}
+
+type SendingFilterGetSettlements struct {
+	// Sender's settlement or a part of it.
+	SenderSettlement OptString `json:"sender_settlement"`
+	// Receiver's settlement or a part of it.
+	ReceiverSettlement OptString `json:"receiver_settlement"`
+}
+
+// GetSenderSettlement returns the value of SenderSettlement.
+func (s SendingFilterGetSettlements) GetSenderSettlement() OptString {
+	return s.SenderSettlement
+}
+
+// GetReceiverSettlement returns the value of ReceiverSettlement.
+func (s SendingFilterGetSettlements) GetReceiverSettlement() OptString {
+	return s.ReceiverSettlement
+}
+
+// SetSenderSettlement sets the value of SenderSettlement.
+func (s *SendingFilterGetSettlements) SetSenderSettlement(val OptString) {
+	s.SenderSettlement = val
+}
+
+// SetReceiverSettlement sets the value of ReceiverSettlement.
+func (s *SendingFilterGetSettlements) SetReceiverSettlement(val OptString) {
+	s.ReceiverSettlement = val
+}
+
+type SendingFilterGetWeight struct {
+	WeightMin OptSendingWeight `json:"weight_min"`
+	WeightMax OptSendingWeight `json:"weight_max"`
+}
+
+// GetWeightMin returns the value of WeightMin.
+func (s SendingFilterGetWeight) GetWeightMin() OptSendingWeight {
+	return s.WeightMin
+}
+
+// GetWeightMax returns the value of WeightMax.
+func (s SendingFilterGetWeight) GetWeightMax() OptSendingWeight {
+	return s.WeightMax
+}
+
+// SetWeightMin sets the value of WeightMin.
+func (s *SendingFilterGetWeight) SetWeightMin(val OptSendingWeight) {
+	s.WeightMin = val
+}
+
+// SetWeightMax sets the value of WeightMax.
+func (s *SendingFilterGetWeight) SetWeightMax(val OptSendingWeight) {
+	s.WeightMax = val
+}
+
+type SendingFilterGetWidth struct {
+	WidthMin OptInt64 `json:"width_min"`
+	WidthMax OptInt64 `json:"width_max"`
+}
+
+// GetWidthMin returns the value of WidthMin.
+func (s SendingFilterGetWidth) GetWidthMin() OptInt64 {
+	return s.WidthMin
+}
+
+// GetWidthMax returns the value of WidthMax.
+func (s SendingFilterGetWidth) GetWidthMax() OptInt64 {
+	return s.WidthMax
+}
+
+// SetWidthMin sets the value of WidthMin.
+func (s *SendingFilterGetWidth) SetWidthMin(val OptInt64) {
+	s.WidthMin = val
+}
+
+// SetWidthMax sets the value of WidthMax.
+func (s *SendingFilterGetWidth) SetWidthMax(val OptInt64) {
+	s.WidthMax = val
 }
 
 type SendingGetApplicationJSONBadRequest Error
