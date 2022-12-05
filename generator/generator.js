@@ -1,6 +1,6 @@
 import fs from 'fs'
 import {v4 as uuidv4} from 'uuid';
-import {default as _, isNull} from 'underscore'
+import {default as _, get, isNull} from 'underscore'
 import { ObjectID, UUID } from 'bson'
 
 import Chance from 'chance'
@@ -35,12 +35,29 @@ const sendingsType = {
 
 const sendingStatus = {
     ON_THE_WAY: "В пути",
-    LOST: "Потеряно",
+    LOST: "Утеряно",
     DELIVERED: "Доставлено"
 }
 
 function getOneOf(array) {
     return _.sample(array, 1)[0]
+}
+
+function getBsonTimestamp(timestamp) {
+    return {
+        "$date": timestamp.toISOString()
+    }
+}
+
+function parseBsonTimestamp(timestamp) {
+    return new Date(timestamp.$date)
+}
+
+function getBsonObjectId(id) {
+    let oid = new ObjectID(id)
+    return {
+        "$oid": oid
+    }
 }
 
 class PostGenerator {
@@ -64,22 +81,22 @@ class PostGenerator {
         ]
 
         for (; this.postcodes.size < n;) {
-            let postcode_prefix = _.sample(postcode_prefixes, 1)[0]
+            let postcode_prefix = getOneOf(postcode_prefixes)
             this.postcodes.add(postcode_prefix + chance.string({ length: 3, numeric: true }))
         }
     }
 
     #generateAddress(postcode = "", savePostcode = false) {
         function generateStreet() {
-            return _.sample([
-                "ул. ", "бул. ", "пр-кт ", "ал. "
-            ], 1)[0] + _.sample([
+            let streetPrefixes = ["ул.", "бул.", "пр-кт", "ал."]
+            let streetNames = [
                 "Мира", "Кефира", "Эчпочмака",
                 "Татаров", "Победы", "Силы",
                 "Ленина", "ЛЭТИ", "Космонавтов",
                 "Заки Валиди", "Габдуллы Тукая", "Мусы Джалиля",
                 "Салавата Юлаева", "Мажита Гафури", "Губкина"
-            ], 1)[0]
+            ]
+            return `${getOneOf(streetPrefixes)} ${getOneOf(streetNames)}`
         }
 
         function generateBuilding() {
@@ -95,14 +112,14 @@ class PostGenerator {
                 return {
                     postcode: (savePostcode) ? postcode : postcode_prefix + chance.string({ length: 3, numeric: true }),
                     region: "Республика Башкортостан",
-                    district: _.sample([
+                    district: getOneOf([
                         "Стерлитамакский р-н",
                         "Мелеузосвский р-н",
                         "Уфимский р-н",
                         "Буздякский р-н",
                         "Туймазинский р-н",
-                    ], 1)[0],
-                    settlement: _.sample([
+                    ]),
+                    settlement: getOneOf([
                         "г. Агидель",
                         "г. Кумертау",
                         "г. Межгорье",
@@ -113,7 +130,7 @@ class PostGenerator {
                         "г. Стерлитамак",
                         "г. Уфа",
                         "п. Нугуш"
-                    ], 1)[0],
+                    ]),
                     street: generateStreet(),
                     building: generateBuilding()
                 }
@@ -124,22 +141,22 @@ class PostGenerator {
                 return {
                     postcode: (savePostcode) ? postcode : postcode_prefix + chance.string({ length: 3, numeric: true }),
                     region: "Республика Татарстан",
-                    district: _.sample([
+                    district: getOneOf([
                         "Азнакаевский р-н",
                         "Бугульминский р-н",
                         "Зеленодольский р-н",
                         "Менделеевский р-н",
                         "Нурлатский р-н",
                         "Тукаевский р-н",
-                    ], 1)[0],
-                    settlement: _.sample([
+                    ]),
+                    settlement: getOneOf([
                         "г. Казань",
                         "г. Набережные Челны",
                         "г. Азнакаево",
                         "с. Мальбагуш",
                         "с. Сарлы",
                         "п. Тырыш",
-                    ], 1)[0],
+                    ]),
                     street: generateStreet(),
                     building: generateBuilding()
                 }
@@ -149,15 +166,15 @@ class PostGenerator {
                 return {
                     postcode: (savePostcode) ? postcode : postcode_prefix + chance.string({ length: 3, numeric: true }),
                     region: "Оренбургаская область",
-                    district: _.sample([
+                    district: getOneOf([
                         "Абдулинский р-н",
                         "Беляевский р-н",
                         "Оренбургский р-н",
                         "Грачевский р-н",
                         "Северный р-н",
                         "Тюльганский р-н",
-                    ], 1)[0],
-                    settlement: _.sample([
+                    ]),
+                    settlement: getOneOf([
                         "г. Оренбург",
                         "г. Бузулук",
                         "г. Гай",
@@ -165,7 +182,7 @@ class PostGenerator {
                         "с. Булатовка",
                         "п. Искра",
                         "с. Лоховка",
-                    ], 1)[0],
+                    ]),
                     street: generateStreet(),
                     building: generateBuilding()
                 }
@@ -177,7 +194,7 @@ class PostGenerator {
                 return {
                     postcode: (savePostcode) ? postcode : postcode_prefix + chance.string({ length: 3, numeric: true }),
                     region: "г. Санкт-Петербург",
-                    settlement: _.sample([
+                    settlement: getOneOf([
                         "г. Санкт-Петербург",
                         "г. Зеленогорск",
                         "г. Петергоф",
@@ -185,7 +202,7 @@ class PostGenerator {
                         "г. Ломоносов",
                         "г. Красное Село",
                         "г. Сестрорецк",
-                    ], 1)[0],
+                    ]),
                     street: generateStreet(),
                     building: generateBuilding()
                 }
@@ -212,16 +229,16 @@ class PostGenerator {
 
         let employees_buffer = []
         for (let pos of positions) {
-            let gender = _.sample(['male', 'female'], 1)[0]
+            let gender = getOneOf(['male', 'female'])
             let haveMiddleName = chance.bool()
             let year = chance.year({ min: 1960, max: 2001 });
             let fullName = this.#generateRussianFullName(gender)
             let employee = {
-                _id: new ObjectID(this.#counter()),
+                _id: getBsonObjectId(this.#counter()),
                 surname: fullName.surname,
                 name: fullName.name,
                 gender: ((gender === 'male') ? 'М' : 'Ж'),
-                birth_date: chance.birthday({ year: year }).toISOString(),
+                birth_date: getBsonTimestamp(chance.birthday({ year: year })),
                 position: pos,
                 phone_number: "8" + chance.string({ length: 10, numeric: true }),
             }
@@ -239,10 +256,10 @@ class PostGenerator {
             throw "invalid number of post offices"
         }
         function generateOfficeType() {
-            return _.sample([
+            return getOneOf([
                 officeType.SORTING_OFFICE,
                 officeType.POST_OFFICE
-            ], 1)[0]
+            ])
         }
 
         this.#generatePostcodes(n)
@@ -253,7 +270,7 @@ class PostGenerator {
             let current_employees = this.#generateEmployees(officeType)
             employees_buffer.push(...current_employees)
             post_offices_buffer.push({
-                _id: new ObjectID(this.#counter()),
+                _id: getBsonObjectId(this.#counter()),
                 type: officeType,
                 address: this.#generateAddress(postcode),
                 employees: current_employees.map(x => x._id)
@@ -279,17 +296,17 @@ class PostGenerator {
         }
         function generateStagesAndStatus(sending, employees, post_offices) {
             function getEmployeeID(postcode, position) {
-                let valid_office = _.sample(post_offices.filter(x => x.address.postcode === postcode), 1)[0]
-                let employee = _.sample(employees.filter(x => {
+                let valid_office = getOneOf(post_offices.filter(x => x.address.postcode === postcode))
+                let employee = getOneOf(employees.filter(x => {
                     return ((x.position === position) && (valid_office.employees.includes(x._id)));
-                }), 1)[0]
+                }))
                 return employee._id
             }
 
             function addDays(iso_date, days) {
                 let date = new Date(iso_date)
                 date.setDate(date.getDate() + days)
-                return date.toISOString()
+                return date
             }
 
             let stages_buffer = [
@@ -301,7 +318,7 @@ class PostGenerator {
                 },
                 {
                     "name": stageName.LEFT_POST_OFFICE,
-                    "timestamp": addDays(sending.registration_date, 1),
+                    "timestamp": getBsonTimestamp(addDays(parseBsonTimestamp(sending.registration_date), 1)),
                     "postcode": sending.sender.address.postcode,
                     "employee_id": getEmployeeID(sending.sender.address.postcode, employeePosition.POST_OFFICE_STAFF),
                 }
@@ -311,7 +328,7 @@ class PostGenerator {
             const max_intermediate_stages = 4
             for (let i = 0; i < max_intermediate_stages && chance.bool(); i++) {
                 let last_stage = stages_buffer[stages_buffer.length - 1]
-                let sort_center = _.sample(sort_centers, 1)[0]
+                let sort_center = getOneOf(sort_centers)
                 // Проверяем, что новый офис не встречался раньше
                 let previous_postcodes = stages_buffer.map(x => x.postcode)
                 if (previous_postcodes.includes(sort_center.address.postcode)) {
@@ -319,13 +336,13 @@ class PostGenerator {
                 }
                 stages_buffer.push({
                     "name": stageName.ARRIVED_AT_SORTING_OFFICE,
-                    "timestamp": addDays(last_stage.timestamp, 1),
+                    "timestamp": getBsonTimestamp(addDays(parseBsonTimestamp(last_stage.timestamp), 1)),
                     "postcode": sort_center.address.postcode,
                     "employee_id": getEmployeeID(sort_center.address.postcode, employeePosition.DRIVER),
                 })
                 stages_buffer.push({
                     "name": stageName.LEFT_SORTING_OFFICE,
-                    "timestamp": addDays(last_stage.timestamp, 2),
+                    "timestamp": getBsonTimestamp(addDays(parseBsonTimestamp(last_stage.timestamp), 2)),
                     "postcode": sort_center.address.postcode,
                     "employee_id": getEmployeeID(sort_center.address.postcode, employeePosition.SORTING_OFFICE_STAFF),
                 })
@@ -338,13 +355,13 @@ class PostGenerator {
                     let last_stage = stages_buffer[stages_buffer.length - 1]
                     stages_buffer.push({
                         "name": stageName.ARRIVED_AT_POST_OFFICE,
-                        "timestamp": addDays(last_stage.timestamp, 1),
+                        "timestamp": getBsonTimestamp(addDays(parseBsonTimestamp(last_stage.timestamp), 1)),
                         "postcode": sending.receiver.address.postcode,
                         "employee_id": getEmployeeID(sending.receiver.address.postcode, employeePosition.DRIVER),
                     })
                     stages_buffer.push({
                         "name": stageName.DELIVERED,
-                        "timestamp": addDays(last_stage.timestamp, 2),
+                        "timestamp": getBsonTimestamp(addDays(parseBsonTimestamp(last_stage.timestamp), 2)),
                         "postcode": sending.receiver.address.postcode,
                         "employee_id": getEmployeeID(sending.receiver.address.postcode, employeePosition.POSTMAN),
                     })
@@ -374,9 +391,9 @@ class PostGenerator {
             let senderFullName = this.#generateRussianFullName()
             let receiverFullName = this.#generateRussianFullName()
             let sending = {
-                _id: new ObjectID(this.#counter()),
+                _id: getBsonObjectId(this.#counter()),
                 order_id: new UUID(uuidv4()),
-                registration_date: chance.date({ year: 2022, months: months }).toISOString(),
+                registration_date: getBsonTimestamp(chance.date({ year: 2022, months: months })),
                 sender: {
                     name: senderFullName.name,
                     surname: senderFullName.surname,
@@ -387,11 +404,11 @@ class PostGenerator {
                     surname: receiverFullName.surname,
                     middle_name: receiverFullName.middle_name,
                 },
-                type: _.sample([
+                type: getOneOf([
                     sendingsType.LETTER,
                     sendingsType.PARCEL,
                     sendingsType.PACKAGE,
-                ], 1)[0],
+                ]),
                 size: {
                     length: chance.integer({ min: 10, max: 100}),
                     width: chance.integer({ min: 10, max: 100}),
