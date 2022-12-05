@@ -1,166 +1,464 @@
 [
   {
-    "_id": "00000004779bfa1e5da4f5f3",
+    "_id": {
+      "$oid": "000000030d0093fb5abbc4d8"
+    },
+    "type": "Сортировочный центр",
+    "address": {
+      "postcode": "421744",
+      "region": "Республика Татарстан",
+      "district": "Бугульминский р-н",
+      "settlement": "г. Набережные Челны",
+      "street": "ул. Кефира",
+      "building": "4"
+    },
+    "employees": [
+      {
+        "$oid": "000000010d0093fb5abbc4d6"
+      },
+      {
+        "$oid": "000000020d0093fb5abbc4d7"
+      }
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "000000070d0093fb5abbc4dc"
+    },
     "type": "Отделение связи",
     "address": {
-      "postcode": "193998",
+      "postcode": "190815",
       "region": "г. Санкт-Петербург",
       "settlement": "г. Санкт-Петербург",
-      "street": "ул. Ленина",
-      "building": "33"
+      "street": "ул. Победы",
+      "building": "47"
     },
     "employees": [
-      "00000001779bfa1e5da4f5f0",
-      "00000002779bfa1e5da4f5f1",
-      "00000003779bfa1e5da4f5f2"
+      {
+        "$oid": "000000040d0093fb5abbc4d9"
+      },
+      {
+        "$oid": "000000050d0093fb5abbc4da"
+      },
+      {
+        "$oid": "000000060d0093fb5abbc4db"
+      }
     ]
   },
   {
-    "_id": "00000008779bfa1e5da4f5f7",
-    "type": "Отделение связи",
+    "_id": {
+      "$oid": "0000000a0d0093fb5abbc4df"
+    },
+    "type": "Сортировочный центр",
     "address": {
-      "postcode": "450124",
+      "postcode": "452280",
       "region": "Республика Башкортостан",
       "district": "Уфимский р-н",
-      "settlement": "г. Сибай",
-      "street": "пр-кт Силы",
-      "building": "69"
+      "settlement": "г. Октябрьский",
+      "street": "ул. Ленина",
+      "building": "60"
     },
     "employees": [
-      "00000005779bfa1e5da4f5f4",
-      "00000006779bfa1e5da4f5f5",
-      "00000007779bfa1e5da4f5f6"
+      {
+        "$oid": "000000080d0093fb5abbc4dd"
+      },
+      {
+        "$oid": "000000090d0093fb5abbc4de"
+      }
     ]
   },
   {
-    "_id": "0000000c779bfa1e5da4f5fb",
-    "type": "Отделение связи",
-    "address": {
-      "postcode": "421769",
-      "region": "Республика Татарстан",
-      "district": "Менделеевский р-н",
-      "settlement": "с. Сарлы",
-      "street": "ул. Мажита Гафури",
-      "building": "72"
+    "_id": {
+      "$oid": "0000000d0d0093fb5abbc4e2"
     },
-    "employees": [
-      "00000009779bfa1e5da4f5f8",
-      "0000000a779bfa1e5da4f5f9",
-      "0000000b779bfa1e5da4f5fa"
-    ]
-  },
-  {
-    "_id": "0000000f779bfa1e5da4f5fe",
     "type": "Сортировочный центр",
     "address": {
-      "postcode": "452136",
-      "region": "Республика Башкортостан",
-      "district": "Туймазинский р-н",
-      "settlement": "г. Кумертау",
-      "street": "ул. Губкина",
-      "building": "89"
-    },
-    "employees": [
-      "0000000d779bfa1e5da4f5fc",
-      "0000000e779bfa1e5da4f5fd"
-    ]
-  },
-  {
-    "_id": "00000012779bfa1e5da4f601",
-    "type": "Сортировочный центр",
-    "address": {
-      "postcode": "422359",
-      "region": "Республика Татарстан",
-      "district": "Азнакаевский р-н",
-      "settlement": "г. Набережные Челны",
-      "street": "пр-кт Космонавтов",
-      "building": "54"
-    },
-    "employees": [
-      "00000010779bfa1e5da4f5ff",
-      "00000011779bfa1e5da4f600"
-    ]
-  },
-  {
-    "_id": "00000016779bfa1e5da4f605",
-    "type": "Отделение связи",
-    "address": {
-      "postcode": "422704",
-      "region": "Республика Татарстан",
-      "district": "Нурлатский р-н",
-      "settlement": "с. Мальбагуш",
-      "street": "ул. Мира",
+      "postcode": "192872",
+      "region": "г. Санкт-Петербург",
+      "settlement": "г. Петергоф",
+      "street": "ул. Космонавтов",
       "building": "40"
     },
     "employees": [
-      "00000013779bfa1e5da4f602",
-      "00000014779bfa1e5da4f603",
-      "00000015779bfa1e5da4f604"
+      {
+        "$oid": "0000000b0d0093fb5abbc4e0"
+      },
+      {
+        "$oid": "0000000c0d0093fb5abbc4e1"
+      }
     ]
   },
   {
-    "_id": "0000001a779bfa1e5da4f609",
+    "_id": {
+      "$oid": "000000110d0093fb5abbc4e6"
+    },
     "type": "Отделение связи",
+    "address": {
+      "postcode": "453717",
+      "region": "Республика Башкортостан",
+      "district": "Уфимский р-н",
+      "settlement": "г. Агидель",
+      "street": "пр-кт Мажита Гафури",
+      "building": "83"
+    },
+    "employees": [
+      {
+        "$oid": "0000000e0d0093fb5abbc4e3"
+      },
+      {
+        "$oid": "0000000f0d0093fb5abbc4e4"
+      },
+      {
+        "$oid": "000000100d0093fb5abbc4e5"
+      }
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "000000140d0093fb5abbc4e9"
+    },
+    "type": "Сортировочный центр",
     "address": {
       "postcode": "190191",
       "region": "г. Санкт-Петербург",
-      "settlement": "г. Зеленогорск",
-      "street": "бул. Заки Валиди",
-      "building": "96"
+      "settlement": "г. Пушкин",
+      "street": "ул. Габдуллы Тукая",
+      "building": "72"
     },
     "employees": [
-      "00000017779bfa1e5da4f606",
-      "00000018779bfa1e5da4f607",
-      "00000019779bfa1e5da4f608"
+      {
+        "$oid": "000000120d0093fb5abbc4e7"
+      },
+      {
+        "$oid": "000000130d0093fb5abbc4e8"
+      }
     ]
   },
   {
-    "_id": "0000001e779bfa1e5da4f60d",
+    "_id": {
+      "$oid": "000000180d0093fb5abbc4ed"
+    },
     "type": "Отделение связи",
     "address": {
-      "postcode": "193731",
+      "postcode": "193235",
       "region": "г. Санкт-Петербург",
-      "settlement": "г. Петергоф",
-      "street": "пр-кт Силы",
-      "building": "5"
+      "settlement": "г. Пушкин",
+      "street": "бул. ЛЭТИ",
+      "building": "93"
     },
     "employees": [
-      "0000001b779bfa1e5da4f60a",
-      "0000001c779bfa1e5da4f60b",
-      "0000001d779bfa1e5da4f60c"
+      {
+        "$oid": "000000150d0093fb5abbc4ea"
+      },
+      {
+        "$oid": "000000160d0093fb5abbc4eb"
+      },
+      {
+        "$oid": "000000170d0093fb5abbc4ec"
+      }
     ]
   },
   {
-    "_id": "00000021779bfa1e5da4f610",
+    "_id": {
+      "$oid": "0000001b0d0093fb5abbc4f0"
+    },
     "type": "Сортировочный центр",
     "address": {
-      "postcode": "452072",
-      "region": "Республика Башкортостан",
-      "district": "Буздякский р-н",
-      "settlement": "г. Кумертау",
-      "street": "ал. Губкина",
-      "building": "37"
+      "postcode": "193586",
+      "region": "г. Санкт-Петербург",
+      "settlement": "г. Зеленогорск",
+      "street": "ул. Салавата Юлаева",
+      "building": "70"
     },
     "employees": [
-      "0000001f779bfa1e5da4f60e",
-      "00000020779bfa1e5da4f60f"
+      {
+        "$oid": "000000190d0093fb5abbc4ee"
+      },
+      {
+        "$oid": "0000001a0d0093fb5abbc4ef"
+      }
     ]
   },
   {
-    "_id": "00000025779bfa1e5da4f614",
+    "_id": {
+      "$oid": "0000001f0d0093fb5abbc4f4"
+    },
     "type": "Отделение связи",
     "address": {
-      "postcode": "452099",
+      "postcode": "452845",
       "region": "Республика Башкортостан",
-      "district": "Мелеузосвский р-н",
-      "settlement": "г. Уфа",
-      "street": "ул. ЛЭТИ",
-      "building": "9"
+      "district": "Туймазинский р-н",
+      "settlement": "г. Сибай",
+      "street": "ул. Эчпочмака",
+      "building": "61"
     },
     "employees": [
-      "00000022779bfa1e5da4f611",
-      "00000023779bfa1e5da4f612",
-      "00000024779bfa1e5da4f613"
+      {
+        "$oid": "0000001c0d0093fb5abbc4f1"
+      },
+      {
+        "$oid": "0000001d0d0093fb5abbc4f2"
+      },
+      {
+        "$oid": "0000001e0d0093fb5abbc4f3"
+      }
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "000000220d0093fb5abbc4f7"
+    },
+    "type": "Сортировочный центр",
+    "address": {
+      "postcode": "421536",
+      "region": "Республика Татарстан",
+      "district": "Бугульминский р-н",
+      "settlement": "с. Сарлы",
+      "street": "пр-кт Космонавтов",
+      "building": "76"
+    },
+    "employees": [
+      {
+        "$oid": "000000200d0093fb5abbc4f5"
+      },
+      {
+        "$oid": "000000210d0093fb5abbc4f6"
+      }
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "000000260d0093fb5abbc4fb"
+    },
+    "type": "Отделение связи",
+    "address": {
+      "postcode": "450428",
+      "region": "Республика Башкортостан",
+      "district": "Мелеузосвский р-н",
+      "settlement": "г. Октябрьский",
+      "street": "ал. Силы",
+      "building": "42"
+    },
+    "employees": [
+      {
+        "$oid": "000000230d0093fb5abbc4f8"
+      },
+      {
+        "$oid": "000000240d0093fb5abbc4f9"
+      },
+      {
+        "$oid": "000000250d0093fb5abbc4fa"
+      }
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "0000002a0d0093fb5abbc4ff"
+    },
+    "type": "Отделение связи",
+    "address": {
+      "postcode": "422021",
+      "region": "Республика Татарстан",
+      "district": "Тукаевский р-н",
+      "settlement": "г. Набережные Челны",
+      "street": "ул. Заки Валиди",
+      "building": "1"
+    },
+    "employees": [
+      {
+        "$oid": "000000270d0093fb5abbc4fc"
+      },
+      {
+        "$oid": "000000280d0093fb5abbc4fd"
+      },
+      {
+        "$oid": "000000290d0093fb5abbc4fe"
+      }
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "0000002d0d0093fb5abbc502"
+    },
+    "type": "Сортировочный центр",
+    "address": {
+      "postcode": "450882",
+      "region": "Республика Башкортостан",
+      "district": "Буздякский р-н",
+      "settlement": "п. Нугуш",
+      "street": "бул. Мажита Гафури",
+      "building": "88"
+    },
+    "employees": [
+      {
+        "$oid": "0000002b0d0093fb5abbc500"
+      },
+      {
+        "$oid": "0000002c0d0093fb5abbc501"
+      }
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "000000310d0093fb5abbc506"
+    },
+    "type": "Отделение связи",
+    "address": {
+      "postcode": "450073",
+      "region": "Республика Башкортостан",
+      "district": "Туймазинский р-н",
+      "settlement": "г. Межгорье",
+      "street": "бул. Заки Валиди",
+      "building": "7"
+    },
+    "employees": [
+      {
+        "$oid": "0000002e0d0093fb5abbc503"
+      },
+      {
+        "$oid": "0000002f0d0093fb5abbc504"
+      },
+      {
+        "$oid": "000000300d0093fb5abbc505"
+      }
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "000000350d0093fb5abbc50a"
+    },
+    "type": "Отделение связи",
+    "address": {
+      "postcode": "193779",
+      "region": "г. Санкт-Петербург",
+      "settlement": "г. Зеленогорск",
+      "street": "ул. Салавата Юлаева",
+      "building": "26"
+    },
+    "employees": [
+      {
+        "$oid": "000000320d0093fb5abbc507"
+      },
+      {
+        "$oid": "000000330d0093fb5abbc508"
+      },
+      {
+        "$oid": "000000340d0093fb5abbc509"
+      }
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "000000390d0093fb5abbc50e"
+    },
+    "type": "Отделение связи",
+    "address": {
+      "postcode": "451952",
+      "region": "Республика Башкортостан",
+      "district": "Мелеузосвский р-н",
+      "settlement": "г. Агидель",
+      "street": "пр-кт Мажита Гафури",
+      "building": "23"
+    },
+    "employees": [
+      {
+        "$oid": "000000360d0093fb5abbc50b"
+      },
+      {
+        "$oid": "000000370d0093fb5abbc50c"
+      },
+      {
+        "$oid": "000000380d0093fb5abbc50d"
+      }
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "0000003d0d0093fb5abbc512"
+    },
+    "type": "Отделение связи",
+    "address": {
+      "postcode": "190042",
+      "region": "г. Санкт-Петербург",
+      "settlement": "г. Красное Село",
+      "street": "бул. Заки Валиди",
+      "building": "56"
+    },
+    "employees": [
+      {
+        "$oid": "0000003a0d0093fb5abbc50f"
+      },
+      {
+        "$oid": "0000003b0d0093fb5abbc510"
+      },
+      {
+        "$oid": "0000003c0d0093fb5abbc511"
+      }
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "000000400d0093fb5abbc515"
+    },
+    "type": "Сортировочный центр",
+    "address": {
+      "postcode": "423497",
+      "region": "Республика Татарстан",
+      "district": "Зеленодольский р-н",
+      "settlement": "с. Мальбагуш",
+      "street": "ал. Победы",
+      "building": "100"
+    },
+    "employees": [
+      {
+        "$oid": "0000003e0d0093fb5abbc513"
+      },
+      {
+        "$oid": "0000003f0d0093fb5abbc514"
+      }
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "000000430d0093fb5abbc518"
+    },
+    "type": "Сортировочный центр",
+    "address": {
+      "postcode": "193522",
+      "region": "г. Санкт-Петербург",
+      "settlement": "г. Петергоф",
+      "street": "ал. ЛЭТИ",
+      "building": "86"
+    },
+    "employees": [
+      {
+        "$oid": "000000410d0093fb5abbc516"
+      },
+      {
+        "$oid": "000000420d0093fb5abbc517"
+      }
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "000000460d0093fb5abbc51b"
+    },
+    "type": "Сортировочный центр",
+    "address": {
+      "postcode": "421185",
+      "region": "Республика Татарстан",
+      "district": "Нурлатский р-н",
+      "settlement": "п. Тырыш",
+      "street": "ул. ЛЭТИ",
+      "building": "75"
+    },
+    "employees": [
+      {
+        "$oid": "000000440d0093fb5abbc519"
+      },
+      {
+        "$oid": "000000450d0093fb5abbc51a"
+      }
     ]
   }
 ]
