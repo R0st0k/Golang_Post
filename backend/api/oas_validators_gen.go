@@ -316,6 +316,16 @@ func (s PostClient) Validate() error {
 	}
 	return nil
 }
+func (s PostOfficeType) Validate() error {
+	switch s {
+	case "Отделение связи":
+		return nil
+	case "Сортировочный центр":
+		return nil
+	default:
+		return errors.Errorf("invalid value: %v", s)
+	}
+}
 func (s PostcodesBySettlementGetResponse) Validate() error {
 	var failures []validate.FieldError
 	for key, elem := range s {

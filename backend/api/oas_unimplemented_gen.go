@@ -37,7 +37,7 @@ func (UnimplementedHandler) DataImportSendingPost(ctx context.Context, req []Sen
 // value.
 //
 // GET /postcodes_by_settlement
-func (UnimplementedHandler) PostcodesBySettlementGet(ctx context.Context) (r PostcodesBySettlementGetResponse, _ error) {
+func (UnimplementedHandler) PostcodesBySettlementGet(ctx context.Context, params PostcodesBySettlementGetParams) (r PostcodesBySettlementGetResponse, _ error) {
 	return r, ht.ErrNotImplemented
 }
 

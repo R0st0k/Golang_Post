@@ -26,7 +26,7 @@ type Handler interface {
 	// value.
 	//
 	// GET /postcodes_by_settlement
-	PostcodesBySettlementGet(ctx context.Context) (PostcodesBySettlementGetResponse, error)
+	PostcodesBySettlementGet(ctx context.Context, params PostcodesBySettlementGetParams) (PostcodesBySettlementGetResponse, error)
 	// SendingFilterGet implements GET /sending_filter operation.
 	//
 	// Get sendings that fit the filter. Require `page` and `elems_on_page`. Return amount of sendings

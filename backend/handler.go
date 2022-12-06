@@ -92,12 +92,28 @@ func (p *postService) SendingPost(ctx context.Context, req post.SendingPostReq) 
 
 }
 
-func (p *postService) PostcodesBySettlementGet(ctx context.Context) (post.PostcodesBySettlementGetResponse, error) {
+func (p *postService) ExportPostOfficeTypeMultiple(params []post.PostOfficeType) map[string]interface{} {
+	types := map[string]interface{}{}
+
+	if len(params) > 0 {
+		result := []string{}
+		for _, data := range params {
+			result = append(result, string(data))
+		}
+		types["type"] = result
+	}
+
+	return types
+}
+
+func (p *postService) PostcodesBySettlementGet(ctx context.Context, params post.PostcodesBySettlementGetParams) (post.PostcodesBySettlementGetResponse, error) {
 	p.mux.Lock()
 	defer p.mux.Unlock()
 
+	types := p.ExportPostOfficeTypeMultiple(params.Type)
+
 	po := new(models.PostOffice)
-	postcodesBySettlement, err := po.GetPostcodesBySettlement()
+	postcodesBySettlement, err := po.GetPostcodesBySettlement(types)
 	if err != nil {
 		return nil, err
 	}
