@@ -8,6 +8,18 @@ import (
 
 // Handler handles operations described by OpenAPI v3 specification.
 type Handler interface {
+	// DataExportSendingGet implements GET /data_export_sending operation.
+	//
+	// Get data from collection `sendings` from database. Return json array.
+	//
+	// GET /data_export_sending
+	DataExportSendingGet(ctx context.Context) ([]Sending, error)
+	// DataImportSendingPost implements POST /data_import_sending operation.
+	//
+	// Import data into collection `sendings` in database. Require array of json.
+	//
+	// POST /data_import_sending
+	DataImportSendingPost(ctx context.Context, req []Sending) (DataImportSendingPostRes, error)
 	// PostcodesBySettlementGet implements GET /postcodes_by_settlement operation.
 	//
 	// Get information about postcodes in cities. Return map with `settlement` key and `postcode` array
