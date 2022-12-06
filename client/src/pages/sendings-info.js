@@ -6,6 +6,7 @@ import CardContent from '@mui/material/CardContent';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import axios from 'axios';
+import qs from 'qs';
 
 import CustomAccordion from "../components/customAccordion";
 import AdvancedSearchSendings from "../components/advancedSearchSendings";
@@ -24,10 +25,10 @@ export default class SendingsInfo extends React.Component {
                 status: [],
                 sender_settlement: "",
                 receiver_settlement: "",
-                weight: "",
-                length: "",
-                width: "",
-                height: ""
+                weight: [10, 10000],
+                length: [10, 1000],
+                width: [10, 1000],
+                height: [10, 1000]
             },
             data: [],
             total: 0,
@@ -99,7 +100,26 @@ export default class SendingsInfo extends React.Component {
         const filter = this.state.filter;
         for(let key in filter){
             if(filter[key] !== ""){
-                params[key] = filter[key];
+                switch(key) {
+                    case "weight":
+                        params['weight_min'] = filter[key][0];
+                        params['weight_max'] = filter[key][1];
+                        break;
+                    case "length":
+                        params['length_min'] = filter[key][0];
+                        params['length_max'] = filter[key][1];
+                        break;
+                    case "width":
+                        params['width_min'] = filter[key][0];
+                        params['width_max'] = filter[key][1];
+                        break;
+                    case "height":
+                        params['height_min'] = filter[key][0];
+                        params['height_max'] = filter[key][1];
+                        break;
+                    default:
+                        params[key] = filter[key];
+                }
             }
         }
         params["page"] = this.state.page + 1;
@@ -113,8 +133,13 @@ export default class SendingsInfo extends React.Component {
                 params['sort_type'] = this.state.order;
             }
         }
-        axios.get('http://localhost:8080/api/v1/sending_filter', {
-            params
+        const api = axios.create({
+            paramsSerializer: {
+                serialize: (params) => qs.stringify(params, {arrayFormat: 'repeat'})
+            }
+        });
+        api.get('http://localhost:8080/api/v1/sending_filter',{
+            params: params
         })
             .then(
                 (response) => {
