@@ -781,6 +781,15 @@ func (s *PostClient) SetAddress(val Address) {
 	s.Address = val
 }
 
+// Available types of post offices.
+// Ref: #/components/schemas/PostOfficeType
+type PostOfficeType string
+
+const (
+	PostOfficeType_0 PostOfficeType = "Отделение связи"
+	PostOfficeType_1 PostOfficeType = "Сортировочный центр"
+)
+
 type PostcodesBySettlementGetResponse map[string][]AddressPostcode
 
 func (s *PostcodesBySettlementGetResponse) init() PostcodesBySettlementGetResponse {

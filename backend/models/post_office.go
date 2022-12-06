@@ -59,23 +59,33 @@ func (po *PostOffice) GetSettlementByPostcode() (map[string]string, error) {
 	return settlementByPostcode, nil
 }
 
-// Return ONLY post offices with "Communication department" type
-
-func (po *PostOffice) GetPostcodesBySettlement() (map[string][]string, error) {
+func (po *PostOffice) GetPostcodesBySettlement(types map[string]interface{}) (map[string][]string, error) {
 	client := db.GetDB()
 	postOfficeCollection := client.Database("post").Collection("postOffices")
 
-	var postOffices []PostOffice
+	matchPipeline := mongo.Pipeline{}
+	projectPipeline := mongo.Pipeline{
+		bson.D{{
+			"$project", bson.D{
+				{"address.postcode", 1},
+				{"address.settlement", 1},
+				{"_id", 0}},
+		}},
+	}
+
+	matchStringArray(types, "type", "type", &matchPipeline)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	projection := bson.D{
-		{"address.postcode", 1},
-		{"address.settlement", 1},
-		{"_id", 0}}
-	opts := options.Find().SetProjection(projection)
-	cursor, err := postOfficeCollection.Find(ctx, bson.D{{"type", "Отделение связи"}}, opts)
+	findPipeline := mongo.Pipeline{}
+	findPipeline = append(findPipeline, matchPipeline...)
+	findPipeline = append(findPipeline, projectPipeline...)
+
+	var postOffices []PostOffice
+
+	cursor, err := postOfficeCollection.Aggregate(ctx, findPipeline)
+
 	if err != nil {
 		return nil, fmt.Errorf("GetPostOffices: %v", err)
 	}
