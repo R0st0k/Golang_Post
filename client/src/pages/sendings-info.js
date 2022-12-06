@@ -18,10 +18,10 @@ export default class SendingsInfo extends React.Component {
             order_id: "",
             filter:  {},
             advanced_search: {
-                type: "",
+                type: [],
                 date_start: "",
                 date_finish: "",
-                status: "",
+                status: [],
                 sender_settlement: "",
                 receiver_settlement: "",
                 weight: "",
