@@ -1,6 +1,10 @@
-import {Grid, Typography} from "@mui/material";
+import {FormControl, Grid, Typography} from "@mui/material";
 import TextField from "@mui/material/TextField";
 import MenuItem from "@mui/material/MenuItem";
+import Select from '@mui/material/Select';
+import Chip from '@mui/material/Chip';
+import Slider from '@mui/material/Slider';
+import InputLabel from '@mui/material/InputLabel';
 import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
 import CloseIcon from "@mui/icons-material/Close";
@@ -15,7 +19,11 @@ export default function AdvancedSearchSendings(props){
     const [cityAndPostcodes, setCityAndPostcodes] = useState([]);
 
     useEffect(() => {
-        axios.get('http://localhost:8080/api/v1/postcodes_by_settlement')
+        axios.get('http://localhost:8080/api/v1/postcodes_by_settlement', {
+            params: {
+                type: "Отделение связи"
+            }
+        })
             .then(
                 (response) => {
                     setCityAndPostcodes(response.data);
@@ -46,23 +54,31 @@ export default function AdvancedSearchSendings(props){
 
     return (
         <div>
-            <Grid container spacing={2}>
+            <Grid container spacing={3}>
                 <Grid item xs={3}>
-                    <TextField
-                        fullWidth
-                        select
+                    <FormControl fullWidth>
+                    <InputLabel id="type-select">Тип</InputLabel>
+                    <Select
+                        labelId="type-select"
                         label="Тип"
+                        multiple
+                        fullWidth
                         name="type"
                         value={props.values.type}
                         onChange={props.onChange}
+                        renderValue={(selected) => (
+                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                                {selected.map((value) => (
+                                    <Chip key={value} label={value} />
+                                ))}
+                            </Box>
+                        )}
                     >
-                        <MenuItem value="">
-                            Не выбрано
-                        </MenuItem>
                         <MenuItem value={'Письмо'}>Письмо</MenuItem>
                         <MenuItem value={'Посылка'}>Посылка</MenuItem>
                         <MenuItem value={'Бандероль'}>Бандероль</MenuItem>
-                    </TextField>
+                    </Select>
+                    </FormControl>
                 </Grid>
                 <Grid item xs={3}>
                     <LocalizationProvider dateAdapter={AdapterMoment}>
@@ -89,20 +105,29 @@ export default function AdvancedSearchSendings(props){
                     </LocalizationProvider>
                 </Grid>
                 <Grid item xs={3}>
-                    <TextField
-                        fullWidth
-                        select
-                        name="status"
-                        label="Статус"
-                        value={props.values.status}
-                        onChange={props.onChange}
-                    >
-                        <MenuItem value="">
-                            Не выбрано
-                        </MenuItem>
-                        <MenuItem value={'В пути'}>В пути</MenuItem>
-                        <MenuItem value={'Доставлено'}>Доставлено</MenuItem>
-                    </TextField>
+                    <FormControl fullWidth>
+                        <InputLabel id="status-select">Статус</InputLabel>
+                        <Select
+                            labelId="status-select"
+                            multiple
+                            fullWidth
+                            name="status"
+                            label="Статус"
+                            value={props.values.status}
+                            onChange={props.onChange}
+                            renderValue={(selected) => (
+                                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                                    {selected.map((value) => (
+                                        <Chip key={value} label={value} />
+                                    ))}
+                                </Box>
+                            )}
+                        >
+                            <MenuItem value={'В пути'}>В пути</MenuItem>
+                            <MenuItem value={'Доставлено'}>Доставлено</MenuItem>
+                            <MenuItem value={'Утеряно'}>Утеряно</MenuItem>
+                        </Select>
+                    </FormControl>
                 </Grid>
                 <Grid item xs={4.5}>
                     <TextField
@@ -139,70 +164,60 @@ export default function AdvancedSearchSendings(props){
                     />*/}
                 </Grid>
                 <Grid item xs={3}>
-                    <Stack direction="row">
-                        <TextField
-                            inputProps={{ inputMode: 'numeric', pattern: '^[0-9]{2,}$' }}
-                            name="weight"
-                            label="Вес"
-                            fullWidth
+                        <Typography textAlign={"center"} gutterBottom>
+                            Вес
+                        </Typography>
+                        <Slider
                             value={props.values.weight}
                             onChange={props.onChange}
+                            name="weight"
+                            min={10}
+                            max={1000}
+                            step={10}
+                            valueLabelDisplay="auto"
                         />
-                        <Typography ml={1} mt={2} color={'#9F9B9B'}>
-                            г
-                        </Typography>
-                    </Stack>
                 </Grid>
                 <Grid item xs={4}>
-                    <Stack direction="row">
-                        <TextField
-                            inputProps={{ inputMode: 'numeric', pattern: '^[0-9]{2,}$' }}
-                            name="length"
-                            label="Длина"
-                            fullWidth
-                            value={props.values.length}
-                            onChange={props.onChange}
-                        />
-                        <Typography mt={2} color={'#9F9B9B'}>
-                            мм
-                        </Typography>
-                        <Box mt={2}>
-                            <CloseIcon style={{color: '#9F9B9B'}}/>
-                        </Box>
-                    </Stack>
+                    <Typography textAlign={"center"} gutterBottom>
+                        Длина
+                    </Typography>
+                    <Slider
+                        value={props.values.length}
+                        onChange={props.onChange}
+                        name="length"
+                        min={10}
+                        max={1000}
+                        step={10}
+                        valueLabelDisplay="auto"
+                    />
                 </Grid>
                 <Grid item xs={4}>
-                    <Stack direction="row">
-                        <TextField
-                            inputProps={{ inputMode: 'numeric', pattern: '^[0-9]{2,}$' }}
-                            name="width"
-                            label="Ширина"
-                            fullWidth
-                            value={props.values.width}
-                            onChange={props.onChange}
-                        />
-                        <Typography mt={2} color={'#9F9B9B'}>
-                            мм
-                        </Typography>
-                        <Box mt={2}>
-                            <CloseIcon style={{color: '#9F9B9B'}}/>
-                        </Box>
-                    </Stack>
+                    <Typography textAlign={"center"} gutterBottom>
+                        Ширина
+                    </Typography>
+                    <Slider
+                        value={props.values.width}
+                        onChange={props.onChange}
+                        name="width"
+                        min={10}
+                        max={1000}
+                        step={10}
+                        valueLabelDisplay="auto"
+                    />
                 </Grid>
                 <Grid item xs={4}>
-                    <Stack direction="row">
-                        <TextField
-                            inputProps={{ inputMode: 'numeric', pattern: '^[0-9]{2,}$' }}
-                            name="height"
-                            label="Высота"
-                            fullWidth
-                            value={props.values.height}
-                            onChange={props.onChange}
-                        />
-                        <Typography mt={2} color={'#9F9B9B'}>
-                            мм
-                        </Typography>
-                    </Stack>
+                    <Typography textAlign={"center"} gutterBottom>
+                        Высота
+                    </Typography>
+                    <Slider
+                        value={props.values.height}
+                        onChange={props.onChange}
+                        name="height"
+                        min={10}
+                        max={1000}
+                        step={10}
+                        valueLabelDisplay="auto"
+                    />
                 </Grid>
             </Grid>
         </div>
