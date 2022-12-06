@@ -9,7 +9,7 @@ info:
   description: Information System "Post" API
   termsOfService: http://swagger.io/terms/
   title: Information System "Post"
-  version: 0.4.0
+  version: 0.5.0
 tags:
   - name: Get Information
     description: Endpoints to get information
@@ -87,6 +87,32 @@ paths:
           $ref: '#/components/responses/SendingFilterGetResponse'
         '400':
           $ref: '#/components/responses/BadRequest'
+  /data_export_sending:
+    get:
+      summary: Get data from collection `sendings` from database.
+      description: >
+        Get data from collection `sendings` from database.
+        Return json array.
+      tags:
+        - Get Information
+      responses:
+        '200':
+          $ref: '#/components/responses/DataExportSendingResponse'
+  /data_import_sending:
+    post:
+      summary: Import data into collection `sendings` in database.
+      description: >
+        Import data into collection `sendings` in database.
+        Require array of json.
+      tags:
+        - Update Information
+      requestBody:
+        $ref: '#/components/requestBodies/ImportSending'
+      responses:
+        '200':
+          description: ok
+        '400':
+          $ref: '#/components/responses/BadRequest'
 components:
   schemas:
     Error:
@@ -97,6 +123,57 @@ components:
         error_message:
           type: string
           example: You don't look at errors anyway
+    Sending:
+      description: Schema of sending
+      type: object
+      required:
+        - _id
+        - order_id
+        - registration_date
+        - sender
+        - receiver
+        - type
+        - size
+        - weight
+        - stages
+        - status
+      properties:
+        _id:
+          $ref: '#/components/schemas/ObjectID'
+        order_id:
+          $ref: '#/components/schemas/SendingOrderID'
+        registration_date:
+          description: Registration date of sending
+          type: object
+          required:
+            - $date
+          properties:
+            $date:
+              type: string
+              format: date-time
+        sender:
+          $ref: '#/components/schemas/PostClient'
+        receiver:
+          $ref: '#/components/schemas/PostClient'
+        type:
+          $ref: '#/components/schemas/SendingType'
+        size:
+          $ref: '#/components/schemas/SendingSize'
+        weight:
+          $ref: '#/components/schemas/SendingWeight'
+        stages:
+          type: array
+          items:
+            $ref: '#/components/schemas/SendingStage'
+    ObjectID:
+      description: ObjectID of sending (24 byte hex string)
+      type: object
+      required:
+        - $oid
+      properties:
+        $oid:
+          type: string
+          pattern: '^[a-fA-F0-9]{24}$'
     SendingOrderID:
       type: string
       format: uuid
@@ -140,9 +217,9 @@ components:
       type: object
       required:
         - name
-        - date
+        - timestamp
         - postcode
-        - settlement
+        - employee_id
       properties:
         name:
           type: string
@@ -154,14 +231,18 @@ components:
             - Прибыло в место вручения
             - Вручено адресату
           example: Принято в отделении связи
-        date:
-          type: string
-          format: date-time
+        timestamp:
+          type: object
+          required:
+            - $date
+          properties:
+            $date:
+              type: string
+              format: date-time
         postcode:
           $ref: '#/components/schemas/AddressPostcode'
-        settlement:
-          type: string
-          example: Санкт-Петербург
+        employee_id:
+          $ref: '#/components/schemas/ObjectID'
     Address:
       type: object
       required:
@@ -174,21 +255,27 @@ components:
           $ref: '#/components/schemas/AddressPostcode'
         region:
           type: string
+          minLength: 1
           example: Республика Башкортостан
         district:
           type: string
+          minLength: 1
           example: Мелеузовский район
         settlement:
           type: string
+          minLength: 1
           example: пос. Нугуш
         street:
           type: string
+          minLength: 1
           example: ул. Ленина
         building:
           type: string
+          minLength: 1
           example: 42
         apartment:
           type: string
+          minLength: 1
           example: 1
     AddressPostcode:
       type: string
@@ -203,12 +290,15 @@ components:
       properties:
         name:
           type: string
+          minLength: 1
           example: Налсур
         surname:
           type: string
+          minLength: 1
           example: Мулюков
         middle_name:
           type: string
+          minLength: 1
           example: Рустэмович
         address:
           $ref: '#/components/schemas/Address'
@@ -415,6 +505,15 @@ components:
                 $ref: '#/components/schemas/SendingSize'
               weight:
                 $ref: '#/components/schemas/SendingWeight'
+    ImportSending:
+      description: Array of sending
+      required: true
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/Sending'
   responses:
     BadRequest:
       description: Bad request
@@ -446,7 +545,32 @@ components:
               stages:
                 type: array
                 items:
-                  $ref: '#/components/schemas/SendingStage'
+                  type: object
+                  required:
+                    - name
+                    - date
+                    - postcode
+                    - settlement
+                  properties:
+                    name:
+                      type: string
+                      enum:
+                        - Принято в отделении связи
+                        - Покинуло место приема
+                        - Прибыло в сортировочный центр
+                        - Покинуло сортировочный центр
+                        - Прибыло в место вручения
+                        - Вручено адресату
+                      example: Принято в отделении связи
+                    date:
+                      type: string
+                      format: date-time
+                    postcode:
+                      $ref: '#/components/schemas/AddressPostcode'
+                    settlement:
+                      type: string
+                      minLength: 1
+                      example: Санкт-Петербург
     PostcodesBySettlementGetResponse:
       description: ok
       content:
@@ -525,3 +649,11 @@ components:
                       $ref: '#/components/schemas/SendingSize'
                     status:
                       $ref: '#/components/schemas/SendingStatus'
+    DataExportSendingResponse:
+      description: ok
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/Sending'

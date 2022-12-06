@@ -91,6 +91,11 @@ func (s *Address) SetApartment(val OptString) {
 
 type AddressPostcode string
 
+// DataImportSendingPostOK is response for DataImportSendingPost operation.
+type DataImportSendingPostOK struct{}
+
+func (*DataImportSendingPostOK) dataImportSendingPostRes() {}
+
 type ElementsOnPage int64
 
 // Ref: #/components/schemas/Error
@@ -108,8 +113,25 @@ func (s *Error) SetErrorMessage(val string) {
 	s.ErrorMessage = val
 }
 
-func (*Error) sendingFilterGetRes() {}
-func (*Error) sendingPostRes()      {}
+func (*Error) dataImportSendingPostRes() {}
+func (*Error) sendingFilterGetRes()      {}
+func (*Error) sendingPostRes()           {}
+
+// ObjectID of sending (24 byte hex string).
+// Ref: #/components/schemas/ObjectID
+type ObjectID struct {
+	Oid string `json:"$oid"`
+}
+
+// GetOid returns the value of Oid.
+func (s ObjectID) GetOid() string {
+	return s.Oid
+}
+
+// SetOid sets the value of Oid.
+func (s *ObjectID) SetOid(val string) {
+	s.Oid = val
+}
 
 // NewOptDate returns new OptDate with value set to v.
 func NewOptDate(v time.Time) OptDate {
@@ -770,6 +792,111 @@ func (s *PostcodesBySettlementGetResponse) init() PostcodesBySettlementGetRespon
 	return m
 }
 
+// Schema of sending.
+// Ref: #/components/schemas/Sending
+type Sending struct {
+	ID      ObjectID       `json:"_id"`
+	OrderID SendingOrderID `json:"order_id"`
+	// Registration date of sending.
+	RegistrationDate SendingRegistrationDate `json:"registration_date"`
+	Sender           PostClient              `json:"sender"`
+	Receiver         PostClient              `json:"receiver"`
+	Type             SendingType             `json:"type"`
+	Size             SendingSize             `json:"size"`
+	Weight           SendingWeight           `json:"weight"`
+	Stages           []SendingStage          `json:"stages"`
+}
+
+// GetID returns the value of ID.
+func (s Sending) GetID() ObjectID {
+	return s.ID
+}
+
+// GetOrderID returns the value of OrderID.
+func (s Sending) GetOrderID() SendingOrderID {
+	return s.OrderID
+}
+
+// GetRegistrationDate returns the value of RegistrationDate.
+func (s Sending) GetRegistrationDate() SendingRegistrationDate {
+	return s.RegistrationDate
+}
+
+// GetSender returns the value of Sender.
+func (s Sending) GetSender() PostClient {
+	return s.Sender
+}
+
+// GetReceiver returns the value of Receiver.
+func (s Sending) GetReceiver() PostClient {
+	return s.Receiver
+}
+
+// GetType returns the value of Type.
+func (s Sending) GetType() SendingType {
+	return s.Type
+}
+
+// GetSize returns the value of Size.
+func (s Sending) GetSize() SendingSize {
+	return s.Size
+}
+
+// GetWeight returns the value of Weight.
+func (s Sending) GetWeight() SendingWeight {
+	return s.Weight
+}
+
+// GetStages returns the value of Stages.
+func (s Sending) GetStages() []SendingStage {
+	return s.Stages
+}
+
+// SetID sets the value of ID.
+func (s *Sending) SetID(val ObjectID) {
+	s.ID = val
+}
+
+// SetOrderID sets the value of OrderID.
+func (s *Sending) SetOrderID(val SendingOrderID) {
+	s.OrderID = val
+}
+
+// SetRegistrationDate sets the value of RegistrationDate.
+func (s *Sending) SetRegistrationDate(val SendingRegistrationDate) {
+	s.RegistrationDate = val
+}
+
+// SetSender sets the value of Sender.
+func (s *Sending) SetSender(val PostClient) {
+	s.Sender = val
+}
+
+// SetReceiver sets the value of Receiver.
+func (s *Sending) SetReceiver(val PostClient) {
+	s.Receiver = val
+}
+
+// SetType sets the value of Type.
+func (s *Sending) SetType(val SendingType) {
+	s.Type = val
+}
+
+// SetSize sets the value of Size.
+func (s *Sending) SetSize(val SendingSize) {
+	s.Size = val
+}
+
+// SetWeight sets the value of Weight.
+func (s *Sending) SetWeight(val SendingWeight) {
+	s.Weight = val
+}
+
+// SetStages sets the value of Stages.
+func (s *Sending) SetStages(val []SendingStage) {
+	s.Stages = val
+}
+
 type SendingFilterGetDate struct {
 	// Start of sending date range.
 	DateStart OptDate `json:"date_start"`
@@ -1065,9 +1192,9 @@ type SendingGetApplicationJSONNotFound Error
 func (*SendingGetApplicationJSONNotFound) sendingGetRes() {}
 
 type SendingGetResponse struct {
-	Type   SendingType    `json:"type"`
-	Status SendingStatus  `json:"status"`
-	Stages []SendingStage `json:"stages"`
+	Type   SendingType                    `json:"type"`
+	Status SendingStatus                  `json:"status"`
+	Stages []SendingGetResponseStagesItem `json:"stages"`
 }
 
 // GetType returns the value of Type.
@@ -1081,7 +1208,7 @@ func (s SendingGetResponse) GetStatus() SendingStatus {
 }
 
 // GetStages returns the value of Stages.
-func (s SendingGetResponse) GetStages() []SendingStage {
+func (s SendingGetResponse) GetStages() []SendingGetResponseStagesItem {
 	return s.Stages
 }
 
@@ -1096,11 +1223,69 @@ func (s *SendingGetResponse) SetStatus(val SendingStatus) {
 }
 
 // SetStages sets the value of Stages.
-func (s *SendingGetResponse) SetStages(val []SendingStage) {
+func (s *SendingGetResponse) SetStages(val []SendingGetResponseStagesItem) {
 	s.Stages = val
 }
 
 func (*SendingGetResponse) sendingGetRes() {}
+
+type SendingGetResponseStagesItem struct {
+	Name       SendingGetResponseStagesItemName `json:"name"`
+	Date       time.Time                        `json:"date"`
+	Postcode   AddressPostcode                  `json:"postcode"`
+	Settlement string                           `json:"settlement"`
+}
+
+// GetName returns the value of Name.
+func (s SendingGetResponseStagesItem) GetName() SendingGetResponseStagesItemName {
+	return s.Name
+}
+
+// GetDate returns the value of Date.
+func (s SendingGetResponseStagesItem) GetDate() time.Time {
+	return s.Date
+}
+
+// GetPostcode returns the value of Postcode.
+func (s SendingGetResponseStagesItem) GetPostcode() AddressPostcode {
+	return s.Postcode
+}
+
+// GetSettlement returns the value of Settlement.
+func (s SendingGetResponseStagesItem) GetSettlement() string {
+	return s.Settlement
+}
+
+// SetName sets the value of Name.
+func (s *SendingGetResponseStagesItem) SetName(val SendingGetResponseStagesItemName) {
+	s.Name = val
+}
+
+// SetDate sets the value of Date.
+func (s *SendingGetResponseStagesItem) SetDate(val time.Time) {
+	s.Date = val
+}
+
+// SetPostcode sets the value of Postcode.
+func (s *SendingGetResponseStagesItem) SetPostcode(val AddressPostcode) {
+	s.Postcode = val
+}
+
+// SetSettlement sets the value of Settlement.
+func (s *SendingGetResponseStagesItem) SetSettlement(val string) {
+	s.Settlement = val
+}
+
+type SendingGetResponseStagesItemName string
+
+const (
+	SendingGetResponseStagesItemName_0 SendingGetResponseStagesItemName = "Принято в отделении связи"
+	SendingGetResponseStagesItemName_1 SendingGetResponseStagesItemName = "Покинуло место приема"
+	SendingGetResponseStagesItemName_2 SendingGetResponseStagesItemName = "Прибыло в сортировочный центр"
+	SendingGetResponseStagesItemName_3 SendingGetResponseStagesItemName = "Покинуло сортировочный центр"
+	SendingGetResponseStagesItemName_4 SendingGetResponseStagesItemName = "Прибыло в место вручения"
+	SendingGetResponseStagesItemName_5 SendingGetResponseStagesItemName = "Вручено адресату"
+)
 
 type SendingOrderID uuid.UUID
 
@@ -1177,6 +1362,21 @@ func (s *SendingPostResponse) SetOrderID(val SendingOrderID) {
 }
 
 func (*SendingPostResponse) sendingPostRes() {}
+
+// Registration date of sending.
+type SendingRegistrationDate struct {
+	Date time.Time `json:"$date"`
+}
+
+// GetDate returns the value of Date.
+func (s SendingRegistrationDate) GetDate() time.Time {
+	return s.Date
+}
+
+// SetDate sets the value of Date.
+func (s *SendingRegistrationDate) SetDate(val time.Time) {
+	s.Date = val
+}
 
 // Ref: #/components/schemas/SendingSize
 type SendingSize struct {
@@ -1262,10 +1462,10 @@ const (
 
 // Ref: #/components/schemas/SendingStage
 type SendingStage struct {
-	Name       SendingStageName `json:"name"`
-	Date       time.Time        `json:"date"`
-	Postcode   AddressPostcode  `json:"postcode"`
-	Settlement string           `json:"settlement"`
+	Name       SendingStageName      `json:"name"`
+	Timestamp  SendingStageTimestamp `json:"timestamp"`
+	Postcode   AddressPostcode       `json:"postcode"`
+	EmployeeID ObjectID              `json:"employee_id"`
 }
 
 // GetName returns the value of Name.
@@ -1273,9 +1473,9 @@ func (s SendingStage) GetName() SendingStageName {
 	return s.Name
 }
 
-// GetDate returns the value of Date.
-func (s SendingStage) GetDate() time.Time {
-	return s.Date
+// GetTimestamp returns the value of Timestamp.
+func (s SendingStage) GetTimestamp() SendingStageTimestamp {
+	return s.Timestamp
 }
 
 // GetPostcode returns the value of Postcode.
@@ -1283,9 +1483,9 @@ func (s SendingStage) GetPostcode() AddressPostcode {
 	return s.Postcode
 }
 
-// GetSettlement returns the value of Settlement.
-func (s SendingStage) GetSettlement() string {
-	return s.Settlement
+// GetEmployeeID returns the value of EmployeeID.
+func (s SendingStage) GetEmployeeID() ObjectID {
+	return s.EmployeeID
 }
 
 // SetName sets the value of Name.
@@ -1293,9 +1493,9 @@ func (s *SendingStage) SetName(val SendingStageName) {
 	s.Name = val
 }
 
-// SetDate sets the value of Date.
-func (s *SendingStage) SetDate(val time.Time) {
-	s.Date = val
+// SetTimestamp sets the value of Timestamp.
+func (s *SendingStage) SetTimestamp(val SendingStageTimestamp) {
+	s.Timestamp = val
 }
 
 // SetPostcode sets the value of Postcode.
@@ -1303,9 +1503,9 @@ func (s *SendingStage) SetPostcode(val AddressPostcode) {
 	s.Postcode = val
 }
 
-// SetSettlement sets the value of Settlement.
-func (s *SendingStage) SetSettlement(val string) {
-	s.Settlement = val
+// SetEmployeeID sets the value of EmployeeID.
+func (s *SendingStage) SetEmployeeID(val ObjectID) {
+	s.EmployeeID = val
 }
 
 type SendingStageName string
@@ -1318,6 +1518,20 @@ const (
 	SendingStageName_4 SendingStageName = "Прибыло в место вручения"
 	SendingStageName_5 SendingStageName = "Вручено адресату"
 )
+
+type SendingStageTimestamp struct {
+	Date time.Time `json:"$date"`
+}
+
+// GetDate returns the value of Date.
+func (s SendingStageTimestamp) GetDate() time.Time {
+	return s.Date
+}
+
+// SetDate sets the value of Date.
+func (s *SendingStageTimestamp) SetDate(val time.Time) {
+	s.Date = val
+}
 
 // Ref: #/components/schemas/SendingStatus
 type SendingStatus string

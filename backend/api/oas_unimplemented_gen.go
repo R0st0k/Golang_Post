@@ -13,6 +13,24 @@ type UnimplementedHandler struct{}
 
 var _ Handler = UnimplementedHandler{}
 
+// DataExportSendingGet implements GET /data_export_sending operation.
+//
+// Get data from collection `sendings` from database. Return json array.
+//
+// GET /data_export_sending
+func (UnimplementedHandler) DataExportSendingGet(ctx context.Context) (r []Sending, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
+// DataImportSendingPost implements POST /data_import_sending operation.
+//
+// Import data into collection `sendings` in database. Require array of json.
+//
+// POST /data_import_sending
+func (UnimplementedHandler) DataImportSendingPost(ctx context.Context, req []Sending) (r DataImportSendingPostRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
 // PostcodesBySettlementGet implements GET /postcodes_by_settlement operation.
 //
 // Get information about postcodes in cities. Return map with `settlement` key and `postcode` array

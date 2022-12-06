@@ -3,12 +3,16 @@ package models
 import (
 	"backend/db"
 	"context"
+	"errors"
 	"fmt"
 	"github.com/google/uuid"
+	"github.com/mongodb/mongo-tools/mongoexport"
+	"github.com/mongodb/mongo-tools/mongoimport"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"os"
 	"regexp"
 	"time"
 )
@@ -401,4 +405,107 @@ func (s *Sending) FilterSending(sendingFilter map[string]interface{}) (int64, []
 	}
 
 	return total, results, nil
+}
+
+func (s *Sending) Export() (string, error) {
+	f, err := os.CreateTemp("", "sendings")
+	if err != nil {
+		return "", err
+	}
+	defer f.Close()
+
+	RawArgs := []string{
+		fmt.Sprintf("--uri=%s", db.GetDBURI()),
+		"--db=post",
+		"--collection=sendings",
+		fmt.Sprintf("--out=%s", f.Name()),
+		"--jsonArray",
+		"--pretty",
+	}
+
+	Options, err := mongoexport.ParseOptions(RawArgs, "", "")
+	if err != nil {
+		return "", err
+	}
+
+	MongoExport, err := mongoexport.New(Options)
+	if err != nil {
+		return "", err
+	}
+	defer MongoExport.Close()
+
+	_, err = MongoExport.Export(f)
+	if err != nil {
+		return "", err
+	}
+
+	return f.Name(), nil
+}
+
+func (s *Sending) Import(filename string) error {
+	client := db.GetDB()
+	sendingCollection := client.Database("post").Collection("sendings")
+	testCollection := client.Database("post").Collection("test")
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	RawArgsTest := []string{
+		fmt.Sprintf("--uri=%s", db.GetDBURI()),
+		"--db=post",
+		"--collection=test",
+		fmt.Sprintf("--file=%s", filename),
+		"--jsonArray",
+	}
+
+	RawArgs := []string{
+		fmt.Sprintf("--uri=%s", db.GetDBURI()),
+		"--db=post",
+		"--collection=sendings",
+		fmt.Sprintf("--file=%s", filename),
+		"--jsonArray",
+	}
+	{
+		Options, err := mongoimport.ParseOptions(RawArgsTest, "", "")
+		if err != nil {
+			return err
+		}
+		MongoImport, err := mongoimport.New(Options)
+		if err != nil {
+			return err
+		}
+		defer MongoImport.Close()
+		success, failed, err := MongoImport.ImportDocuments()
+		if err != nil {
+			return err
+		}
+		if failed > 0 {
+			return errors.New(fmt.Sprintf("%d imported and %d aborted", success, failed))
+		}
+		if err = testCollection.Drop(ctx); err != nil {
+			return err
+		}
+	}
+	Options, err := mongoimport.ParseOptions(RawArgs, "", "")
+	if err != nil {
+		return err
+	}
+	MongoImport, err := mongoimport.New(Options)
+	if err != nil {
+		return err
+	}
+	defer MongoImport.Close()
+
+	if err := sendingCollection.Drop(ctx); err != nil {
+		return err
+	}
+	success, failed, err := MongoImport.ImportDocuments()
+	if err != nil {
+		return err
+	}
+	if failed > 0 {
+		return errors.New(fmt.Sprintf("%d imported and %d aborted", success, failed))
+	}
+
+	return nil
 }

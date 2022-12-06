@@ -14,6 +14,179 @@ import (
 	"github.com/ogen-go/ogen/ogenerrors"
 )
 
+// handleDataExportSendingGetRequest handles GET /data_export_sending operation.
+//
+// Get data from collection `sendings` from database. Return json array.
+//
+// GET /data_export_sending
+func (s *Server) handleDataExportSendingGetRequest(args [0]string, w http.ResponseWriter, r *http.Request) {
+	var otelAttrs []attribute.KeyValue
+
+	// Start a span for this request.
+	ctx, span := s.cfg.Tracer.Start(r.Context(), "DataExportSendingGet",
+		serverSpanKind,
+	)
+	defer span.End()
+
+	// Run stopwatch.
+	startTime := time.Now()
+	defer func() {
+		elapsedDuration := time.Since(startTime)
+		s.duration.Record(ctx, elapsedDuration.Microseconds(), otelAttrs...)
+	}()
+
+	// Increment request counter.
+	s.requests.Add(ctx, 1, otelAttrs...)
+
+	var (
+		recordError = func(stage string, err error) {
+			span.RecordError(err)
+			span.SetStatus(codes.Error, stage)
+			s.errors.Add(ctx, 1, otelAttrs...)
+		}
+		err error
+	)
+
+	var response []Sending
+	if m := s.cfg.Middleware; m != nil {
+		mreq := middleware.Request{
+			Context:       ctx,
+			OperationName: "DataExportSendingGet",
+			OperationID:   "",
+			Body:          nil,
+			Params:        map[string]any{},
+			Raw:           r,
+		}
+
+		type (
+			Request  = struct{}
+			Params   = struct{}
+			Response = []Sending
+		)
+		response, err = middleware.HookMiddleware[
+			Request,
+			Params,
+			Response,
+		](
+			m,
+			mreq,
+			nil,
+			func(ctx context.Context, request Request, params Params) (Response, error) {
+				return s.h.DataExportSendingGet(ctx)
+			},
+		)
+	} else {
+		response, err = s.h.DataExportSendingGet(ctx)
+	}
+	if err != nil {
+		recordError("Internal", err)
+		s.cfg.ErrorHandler(ctx, w, r, err)
+		return
+	}
+
+	if err := encodeDataExportSendingGetResponse(response, w, span); err != nil {
+		recordError("EncodeResponse", err)
+		s.cfg.ErrorHandler(ctx, w, r, err)
+		return
+	}
+}
+
+// handleDataImportSendingPostRequest handles POST /data_import_sending operation.
+//
+// Import data into collection `sendings` in database. Require array of json.
+//
+// POST /data_import_sending
+func (s *Server) handleDataImportSendingPostRequest(args [0]string, w http.ResponseWriter, r *http.Request) {
+	var otelAttrs []attribute.KeyValue
+
+	// Start a span for this request.
+	ctx, span := s.cfg.Tracer.Start(r.Context(), "DataImportSendingPost",
+		serverSpanKind,
+	)
+	defer span.End()
+
+	// Run stopwatch.
+	startTime := time.Now()
+	defer func() {
+		elapsedDuration := time.Since(startTime)
+		s.duration.Record(ctx, elapsedDuration.Microseconds(), otelAttrs...)
+	}()
+
+	// Increment request counter.
+	s.requests.Add(ctx, 1, otelAttrs...)
+
+	var (
+		recordError = func(stage string, err error) {
+			span.RecordError(err)
+			span.SetStatus(codes.Error, stage)
+			s.errors.Add(ctx, 1, otelAttrs...)
+		}
+		err          error
+		opErrContext = ogenerrors.OperationContext{
+			Name: "DataImportSendingPost",
+			ID:   "",
+		}
+	)
+	request, close, err := s.decodeDataImportSendingPostRequest(r)
+	if err != nil {
+		err = &ogenerrors.DecodeRequestError{
+			OperationContext: opErrContext,
+			Err:              err,
+		}
+		recordError("DecodeRequest", err)
+		s.cfg.ErrorHandler(ctx, w, r, err)
+		return
+	}
+	defer func() {
+		if err := close(); err != nil {
+			recordError("CloseRequest", err)
+		}
+	}()
+
+	var response DataImportSendingPostRes
+	if m := s.cfg.Middleware; m != nil {
+		mreq := middleware.Request{
+			Context:       ctx,
+			OperationName: "DataImportSendingPost",
+			OperationID:   "",
+			Body:          request,
+			Params:        map[string]any{},
+			Raw:           r,
+		}
+
+		type (
+			Request  = []Sending
+			Params   = struct{}
+			Response = DataImportSendingPostRes
+		)
+		response, err = middleware.HookMiddleware[
+			Request,
+			Params,
+			Response,
+		](
+			m,
+			mreq,
+			nil,
+			func(ctx context.Context, request Request, params Params) (Response, error) {
+				return s.h.DataImportSendingPost(ctx, request)
+			},
+		)
+	} else {
+		response, err = s.h.DataImportSendingPost(ctx, request)
+	}
+	if err != nil {
+		recordError("Internal", err)
+		s.cfg.ErrorHandler(ctx, w, r, err)
+		return
+	}
+
+	if err := encodeDataImportSendingPostResponse(response, w, span); err != nil {
+		recordError("EncodeResponse", err)
+		s.cfg.ErrorHandler(ctx, w, r, err)
+		return
+	}
+}
+
 // handlePostcodesBySettlementGetRequest handles GET /postcodes_by_settlement operation.
 //
 // Get information about postcodes in cities. Return map with `settlement` key and `postcode` array
