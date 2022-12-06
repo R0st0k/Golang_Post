@@ -13,7 +13,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"os"
-	"regexp"
 	"time"
 )
 
@@ -146,189 +145,73 @@ func (s *Sending) FilterSending(sendingFilter map[string]interface{}) (int64, []
 	client := db.GetDB()
 	sendingCollection := client.Database("post").Collection("sendings")
 
-	pagePipeline := mongo.Pipeline{}
+	var err error
+
+	pagePipeline := getPagePipeline(sendingFilter, "page", "elems")
 	matchPipeline := mongo.Pipeline{}
 	sortPipeline := mongo.Pipeline{}
 
-	if page := sendingFilter["page"].(int64); page > 1 {
-		skip := bson.D{{
-			"$skip", (page - 1) * sendingFilter["elems"].(int64),
-		}}
-		pagePipeline = append(pagePipeline, skip)
+	err = matchRegex(sendingFilter, "order_id", "order_id", "i", &matchPipeline)
+	if err != nil {
+		return 0, nil, err
 	}
-	{
-		limit := bson.D{{
-			"$limit", sendingFilter["elems"].(int64),
-		}}
-		pagePipeline = append(pagePipeline, limit)
+	err = matchArray(sendingFilter, "type", "type", "string", &matchPipeline)
+	if err != nil {
+		return 0, nil, err
 	}
-	if filter, ok := sendingFilter["order_id"]; ok {
-		match := bson.D{{
-			"$match", bson.D{{
-				"order_id", bson.D{{
-					"$regex", regexp.QuoteMeta(filter.(string)),
-				},
-					{
-						"$options", "i",
-					}},
-			}},
-		}}
-		matchPipeline = append(matchPipeline, match)
+	err = matchArray(sendingFilter, "status", "status", "string", &matchPipeline)
+	if err != nil {
+		return 0, nil, err
 	}
-	if filter, ok := sendingFilter["type"]; ok {
-		result := bson.A{}
-		for _, data := range filter.([]string) {
-			result = append(result, data)
-		}
-		match := bson.D{{
-			"$match", bson.D{{
-				"type", bson.D{{
-					"$in", result,
-				}},
-			}},
-		}}
-		matchPipeline = append(matchPipeline, match)
+	err = matchWithCompare(sendingFilter, "date_start", "registration_date", "time", "$gte", &matchPipeline)
+	if err != nil {
+		return 0, nil, err
 	}
-	if filter, ok := sendingFilter["status"]; ok {
-		result := bson.A{}
-		for _, data := range filter.([]string) {
-			result = append(result, data)
-		}
-		match := bson.D{{
-			"$match", bson.D{{
-				"status", bson.D{{
-					"$in", result,
-				}},
-			}},
-		}}
-		matchPipeline = append(matchPipeline, match)
+	err = matchWithCompare(sendingFilter, "date_finish", "registration_date", "time", "$lte", &matchPipeline)
+	if err != nil {
+		return 0, nil, err
 	}
-	if filter, ok := sendingFilter["date_start"]; ok {
-		match := bson.D{{
-			"$match", bson.D{{
-				"registration_date", bson.D{{
-					"$gte", filter.(time.Time).Format(time.RFC3339),
-				}},
-			}},
-		}}
-		matchPipeline = append(matchPipeline, match)
+	err = matchRegex(sendingFilter, "sender_settlement", "sender.address.settlement", "i", &matchPipeline)
+	if err != nil {
+		return 0, nil, err
 	}
-	if filter, ok := sendingFilter["date_finish"]; ok {
-		match := bson.D{{
-			"$match", bson.D{{
-				"registration_date", bson.D{{
-					"$lte", filter.(time.Time).Format(time.RFC3339),
-				}},
-			}},
-		}}
-		matchPipeline = append(matchPipeline, match)
+	err = matchRegex(sendingFilter, "receiver_settlement", "receiver.address.settlement", "i", &matchPipeline)
+	if err != nil {
+		return 0, nil, err
 	}
-	if filter, ok := sendingFilter["sender_settlement"]; ok {
-		match := bson.D{{
-			"$match", bson.D{{
-				"sender.address.settlement", bson.D{{
-					"$regex", regexp.QuoteMeta(filter.(string)),
-				},
-					{
-						"$options", "i",
-					}},
-			}},
-		}}
-		matchPipeline = append(matchPipeline, match)
+	err = matchWithCompare(sendingFilter, "length_min", "size.length", "int64", "$gte", &matchPipeline)
+	if err != nil {
+		return 0, nil, err
 	}
-	if filter, ok := sendingFilter["receiver_settlement"]; ok {
-		match := bson.D{{
-			"$match", bson.D{{
-				"receiver.address.settlement", bson.D{{
-					"$regex", regexp.QuoteMeta(filter.(string)),
-				},
-					{
-						"$options", "i",
-					}},
-			}},
-		}}
-		matchPipeline = append(matchPipeline, match)
+	err = matchWithCompare(sendingFilter, "length_max", "size.length", "int64", "$lte", &matchPipeline)
+	if err != nil {
+		return 0, nil, err
 	}
-	if filter, ok := sendingFilter["length_min"]; ok {
-		match := bson.D{{
-			"$match", bson.D{{
-				"size.length", bson.D{{
-					"$gte", filter.(int64),
-				}},
-			}},
-		}}
-		matchPipeline = append(matchPipeline, match)
+	err = matchWithCompare(sendingFilter, "width_min", "size.width", "int64", "$gte", &matchPipeline)
+	if err != nil {
+		return 0, nil, err
 	}
-	if filter, ok := sendingFilter["length_max"]; ok {
-		match := bson.D{{
-			"$match", bson.D{{
-				"size.length", bson.D{{
-					"$lte", filter.(int64),
-				}},
-			}},
-		}}
-		matchPipeline = append(matchPipeline, match)
+	err = matchWithCompare(sendingFilter, "width_max", "size.width", "int64", "$lte", &matchPipeline)
+	if err != nil {
+		return 0, nil, err
 	}
-	if filter, ok := sendingFilter["width_min"]; ok {
-		match := bson.D{{
-			"$match", bson.D{{
-				"size.width", bson.D{{
-					"$gte", filter.(int64),
-				}},
-			}},
-		}}
-		matchPipeline = append(matchPipeline, match)
+	err = matchWithCompare(sendingFilter, "height_min", "size.height", "int64", "$gte", &matchPipeline)
+	if err != nil {
+		return 0, nil, err
 	}
-	if filter, ok := sendingFilter["width_max"]; ok {
-		match := bson.D{{
-			"$match", bson.D{{
-				"size.width", bson.D{{
-					"$lte", filter.(int64),
-				}},
-			}},
-		}}
-		matchPipeline = append(matchPipeline, match)
+	err = matchWithCompare(sendingFilter, "height_max", "size.height", "int64", "$lte", &matchPipeline)
+	if err != nil {
+		return 0, nil, err
 	}
-	if filter, ok := sendingFilter["height_min"]; ok {
-		match := bson.D{{
-			"$match", bson.D{{
-				"size.height", bson.D{{
-					"$gte", filter.(int64),
-				}},
-			}},
-		}}
-		matchPipeline = append(matchPipeline, match)
+	err = matchWithCompare(sendingFilter, "weight_min", "weight", "int64", "$gte", &matchPipeline)
+	if err != nil {
+		return 0, nil, err
 	}
-	if filter, ok := sendingFilter["height_max"]; ok {
-		match := bson.D{{
-			"$match", bson.D{{
-				"size.height", bson.D{{
-					"$lte", filter.(int64),
-				}},
-			}},
-		}}
-		matchPipeline = append(matchPipeline, match)
+	err = matchWithCompare(sendingFilter, "weight_max", "weight", "int64", "$lte", &matchPipeline)
+	if err != nil {
+		return 0, nil, err
 	}
-	if filter, ok := sendingFilter["weight_min"]; ok {
-		match := bson.D{{
-			"$match", bson.D{{
-				"weight", bson.D{{
-					"$gte", filter.(int64),
-				}},
-			}},
-		}}
-		matchPipeline = append(matchPipeline, match)
-	}
-	if filter, ok := sendingFilter["weight_max"]; ok {
-		match := bson.D{{
-			"$match", bson.D{{
-				"weight", bson.D{{
-					"$lte", filter.(int64),
-				}},
-			}},
-		}}
-		matchPipeline = append(matchPipeline, match)
-	}
+
 	{
 		sortTypeInMap, okType := sendingFilter["sort_type"]
 		sortFieldInMap, okField := sendingFilter["sort_field"]

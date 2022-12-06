@@ -9,7 +9,7 @@ info:
   description: Information System "Post" API
   termsOfService: http://swagger.io/terms/
   title: Information System "Post"
-  version: 0.5.0
+  version: 0.6.2
 tags:
   - name: Get Information
     description: Endpoints to get information
@@ -57,6 +57,8 @@ paths:
         Return map with `settlement` key and `postcode` array value.
       tags:
         - Get Information
+      parameters:
+        - $ref: '#/components/parameters/PostOfficeTypeMultiple'
       responses:
         '200':
           $ref: '#/components/responses/PostcodesBySettlementGetResponse'
@@ -302,6 +304,11 @@ components:
           example: Рустэмович
         address:
           $ref: '#/components/schemas/Address'
+    PostOfficeType:
+      description: Available types of post offices
+      type: string
+      enum: [ Отделение связи, Сортировочный центр ]
+      example: Отделение связи
     Page:
       type: integer
       format: int64
@@ -358,7 +365,6 @@ components:
       in: query
       name: type
       description: Array of filtered type of sending
-      explode: false
       schema:
         type: array
         uniqueItems: true
@@ -370,7 +376,6 @@ components:
       in: query
       name: status
       description: Array of filtered status of sending
-      explode: false
       schema:
         type: array
         uniqueItems: true
@@ -480,6 +485,17 @@ components:
       description: Sending sort
       schema:
         $ref: '#/components/schemas/SendingSort'
+    PostOfficeTypeMultiple:
+      in: query
+      name: type
+      description: Array of filtered type of post offices
+      schema:
+        type: array
+        uniqueItems: true
+        items:
+          $ref: '#/components/schemas/PostOfficeType'
+        minItems: 1
+        example: [ Отделение связи, Сортировочный центр ]
   requestBodies:
     Sending:
       description: Information of sending

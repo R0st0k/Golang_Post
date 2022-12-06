@@ -213,7 +213,7 @@ func (c *Client) DataImportSendingPost(ctx context.Context, request []Sending) (
 // value.
 //
 // GET /postcodes_by_settlement
-func (c *Client) PostcodesBySettlementGet(ctx context.Context) (res PostcodesBySettlementGetResponse, err error) {
+func (c *Client) PostcodesBySettlementGet(ctx context.Context, params PostcodesBySettlementGetParams) (res PostcodesBySettlementGetResponse, err error) {
 	var otelAttrs []attribute.KeyValue
 
 	// Run stopwatch.
@@ -244,6 +244,33 @@ func (c *Client) PostcodesBySettlementGet(ctx context.Context) (res PostcodesByS
 	stage = "BuildURL"
 	u := uri.Clone(c.requestURL(ctx))
 	u.Path += "/postcodes_by_settlement"
+
+	stage = "EncodeQueryParams"
+	q := uri.NewQueryEncoder()
+	{
+		// Encode "type" parameter.
+		cfg := uri.QueryParameterEncodingConfig{
+			Name:    "type",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
+			return e.EncodeArray(func(e uri.Encoder) error {
+				for i, item := range params.Type {
+					if err := func() error {
+						return e.EncodeValue(conv.StringToString(string(item)))
+					}(); err != nil {
+						return errors.Wrapf(err, "[%d]", i)
+					}
+				}
+				return nil
+			})
+		}); err != nil {
+			return res, errors.Wrap(err, "encode query")
+		}
+	}
+	u.RawQuery = q.Values().Encode()
 
 	stage = "EncodeRequest"
 	r, err := ht.NewRequest(ctx, "GET", u, nil)
@@ -363,7 +390,7 @@ func (c *Client) SendingFilterGet(ctx context.Context, params SendingFilterGetPa
 		cfg := uri.QueryParameterEncodingConfig{
 			Name:    "type",
 			Style:   uri.QueryStyleForm,
-			Explode: false,
+			Explode: true,
 		}
 
 		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
@@ -386,7 +413,7 @@ func (c *Client) SendingFilterGet(ctx context.Context, params SendingFilterGetPa
 		cfg := uri.QueryParameterEncodingConfig{
 			Name:    "status",
 			Style:   uri.QueryStyleForm,
-			Explode: false,
+			Explode: true,
 		}
 
 		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {

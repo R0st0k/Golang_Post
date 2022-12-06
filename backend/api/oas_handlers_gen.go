@@ -218,8 +218,22 @@ func (s *Server) handlePostcodesBySettlementGetRequest(args [0]string, w http.Re
 			span.SetStatus(codes.Error, stage)
 			s.errors.Add(ctx, 1, otelAttrs...)
 		}
-		err error
+		err          error
+		opErrContext = ogenerrors.OperationContext{
+			Name: "PostcodesBySettlementGet",
+			ID:   "",
+		}
 	)
+	params, err := decodePostcodesBySettlementGetParams(args, r)
+	if err != nil {
+		err = &ogenerrors.DecodeParamsError{
+			OperationContext: opErrContext,
+			Err:              err,
+		}
+		recordError("DecodeParams", err)
+		s.cfg.ErrorHandler(ctx, w, r, err)
+		return
+	}
 
 	var response PostcodesBySettlementGetResponse
 	if m := s.cfg.Middleware; m != nil {
@@ -228,13 +242,15 @@ func (s *Server) handlePostcodesBySettlementGetRequest(args [0]string, w http.Re
 			OperationName: "PostcodesBySettlementGet",
 			OperationID:   "",
 			Body:          nil,
-			Params:        map[string]any{},
-			Raw:           r,
+			Params: map[string]any{
+				"type": params.Type,
+			},
+			Raw: r,
 		}
 
 		type (
 			Request  = struct{}
-			Params   = struct{}
+			Params   = PostcodesBySettlementGetParams
 			Response = PostcodesBySettlementGetResponse
 		)
 		response, err = middleware.HookMiddleware[
@@ -244,13 +260,13 @@ func (s *Server) handlePostcodesBySettlementGetRequest(args [0]string, w http.Re
 		](
 			m,
 			mreq,
-			nil,
+			unpackPostcodesBySettlementGetParams,
 			func(ctx context.Context, request Request, params Params) (Response, error) {
-				return s.h.PostcodesBySettlementGet(ctx)
+				return s.h.PostcodesBySettlementGet(ctx, params)
 			},
 		)
 	} else {
-		response, err = s.h.PostcodesBySettlementGet(ctx)
+		response, err = s.h.PostcodesBySettlementGet(ctx, params)
 	}
 	if err != nil {
 		recordError("Internal", err)

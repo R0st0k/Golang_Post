@@ -14,6 +14,90 @@ import (
 	"github.com/ogen-go/ogen/validate"
 )
 
+// PostcodesBySettlementGetParams is parameters of GET /postcodes_by_settlement operation.
+type PostcodesBySettlementGetParams struct {
+	// Array of filtered type of post offices.
+	Type []PostOfficeType
+}
+
+func unpackPostcodesBySettlementGetParams(packed map[string]any) (params PostcodesBySettlementGetParams) {
+	if v, ok := packed["type"]; ok {
+		params.Type = v.([]PostOfficeType)
+	}
+	return params
+}
+
+func decodePostcodesBySettlementGetParams(args [0]string, r *http.Request) (params PostcodesBySettlementGetParams, _ error) {
+	q := uri.NewQueryDecoder(r.URL.Query())
+	// Decode query: type.
+	{
+		cfg := uri.QueryParameterDecodingConfig{
+			Name:    "type",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.HasParam(cfg); err == nil {
+			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
+				return d.DecodeArray(func(d uri.Decoder) error {
+					var paramsDotTypeVal PostOfficeType
+					if err := func() error {
+						val, err := d.DecodeValue()
+						if err != nil {
+							return err
+						}
+
+						c, err := conv.ToString(val)
+						if err != nil {
+							return err
+						}
+
+						paramsDotTypeVal = PostOfficeType(c)
+						return nil
+					}(); err != nil {
+						return err
+					}
+					params.Type = append(params.Type, paramsDotTypeVal)
+					return nil
+				})
+			}); err != nil {
+				return params, errors.Wrap(err, "query: type: parse")
+			}
+			if err := func() error {
+				if err := (validate.Array{
+					MinLength:    1,
+					MinLengthSet: true,
+					MaxLength:    0,
+					MaxLengthSet: false,
+				}).ValidateLength(len(params.Type)); err != nil {
+					return errors.Wrap(err, "array")
+				}
+				var failures []validate.FieldError
+				for i, elem := range params.Type {
+					if err := func() error {
+						if err := elem.Validate(); err != nil {
+							return err
+						}
+						return nil
+					}(); err != nil {
+						failures = append(failures, validate.FieldError{
+							Name:  fmt.Sprintf("[%d]", i),
+							Error: err,
+						})
+					}
+				}
+				if len(failures) > 0 {
+					return &validate.Error{Fields: failures}
+				}
+				return nil
+			}(); err != nil {
+				return params, errors.Wrap(err, "query: type: invalid")
+			}
+		}
+	}
+	return params, nil
+}
+
 // SendingFilterGetParams is parameters of GET /sending_filter operation.
 type SendingFilterGetParams struct {
 	// Current page.
@@ -230,7 +314,7 @@ func decodeSendingFilterGetParams(args [0]string, r *http.Request) (params Sendi
 		cfg := uri.QueryParameterDecodingConfig{
 			Name:    "type",
 			Style:   uri.QueryStyleForm,
-			Explode: false,
+			Explode: true,
 		}
 
 		if err := q.HasParam(cfg); err == nil {
@@ -296,7 +380,7 @@ func decodeSendingFilterGetParams(args [0]string, r *http.Request) (params Sendi
 		cfg := uri.QueryParameterDecodingConfig{
 			Name:    "status",
 			Style:   uri.QueryStyleForm,
-			Explode: false,
+			Explode: true,
 		}
 
 		if err := q.HasParam(cfg); err == nil {
