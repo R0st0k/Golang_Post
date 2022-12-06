@@ -73,7 +73,10 @@ func (po *PostOffice) GetPostcodesBySettlement(types map[string]interface{}) (ma
 		}},
 	}
 
-	matchStringArray(types, "type", "type", &matchPipeline)
+	err := matchArray(types, "type", "type", "string", &matchPipeline)
+	if err != nil {
+		return nil, err
+	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
