@@ -252,7 +252,7 @@ func (c *Client) PostcodesBySettlementGet(ctx context.Context, params PostcodesB
 		cfg := uri.QueryParameterEncodingConfig{
 			Name:    "type",
 			Style:   uri.QueryStyleForm,
-			Explode: false,
+			Explode: true,
 		}
 
 		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
@@ -390,7 +390,7 @@ func (c *Client) SendingFilterGet(ctx context.Context, params SendingFilterGetPa
 		cfg := uri.QueryParameterEncodingConfig{
 			Name:    "type",
 			Style:   uri.QueryStyleForm,
-			Explode: false,
+			Explode: true,
 		}
 
 		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
@@ -413,7 +413,7 @@ func (c *Client) SendingFilterGet(ctx context.Context, params SendingFilterGetPa
 		cfg := uri.QueryParameterEncodingConfig{
 			Name:    "status",
 			Style:   uri.QueryStyleForm,
-			Explode: false,
+			Explode: true,
 		}
 
 		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {

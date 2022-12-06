@@ -9,7 +9,7 @@ info:
   description: Information System "Post" API
   termsOfService: http://swagger.io/terms/
   title: Information System "Post"
-  version: 0.6.1
+  version: 0.6.2
 tags:
   - name: Get Information
     description: Endpoints to get information
@@ -365,7 +365,6 @@ components:
       in: query
       name: type
       description: Array of filtered type of sending
-      explode: false
       schema:
         type: array
         uniqueItems: true
@@ -377,7 +376,6 @@ components:
       in: query
       name: status
       description: Array of filtered status of sending
-      explode: false
       schema:
         type: array
         uniqueItems: true
@@ -491,7 +489,6 @@ components:
       in: query
       name: type
       description: Array of filtered type of post offices
-      explode: false
       schema:
         type: array
         uniqueItems: true

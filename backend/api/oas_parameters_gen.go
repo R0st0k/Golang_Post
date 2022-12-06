@@ -34,7 +34,7 @@ func decodePostcodesBySettlementGetParams(args [0]string, r *http.Request) (para
 		cfg := uri.QueryParameterDecodingConfig{
 			Name:    "type",
 			Style:   uri.QueryStyleForm,
-			Explode: false,
+			Explode: true,
 		}
 
 		if err := q.HasParam(cfg); err == nil {
@@ -314,7 +314,7 @@ func decodeSendingFilterGetParams(args [0]string, r *http.Request) (params Sendi
 		cfg := uri.QueryParameterDecodingConfig{
 			Name:    "type",
 			Style:   uri.QueryStyleForm,
-			Explode: false,
+			Explode: true,
 		}
 
 		if err := q.HasParam(cfg); err == nil {
@@ -380,7 +380,7 @@ func decodeSendingFilterGetParams(args [0]string, r *http.Request) (params Sendi
 		cfg := uri.QueryParameterDecodingConfig{
 			Name:    "status",
 			Style:   uri.QueryStyleForm,
-			Explode: false,
+			Explode: true,
 		}
 
 		if err := q.HasParam(cfg); err == nil {
