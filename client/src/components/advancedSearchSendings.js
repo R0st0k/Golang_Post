@@ -19,7 +19,11 @@ export default function AdvancedSearchSendings(props){
     const [cityAndPostcodes, setCityAndPostcodes] = useState([]);
 
     useEffect(() => {
-        axios.get('http://localhost:8080/api/v1/postcodes_by_settlement')
+        axios.get('http://localhost:8080/api/v1/postcodes_by_settlement', {
+            params: {
+                type: "Отделение связи"
+            }
+        })
             .then(
                 (response) => {
                     setCityAndPostcodes(response.data);
