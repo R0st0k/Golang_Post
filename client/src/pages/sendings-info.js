@@ -29,7 +29,7 @@ export default class SendingsInfo extends React.Component {
                 weight: [10, 10000],
                 length: [10, 1000],
                 width: [10, 1000],
-                height: [10, 1000]
+                height: [1, 1000]
             },
             data: [],
             total: 0,
