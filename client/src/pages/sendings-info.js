@@ -7,10 +7,11 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import axios from 'axios';
 import qs from 'qs';
-
+import { FilePicker } from 'react-file-picker';
 import CustomAccordion from "../components/customAccordion";
 import AdvancedSearchSendings from "../components/advancedSearchSendings";
 import SendingsTable from "../components/sendingsTable";
+import AlertDialog from "../components/alertDialog";
 
 export default class SendingsInfo extends React.Component {
     constructor(props) {
@@ -35,7 +36,9 @@ export default class SendingsInfo extends React.Component {
             page: 0,
             rowsPerPage: 5,
             order: "asc",
-            orderBy: ""
+            orderBy: "",
+            dialogIsOpen: false,
+            dialogText: ""
         }
         this.handleChange = this.handleChange.bind(this);
         this.handleChangeAdvanceSearch = this.handleChangeAdvanceSearch.bind(this);
@@ -43,6 +46,10 @@ export default class SendingsInfo extends React.Component {
         this.handleChangeTable = this.handleChangeTable.bind(this);
         this.refreshTable = this.refreshTable.bind(this);
         this.handleChangeRowsPerPage = this.handleChangeRowsPerPage.bind(this);
+        this.handleClickExportButton = this.handleClickExportButton.bind(this);
+        this.handleFileObject = this.handleFileObject.bind(this);
+        this.openDialog = this.openDialog.bind(this);
+        this.closeDialog = this.closeDialog.bind(this);
     }
 
     componentDidMount() {
@@ -172,6 +179,70 @@ export default class SendingsInfo extends React.Component {
         })
     }
 
+    handleClickExportButton(){
+        axios({
+            url: 'http://localhost:8080/api/v1/data_export_sending', //your url
+            method: 'GET',
+            responseType: 'blob', // important
+        }).then((response) => {
+            // create file link in browser's memory
+            const href = URL.createObjectURL(response.data);
+
+            // create "a" HTML element with href to file & click
+            const link = document.createElement('a');
+            link.href = href;
+            link.setAttribute('download', 'data.json'); //or any other extension
+            document.body.appendChild(link);
+            link.click();
+
+            // clean up "a" element & remove ObjectURL
+            document.body.removeChild(link);
+            URL.revokeObjectURL(href);
+        });
+    }
+
+    handleFileObject(FileObject){
+        const reader = new FileReader();
+        reader.addEventListener('load', (event) => {
+            try {
+                const data = JSON.parse(event.target.result);
+                axios.post('http://localhost:8080/api/v1/data_import_sending', data)
+                    .then((response) => {
+                        this.refreshTable();
+                    })
+                    .catch((error) => {
+                        this.setState({
+                                dialogText: "Проблема при парсинге файла: " + FileObject.name
+                            }, () => {
+                                this.openDialog();
+                            }
+                        )
+                    })
+            }
+            catch (e) {
+                this.setState({
+                        dialogText: "Проблема при парсинге файла: " + FileObject.name
+                    }, () => {
+                        this.openDialog();
+                    }
+                )
+            }
+
+        });
+        reader.readAsText(FileObject);
+    }
+
+    openDialog(){
+        this.setState({
+            dialogIsOpen: true
+        });
+    }
+    closeDialog() {
+        this.setState({
+            dialogIsOpen: false
+        });
+    }
+
     render() {
         return (
             <>
@@ -217,8 +288,27 @@ export default class SendingsInfo extends React.Component {
                     orderBy={this.state.orderBy}
                     handleChangeTable={this.handleChangeTable}
                     onChangeRowsPerPage={this.handleChangeRowsPerPage}
-
                 />
+                <Box ml={"10%"} mb={1} sx={{ width: '80%' }}>
+                    <FilePicker
+                        onChange={this.handleFileObject}
+                    >
+                    <Button
+                        variant={"contained"}
+                        style={{float: "right", margin: '3px'}}
+                    >
+                        Импорт
+                    </Button>
+                    </FilePicker>
+                    <Button
+                        variant={"contained"}
+                        style={{float: "right", margin: '3px'}}
+                        onClick={this.handleClickExportButton}
+                    >
+                        Экспорт
+                    </Button>
+                </Box>
+                <AlertDialog open={this.state.dialogIsOpen} onClose={this.closeDialog} text={this.state.dialogText}/>
             </>
         )
     }
