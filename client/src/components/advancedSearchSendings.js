@@ -213,7 +213,7 @@ export default function AdvancedSearchSendings(props){
                         value={props.values.height}
                         onChange={props.onChange}
                         name="height"
-                        min={10}
+                        min={1}
                         max={1000}
                         step={10}
                         valueLabelDisplay="auto"
