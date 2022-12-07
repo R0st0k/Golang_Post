@@ -402,6 +402,57 @@ class PostGenerator {
             }
         }
 
+        function generateSizeAndWeight(sendingType) {
+            function generateLength(sendingType) {
+                switch (sendingType) {
+                    case sendingsType.LETTER:
+                        return chance.integer({ min: 162, max: 324})
+                    case sendingsType.PACKAGE:
+                        return chance.integer({ min: 300, max: 1000})
+                    case sendingsType.PARCEL:
+                        return chance.integer({ min: 148, max: 600})
+                }
+            }
+            function generateWidth(sendingType) {
+                switch (sendingType) {
+                    case sendingsType.LETTER:
+                        return chance.integer({ min: 110, max: 229})
+                    case sendingsType.PACKAGE:
+                        return chance.integer({ min: 300, max: 1000})
+                    case sendingsType.PARCEL:
+                        return chance.integer({ min: 105, max: 300})
+                }
+            }
+            function generateHeight(sendingType) {
+                switch (sendingType) {
+                    case sendingsType.LETTER:
+                        return chance.integer({ min: 3, max: 5})
+                    case sendingsType.PACKAGE:
+                        return chance.integer({ min: 300, max: 1000})
+                    case sendingsType.PARCEL:
+                        return chance.integer({ min: 105, max: 300})
+                }
+            }
+            function generateWeight(sendingType) {
+                switch (sendingType) {
+                    case sendingsType.LETTER:
+                        return chance.integer({ min: 10, max: 100})
+                    case sendingsType.PACKAGE:
+                        return chance.integer({ min: 800, max: 1000})
+                    case sendingsType.PARCEL:
+                        return chance.integer({ min: 300, max: 800})
+                }
+            }
+            return {
+                size: {
+                    length: generateLength(sendingType),
+                    width: generateWidth(sendingType),
+                    height: generateHeight(sendingType),
+                },
+                weight: generateWeight(sendingType)
+            }
+        }
+
         let months = chance.month({ max: 10 });
         for (let i = 0; i < n; i++) {
             let senderFullName = this.#generateRussianFullName()
@@ -425,12 +476,6 @@ class PostGenerator {
                     sendingsType.PARCEL,
                     sendingsType.PACKAGE,
                 ]),
-                size: {
-                    length: chance.integer({ min: 10, max: 100}),
-                    width: chance.integer({ min: 10, max: 100}),
-                    height: chance.integer({ min: 10, max: 100}),
-                },
-                weight: chance.integer({ min: 10, max: 100}),
             }
             let valid_offices = this.post_offices.filter(x => x.type === officeType.POST_OFFICE)
             let sender_post_office = getOneOf(valid_offices)
@@ -439,6 +484,10 @@ class PostGenerator {
             valid_offices = valid_offices.filter(office => office.postcode !== sending.sender.address.postcode)
             let receiver_post_office = getOneOf(valid_offices)
             sending.receiver.address = this.#generateClientAddressByOfficeAddress(receiver_post_office.address)
+
+            let sizeAndWeight = generateSizeAndWeight(sending.type)
+            sending.size = sizeAndWeight.size
+            sending.weight = sizeAndWeight.weight
 
             let stagesAndStatus = generateStagesAndStatus(sending, this.employees, this.post_offices)
             sending.stages = stagesAndStatus.stages
