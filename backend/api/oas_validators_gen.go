@@ -483,7 +483,7 @@ func (s SendingFilterGetHeight) Validate() error {
 			if err := func() error {
 				if err := (validate.Int{
 					MinSet:        true,
-					Min:           10,
+					Min:           1,
 					MaxSet:        false,
 					Max:           0,
 					MinExclusive:  false,
@@ -510,7 +510,7 @@ func (s SendingFilterGetHeight) Validate() error {
 			if err := func() error {
 				if err := (validate.Int{
 					MinSet:        true,
-					Min:           10,
+					Min:           1,
 					MaxSet:        false,
 					Max:           0,
 					MinExclusive:  false,
@@ -1097,7 +1097,7 @@ func (s SendingSize) Validate() error {
 	if err := func() error {
 		if err := (validate.Int{
 			MinSet:        true,
-			Min:           10,
+			Min:           1,
 			MaxSet:        false,
 			Max:           0,
 			MinExclusive:  false,

@@ -9,7 +9,7 @@ info:
   description: Information System "Post" API
   termsOfService: http://swagger.io/terms/
   title: Information System "Post"
-  version: 0.6.3
+  version: 0.6.4
 tags:
   - name: Get Information
     description: Endpoints to get information
@@ -210,7 +210,7 @@ components:
         height:
           type: integer
           format: int64
-          minimum: 10
+          minimum: 1
           example: 42
     SendingWeight:
       type: integer
@@ -463,12 +463,12 @@ components:
           height_min:
             type: integer
             format: int64
-            minimum: 10
+            minimum: 1
             example: 20
           height_max:
             type: integer
             format: int64
-            minimum: 10
+            minimum: 1
             example: 30
     SendingFilterWeight:
       in: query
