@@ -788,9 +788,14 @@ func (s Sending) encodeFields(e *jx.Encoder) {
 		}
 		e.ArrEnd()
 	}
+	{
+
+		e.FieldStart("status")
+		s.Status.Encode(e)
+	}
 }
 
-var jsonFieldsNameOfSending = [9]string{
+var jsonFieldsNameOfSending = [10]string{
 	0: "_id",
 	1: "order_id",
 	2: "registration_date",
@@ -800,6 +805,7 @@ var jsonFieldsNameOfSending = [9]string{
 	6: "size",
 	7: "weight",
 	8: "stages",
+	9: "status",
 }
 
 // Decode decodes Sending from json.
@@ -909,6 +915,16 @@ func (s *Sending) Decode(d *jx.Decoder) error {
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"stages\"")
 			}
+		case "status":
+			requiredBitSet[1] |= 1 << 1
+			if err := func() error {
+				if err := s.Status.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"status\"")
+			}
 		default:
 			return d.Skip()
 		}
@@ -920,7 +936,7 @@ func (s *Sending) Decode(d *jx.Decoder) error {
 	var failures []validate.FieldError
 	for i, mask := range [2]uint8{
 		0b11111111,
-		0b00000001,
+		0b00000011,
 	} {
 		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
 			// Mask only required fields and check equality to mask using XOR.

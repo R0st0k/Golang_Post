@@ -814,6 +814,7 @@ type Sending struct {
 	Size             SendingSize             `json:"size"`
 	Weight           SendingWeight           `json:"weight"`
 	Stages           []SendingStage          `json:"stages"`
+	Status           SendingStatus           `json:"status"`
 }
 
 // GetID returns the value of ID.
@@ -861,6 +862,11 @@ func (s Sending) GetStages() []SendingStage {
 	return s.Stages
 }
 
+// GetStatus returns the value of Status.
+func (s Sending) GetStatus() SendingStatus {
+	return s.Status
+}
+
 // SetID sets the value of ID.
 func (s *Sending) SetID(val ObjectID) {
 	s.ID = val
@@ -904,6 +910,11 @@ func (s *Sending) SetWeight(val SendingWeight) {
 // SetStages sets the value of Stages.
 func (s *Sending) SetStages(val []SendingStage) {
 	s.Stages = val
+}
+
+// SetStatus sets the value of Status.
+func (s *Sending) SetStatus(val SendingStatus) {
+	s.Status = val
 }
 
 type SendingFilterGetDate struct {
