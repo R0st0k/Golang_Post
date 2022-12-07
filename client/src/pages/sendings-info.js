@@ -191,7 +191,7 @@ export default class SendingsInfo extends React.Component {
             // create "a" HTML element with href to file & click
             const link = document.createElement('a');
             link.href = href;
-            link.setAttribute('download', 'data.json'); //or any other extension
+            link.setAttribute('download', 'sendings.json'); //or any other extension
             document.body.appendChild(link);
             link.click();
 
@@ -209,10 +209,15 @@ export default class SendingsInfo extends React.Component {
                 axios.post('http://localhost:8080/api/v1/data_import_sending', data)
                     .then((response) => {
                         this.refreshTable();
+                        this.setState({
+                            dialogText: `Импортирование успешно завершено.`
+                        }, () => {
+                            this.openDialog();
+                        })
                     })
                     .catch((error) => {
                         this.setState({
-                                dialogText: "Проблема при парсинге файла: " + FileObject.name
+                                dialogText: "Импортирование не удалось, файл: " + FileObject.name
                             }, () => {
                                 this.openDialog();
                             }
@@ -221,7 +226,7 @@ export default class SendingsInfo extends React.Component {
             }
             catch (e) {
                 this.setState({
-                        dialogText: "Проблема при парсинге файла: " + FileObject.name
+                        dialogText: "Импортирование не удалось, файл: " + FileObject.name
                     }, () => {
                         this.openDialog();
                     }
