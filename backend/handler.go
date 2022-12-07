@@ -422,6 +422,9 @@ func (p *postService) ImportSendings(params []map[string]interface{}) ([]post.Se
 			}
 			sending.SetStages(stages)
 		}
+		if value, ok := json["status"]; ok {
+			sending.SetStatus(post.SendingStatus(value.(string)))
+		}
 
 		answer = append(answer, *sending)
 	}
@@ -539,6 +542,7 @@ func (p *postService) ExportSending(params []post.Sending) ([]map[string]interfa
 		if err != nil {
 			return nil, err
 		}
+		json["status"] = string(sending.GetStatus())
 
 		answer = append(answer, json)
 	}

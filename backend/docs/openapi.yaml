@@ -9,7 +9,7 @@ info:
   description: Information System "Post" API
   termsOfService: http://swagger.io/terms/
   title: Information System "Post"
-  version: 0.6.2
+  version: 0.6.3
 tags:
   - name: Get Information
     description: Endpoints to get information
@@ -167,6 +167,8 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/SendingStage'
+        status:
+          $ref: '#/components/schemas/SendingStatus'
     ObjectID:
       description: ObjectID of sending (24 byte hex string)
       type: object
