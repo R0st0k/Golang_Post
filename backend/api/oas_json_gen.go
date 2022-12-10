@@ -255,6 +255,488 @@ func (s *AddressPostcode) UnmarshalJSON(data []byte) error {
 }
 
 // Encode implements json.Marshaler.
+func (s EmployeeFilterGetResponse) Encode(e *jx.Encoder) {
+	e.ObjStart()
+	s.encodeFields(e)
+	e.ObjEnd()
+}
+
+// encodeFields encodes fields.
+func (s EmployeeFilterGetResponse) encodeFields(e *jx.Encoder) {
+	{
+
+		e.FieldStart("total")
+		e.Int64(s.Total)
+	}
+	{
+
+		e.FieldStart("result")
+		e.ArrStart()
+		for _, elem := range s.Result {
+			elem.Encode(e)
+		}
+		e.ArrEnd()
+	}
+}
+
+var jsonFieldsNameOfEmployeeFilterGetResponse = [2]string{
+	0: "total",
+	1: "result",
+}
+
+// Decode decodes EmployeeFilterGetResponse from json.
+func (s *EmployeeFilterGetResponse) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode EmployeeFilterGetResponse to nil")
+	}
+	var requiredBitSet [1]uint8
+
+	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
+		switch string(k) {
+		case "total":
+			requiredBitSet[0] |= 1 << 0
+			if err := func() error {
+				v, err := d.Int64()
+				s.Total = int64(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"total\"")
+			}
+		case "result":
+			requiredBitSet[0] |= 1 << 1
+			if err := func() error {
+				s.Result = make([]EmployeeFilterGetResponseResultItem, 0)
+				if err := d.Arr(func(d *jx.Decoder) error {
+					var elem EmployeeFilterGetResponseResultItem
+					if err := elem.Decode(d); err != nil {
+						return err
+					}
+					s.Result = append(s.Result, elem)
+					return nil
+				}); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"result\"")
+			}
+		default:
+			return d.Skip()
+		}
+		return nil
+	}); err != nil {
+		return errors.Wrap(err, "decode EmployeeFilterGetResponse")
+	}
+	// Validate required fields.
+	var failures []validate.FieldError
+	for i, mask := range [1]uint8{
+		0b00000011,
+	} {
+		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
+			// Mask only required fields and check equality to mask using XOR.
+			//
+			// If XOR result is not zero, result is not equal to expected, so some fields are missed.
+			// Bits of fields which would be set are actually bits of missed fields.
+			missed := bits.OnesCount8(result)
+			for bitN := 0; bitN < missed; bitN++ {
+				bitIdx := bits.TrailingZeros8(result)
+				fieldIdx := i*8 + bitIdx
+				var name string
+				if fieldIdx < len(jsonFieldsNameOfEmployeeFilterGetResponse) {
+					name = jsonFieldsNameOfEmployeeFilterGetResponse[fieldIdx]
+				} else {
+					name = strconv.Itoa(fieldIdx)
+				}
+				failures = append(failures, validate.FieldError{
+					Name:  name,
+					Error: validate.ErrFieldRequired,
+				})
+				// Reset bit.
+				result &^= 1 << bitIdx
+			}
+		}
+	}
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s EmployeeFilterGetResponse) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *EmployeeFilterGetResponse) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode implements json.Marshaler.
+func (s EmployeeFilterGetResponseResultItem) Encode(e *jx.Encoder) {
+	e.ObjStart()
+	s.encodeFields(e)
+	e.ObjEnd()
+}
+
+// encodeFields encodes fields.
+func (s EmployeeFilterGetResponseResultItem) encodeFields(e *jx.Encoder) {
+	{
+
+		e.FieldStart("name")
+		e.Str(s.Name)
+	}
+	{
+
+		e.FieldStart("surname")
+		e.Str(s.Surname)
+	}
+	{
+		if s.MiddleName.Set {
+			e.FieldStart("middle_name")
+			s.MiddleName.Encode(e)
+		}
+	}
+	{
+
+		e.FieldStart("gender")
+		s.Gender.Encode(e)
+	}
+	{
+
+		e.FieldStart("birth_date")
+		json.EncodeDate(e, s.BirthDate)
+	}
+	{
+
+		e.FieldStart("position")
+		s.Position.Encode(e)
+	}
+	{
+
+		e.FieldStart("phone_number")
+		s.PhoneNumber.Encode(e)
+	}
+	{
+
+		e.FieldStart("settlement")
+		e.Str(s.Settlement)
+	}
+	{
+
+		e.FieldStart("postcode")
+		s.Postcode.Encode(e)
+	}
+}
+
+var jsonFieldsNameOfEmployeeFilterGetResponseResultItem = [9]string{
+	0: "name",
+	1: "surname",
+	2: "middle_name",
+	3: "gender",
+	4: "birth_date",
+	5: "position",
+	6: "phone_number",
+	7: "settlement",
+	8: "postcode",
+}
+
+// Decode decodes EmployeeFilterGetResponseResultItem from json.
+func (s *EmployeeFilterGetResponseResultItem) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode EmployeeFilterGetResponseResultItem to nil")
+	}
+	var requiredBitSet [2]uint8
+
+	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
+		switch string(k) {
+		case "name":
+			requiredBitSet[0] |= 1 << 0
+			if err := func() error {
+				v, err := d.Str()
+				s.Name = string(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"name\"")
+			}
+		case "surname":
+			requiredBitSet[0] |= 1 << 1
+			if err := func() error {
+				v, err := d.Str()
+				s.Surname = string(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"surname\"")
+			}
+		case "middle_name":
+			if err := func() error {
+				s.MiddleName.Reset()
+				if err := s.MiddleName.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"middle_name\"")
+			}
+		case "gender":
+			requiredBitSet[0] |= 1 << 3
+			if err := func() error {
+				if err := s.Gender.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"gender\"")
+			}
+		case "birth_date":
+			requiredBitSet[0] |= 1 << 4
+			if err := func() error {
+				v, err := json.DecodeDate(d)
+				s.BirthDate = v
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"birth_date\"")
+			}
+		case "position":
+			requiredBitSet[0] |= 1 << 5
+			if err := func() error {
+				if err := s.Position.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"position\"")
+			}
+		case "phone_number":
+			requiredBitSet[0] |= 1 << 6
+			if err := func() error {
+				if err := s.PhoneNumber.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"phone_number\"")
+			}
+		case "settlement":
+			requiredBitSet[0] |= 1 << 7
+			if err := func() error {
+				v, err := d.Str()
+				s.Settlement = string(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"settlement\"")
+			}
+		case "postcode":
+			requiredBitSet[1] |= 1 << 0
+			if err := func() error {
+				if err := s.Postcode.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"postcode\"")
+			}
+		default:
+			return d.Skip()
+		}
+		return nil
+	}); err != nil {
+		return errors.Wrap(err, "decode EmployeeFilterGetResponseResultItem")
+	}
+	// Validate required fields.
+	var failures []validate.FieldError
+	for i, mask := range [2]uint8{
+		0b11111011,
+		0b00000001,
+	} {
+		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
+			// Mask only required fields and check equality to mask using XOR.
+			//
+			// If XOR result is not zero, result is not equal to expected, so some fields are missed.
+			// Bits of fields which would be set are actually bits of missed fields.
+			missed := bits.OnesCount8(result)
+			for bitN := 0; bitN < missed; bitN++ {
+				bitIdx := bits.TrailingZeros8(result)
+				fieldIdx := i*8 + bitIdx
+				var name string
+				if fieldIdx < len(jsonFieldsNameOfEmployeeFilterGetResponseResultItem) {
+					name = jsonFieldsNameOfEmployeeFilterGetResponseResultItem[fieldIdx]
+				} else {
+					name = strconv.Itoa(fieldIdx)
+				}
+				failures = append(failures, validate.FieldError{
+					Name:  name,
+					Error: validate.ErrFieldRequired,
+				})
+				// Reset bit.
+				result &^= 1 << bitIdx
+			}
+		}
+	}
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s EmployeeFilterGetResponseResultItem) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *EmployeeFilterGetResponseResultItem) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode encodes EmployeeGender as json.
+func (s EmployeeGender) Encode(e *jx.Encoder) {
+	e.Str(string(s))
+}
+
+// Decode decodes EmployeeGender from json.
+func (s *EmployeeGender) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode EmployeeGender to nil")
+	}
+	v, err := d.StrBytes()
+	if err != nil {
+		return err
+	}
+	// Try to use constant string.
+	switch EmployeeGender(v) {
+	case EmployeeGender_0:
+		*s = EmployeeGender_0
+	case EmployeeGender_1:
+		*s = EmployeeGender_1
+	default:
+		*s = EmployeeGender(v)
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s EmployeeGender) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *EmployeeGender) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode encodes EmployeePhoneNumber as json.
+func (s EmployeePhoneNumber) Encode(e *jx.Encoder) {
+	unwrapped := string(s)
+
+	e.Str(unwrapped)
+}
+
+// Decode decodes EmployeePhoneNumber from json.
+func (s *EmployeePhoneNumber) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode EmployeePhoneNumber to nil")
+	}
+	var unwrapped string
+	if err := func() error {
+		v, err := d.Str()
+		unwrapped = string(v)
+		if err != nil {
+			return err
+		}
+		return nil
+	}(); err != nil {
+		return errors.Wrap(err, "alias")
+	}
+	*s = EmployeePhoneNumber(unwrapped)
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s EmployeePhoneNumber) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *EmployeePhoneNumber) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode encodes EmployeePosition as json.
+func (s EmployeePosition) Encode(e *jx.Encoder) {
+	e.Str(string(s))
+}
+
+// Decode decodes EmployeePosition from json.
+func (s *EmployeePosition) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode EmployeePosition to nil")
+	}
+	v, err := d.StrBytes()
+	if err != nil {
+		return err
+	}
+	// Try to use constant string.
+	switch EmployeePosition(v) {
+	case EmployeePosition_0:
+		*s = EmployeePosition_0
+	case EmployeePosition_1:
+		*s = EmployeePosition_1
+	case EmployeePosition_2:
+		*s = EmployeePosition_2
+	case EmployeePosition_3:
+		*s = EmployeePosition_3
+	default:
+		*s = EmployeePosition(v)
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s EmployeePosition) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *EmployeePosition) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode implements json.Marshaler.
 func (s Error) Encode(e *jx.Encoder) {
 	e.ObjStart()
 	s.encodeFields(e)
@@ -444,6 +926,39 @@ func (s ObjectID) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
 func (s *ObjectID) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode encodes AddressPostcode as json.
+func (o OptAddressPostcode) Encode(e *jx.Encoder) {
+	if !o.Set {
+		return
+	}
+	o.Value.Encode(e)
+}
+
+// Decode decodes AddressPostcode from json.
+func (o *OptAddressPostcode) Decode(d *jx.Decoder) error {
+	if o == nil {
+		return errors.New("invalid: unable to decode OptAddressPostcode to nil")
+	}
+	o.Set = true
+	if err := o.Value.Decode(d); err != nil {
+		return err
+	}
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s OptAddressPostcode) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *OptAddressPostcode) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }

@@ -14,6 +14,557 @@ import (
 	"github.com/ogen-go/ogen/validate"
 )
 
+// EmployeeFilterGetParams is parameters of GET /employee_filter operation.
+type EmployeeFilterGetParams struct {
+	// Current page.
+	Page Page
+	// The number of items displayed on the page.
+	ElemsOnPage ElementsOnPage
+	// Full name of employee or a part of it.
+	FullName OptEmployeeFilterGetFullName
+	// Full name of post office's settlement or a part of it.
+	Settlement OptString
+	// Full postcode.
+	Postcode OptAddressPostcode
+	// Array of filtered positions of employee.
+	Position []EmployeePosition
+	// Employee birth date range.
+	BirthDate OptEmployeeFilterGetBirthDate
+	// Array of filtered gender of employee.
+	Gender []EmployeeGender
+	// Phone number of employee or a part of it.
+	PhoneNumber OptString
+	// Employee sort.
+	Sort OptEmployeeSort
+}
+
+func unpackEmployeeFilterGetParams(packed map[string]any) (params EmployeeFilterGetParams) {
+	params.Page = packed["page"].(Page)
+	params.ElemsOnPage = packed["elems_on_page"].(ElementsOnPage)
+	if v, ok := packed["full_name"]; ok {
+		params.FullName = v.(OptEmployeeFilterGetFullName)
+	}
+	if v, ok := packed["settlement"]; ok {
+		params.Settlement = v.(OptString)
+	}
+	if v, ok := packed["postcode"]; ok {
+		params.Postcode = v.(OptAddressPostcode)
+	}
+	if v, ok := packed["position"]; ok {
+		params.Position = v.([]EmployeePosition)
+	}
+	if v, ok := packed["birth_date"]; ok {
+		params.BirthDate = v.(OptEmployeeFilterGetBirthDate)
+	}
+	if v, ok := packed["gender"]; ok {
+		params.Gender = v.([]EmployeeGender)
+	}
+	if v, ok := packed["phone_number"]; ok {
+		params.PhoneNumber = v.(OptString)
+	}
+	if v, ok := packed["sort"]; ok {
+		params.Sort = v.(OptEmployeeSort)
+	}
+	return params
+}
+
+func decodeEmployeeFilterGetParams(args [0]string, r *http.Request) (params EmployeeFilterGetParams, _ error) {
+	q := uri.NewQueryDecoder(r.URL.Query())
+	// Decode query: page.
+	{
+		cfg := uri.QueryParameterDecodingConfig{
+			Name:    "page",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.HasParam(cfg); err == nil {
+			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
+				var paramsDotPageVal int64
+				if err := func() error {
+					val, err := d.DecodeValue()
+					if err != nil {
+						return err
+					}
+
+					c, err := conv.ToInt64(val)
+					if err != nil {
+						return err
+					}
+
+					paramsDotPageVal = c
+					return nil
+				}(); err != nil {
+					return err
+				}
+				params.Page = Page(paramsDotPageVal)
+				return nil
+			}); err != nil {
+				return params, errors.Wrap(err, "query: page: parse")
+			}
+			if err := func() error {
+				if err := params.Page.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return params, errors.Wrap(err, "query: page: invalid")
+			}
+		} else {
+			return params, errors.Wrap(err, "query")
+		}
+	}
+	// Decode query: elems_on_page.
+	{
+		cfg := uri.QueryParameterDecodingConfig{
+			Name:    "elems_on_page",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.HasParam(cfg); err == nil {
+			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
+				var paramsDotElemsOnPageVal int64
+				if err := func() error {
+					val, err := d.DecodeValue()
+					if err != nil {
+						return err
+					}
+
+					c, err := conv.ToInt64(val)
+					if err != nil {
+						return err
+					}
+
+					paramsDotElemsOnPageVal = c
+					return nil
+				}(); err != nil {
+					return err
+				}
+				params.ElemsOnPage = ElementsOnPage(paramsDotElemsOnPageVal)
+				return nil
+			}); err != nil {
+				return params, errors.Wrap(err, "query: elems_on_page: parse")
+			}
+			if err := func() error {
+				if err := params.ElemsOnPage.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return params, errors.Wrap(err, "query: elems_on_page: invalid")
+			}
+		} else {
+			return params, errors.Wrap(err, "query")
+		}
+	}
+	// Decode query: full_name.
+	{
+		cfg := uri.QueryParameterDecodingConfig{
+			Name:    "full_name",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+			Fields:  []uri.QueryParameterObjectField{{"name", false}, {"surname", false}, {"middle_name", false}},
+		}
+
+		if err := q.HasParam(cfg); err == nil {
+			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
+				var paramsDotFullNameVal EmployeeFilterGetFullName
+				if err := func() error {
+					return paramsDotFullNameVal.DecodeURI(d)
+				}(); err != nil {
+					return err
+				}
+				params.FullName.SetTo(paramsDotFullNameVal)
+				return nil
+			}); err != nil {
+				return params, errors.Wrap(err, "query: full_name: parse")
+			}
+			if err := func() error {
+				if params.FullName.Set {
+					if err := func() error {
+						if err := params.FullName.Value.Validate(); err != nil {
+							return err
+						}
+						return nil
+					}(); err != nil {
+						return err
+					}
+				}
+				return nil
+			}(); err != nil {
+				return params, errors.Wrap(err, "query: full_name: invalid")
+			}
+		}
+	}
+	// Decode query: settlement.
+	{
+		cfg := uri.QueryParameterDecodingConfig{
+			Name:    "settlement",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.HasParam(cfg); err == nil {
+			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
+				var paramsDotSettlementVal string
+				if err := func() error {
+					val, err := d.DecodeValue()
+					if err != nil {
+						return err
+					}
+
+					c, err := conv.ToString(val)
+					if err != nil {
+						return err
+					}
+
+					paramsDotSettlementVal = c
+					return nil
+				}(); err != nil {
+					return err
+				}
+				params.Settlement.SetTo(paramsDotSettlementVal)
+				return nil
+			}); err != nil {
+				return params, errors.Wrap(err, "query: settlement: parse")
+			}
+			if err := func() error {
+				if params.Settlement.Set {
+					if err := func() error {
+						if err := (validate.String{
+							MinLength:    1,
+							MinLengthSet: true,
+							MaxLength:    0,
+							MaxLengthSet: false,
+							Email:        false,
+							Hostname:     false,
+							Regex:        nil,
+						}).Validate(string(params.Settlement.Value)); err != nil {
+							return errors.Wrap(err, "string")
+						}
+						return nil
+					}(); err != nil {
+						return err
+					}
+				}
+				return nil
+			}(); err != nil {
+				return params, errors.Wrap(err, "query: settlement: invalid")
+			}
+		}
+	}
+	// Decode query: postcode.
+	{
+		cfg := uri.QueryParameterDecodingConfig{
+			Name:    "postcode",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.HasParam(cfg); err == nil {
+			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
+				var paramsDotPostcodeVal AddressPostcode
+				if err := func() error {
+					var paramsDotPostcodeValVal string
+					if err := func() error {
+						val, err := d.DecodeValue()
+						if err != nil {
+							return err
+						}
+
+						c, err := conv.ToString(val)
+						if err != nil {
+							return err
+						}
+
+						paramsDotPostcodeValVal = c
+						return nil
+					}(); err != nil {
+						return err
+					}
+					paramsDotPostcodeVal = AddressPostcode(paramsDotPostcodeValVal)
+					return nil
+				}(); err != nil {
+					return err
+				}
+				params.Postcode.SetTo(paramsDotPostcodeVal)
+				return nil
+			}); err != nil {
+				return params, errors.Wrap(err, "query: postcode: parse")
+			}
+			if err := func() error {
+				if params.Postcode.Set {
+					if err := func() error {
+						if err := params.Postcode.Value.Validate(); err != nil {
+							return err
+						}
+						return nil
+					}(); err != nil {
+						return err
+					}
+				}
+				return nil
+			}(); err != nil {
+				return params, errors.Wrap(err, "query: postcode: invalid")
+			}
+		}
+	}
+	// Decode query: position.
+	{
+		cfg := uri.QueryParameterDecodingConfig{
+			Name:    "position",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.HasParam(cfg); err == nil {
+			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
+				return d.DecodeArray(func(d uri.Decoder) error {
+					var paramsDotPositionVal EmployeePosition
+					if err := func() error {
+						val, err := d.DecodeValue()
+						if err != nil {
+							return err
+						}
+
+						c, err := conv.ToString(val)
+						if err != nil {
+							return err
+						}
+
+						paramsDotPositionVal = EmployeePosition(c)
+						return nil
+					}(); err != nil {
+						return err
+					}
+					params.Position = append(params.Position, paramsDotPositionVal)
+					return nil
+				})
+			}); err != nil {
+				return params, errors.Wrap(err, "query: position: parse")
+			}
+			if err := func() error {
+				if err := (validate.Array{
+					MinLength:    1,
+					MinLengthSet: true,
+					MaxLength:    0,
+					MaxLengthSet: false,
+				}).ValidateLength(len(params.Position)); err != nil {
+					return errors.Wrap(err, "array")
+				}
+				var failures []validate.FieldError
+				for i, elem := range params.Position {
+					if err := func() error {
+						if err := elem.Validate(); err != nil {
+							return err
+						}
+						return nil
+					}(); err != nil {
+						failures = append(failures, validate.FieldError{
+							Name:  fmt.Sprintf("[%d]", i),
+							Error: err,
+						})
+					}
+				}
+				if len(failures) > 0 {
+					return &validate.Error{Fields: failures}
+				}
+				return nil
+			}(); err != nil {
+				return params, errors.Wrap(err, "query: position: invalid")
+			}
+		}
+	}
+	// Decode query: birth_date.
+	{
+		cfg := uri.QueryParameterDecodingConfig{
+			Name:    "birth_date",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+			Fields:  []uri.QueryParameterObjectField{{"birth_date_start", false}, {"birth_date_finish", false}},
+		}
+
+		if err := q.HasParam(cfg); err == nil {
+			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
+				var paramsDotBirthDateVal EmployeeFilterGetBirthDate
+				if err := func() error {
+					return paramsDotBirthDateVal.DecodeURI(d)
+				}(); err != nil {
+					return err
+				}
+				params.BirthDate.SetTo(paramsDotBirthDateVal)
+				return nil
+			}); err != nil {
+				return params, errors.Wrap(err, "query: birth_date: parse")
+			}
+		}
+	}
+	// Decode query: gender.
+	{
+		cfg := uri.QueryParameterDecodingConfig{
+			Name:    "gender",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.HasParam(cfg); err == nil {
+			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
+				return d.DecodeArray(func(d uri.Decoder) error {
+					var paramsDotGenderVal EmployeeGender
+					if err := func() error {
+						val, err := d.DecodeValue()
+						if err != nil {
+							return err
+						}
+
+						c, err := conv.ToString(val)
+						if err != nil {
+							return err
+						}
+
+						paramsDotGenderVal = EmployeeGender(c)
+						return nil
+					}(); err != nil {
+						return err
+					}
+					params.Gender = append(params.Gender, paramsDotGenderVal)
+					return nil
+				})
+			}); err != nil {
+				return params, errors.Wrap(err, "query: gender: parse")
+			}
+			if err := func() error {
+				if err := (validate.Array{
+					MinLength:    1,
+					MinLengthSet: true,
+					MaxLength:    0,
+					MaxLengthSet: false,
+				}).ValidateLength(len(params.Gender)); err != nil {
+					return errors.Wrap(err, "array")
+				}
+				var failures []validate.FieldError
+				for i, elem := range params.Gender {
+					if err := func() error {
+						if err := elem.Validate(); err != nil {
+							return err
+						}
+						return nil
+					}(); err != nil {
+						failures = append(failures, validate.FieldError{
+							Name:  fmt.Sprintf("[%d]", i),
+							Error: err,
+						})
+					}
+				}
+				if len(failures) > 0 {
+					return &validate.Error{Fields: failures}
+				}
+				return nil
+			}(); err != nil {
+				return params, errors.Wrap(err, "query: gender: invalid")
+			}
+		}
+	}
+	// Decode query: phone_number.
+	{
+		cfg := uri.QueryParameterDecodingConfig{
+			Name:    "phone_number",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.HasParam(cfg); err == nil {
+			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
+				var paramsDotPhoneNumberVal string
+				if err := func() error {
+					val, err := d.DecodeValue()
+					if err != nil {
+						return err
+					}
+
+					c, err := conv.ToString(val)
+					if err != nil {
+						return err
+					}
+
+					paramsDotPhoneNumberVal = c
+					return nil
+				}(); err != nil {
+					return err
+				}
+				params.PhoneNumber.SetTo(paramsDotPhoneNumberVal)
+				return nil
+			}); err != nil {
+				return params, errors.Wrap(err, "query: phone_number: parse")
+			}
+			if err := func() error {
+				if params.PhoneNumber.Set {
+					if err := func() error {
+						if err := (validate.String{
+							MinLength:    0,
+							MinLengthSet: false,
+							MaxLength:    0,
+							MaxLengthSet: false,
+							Email:        false,
+							Hostname:     false,
+							Regex:        regexMap["^\\d{1,11}$"],
+						}).Validate(string(params.PhoneNumber.Value)); err != nil {
+							return errors.Wrap(err, "string")
+						}
+						return nil
+					}(); err != nil {
+						return err
+					}
+				}
+				return nil
+			}(); err != nil {
+				return params, errors.Wrap(err, "query: phone_number: invalid")
+			}
+		}
+	}
+	// Decode query: sort.
+	{
+		cfg := uri.QueryParameterDecodingConfig{
+			Name:    "sort",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+			Fields:  []uri.QueryParameterObjectField{{"sort_type", false}, {"sort_field", false}},
+		}
+
+		if err := q.HasParam(cfg); err == nil {
+			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
+				var paramsDotSortVal EmployeeSort
+				if err := func() error {
+					return paramsDotSortVal.DecodeURI(d)
+				}(); err != nil {
+					return err
+				}
+				params.Sort.SetTo(paramsDotSortVal)
+				return nil
+			}); err != nil {
+				return params, errors.Wrap(err, "query: sort: parse")
+			}
+			if err := func() error {
+				if params.Sort.Set {
+					if err := func() error {
+						if err := params.Sort.Value.Validate(); err != nil {
+							return err
+						}
+						return nil
+					}(); err != nil {
+						return err
+					}
+				}
+				return nil
+			}(); err != nil {
+				return params, errors.Wrap(err, "query: sort: invalid")
+			}
+		}
+	}
+	return params, nil
+}
+
 // PostcodesBySettlementGetParams is parameters of GET /postcodes_by_settlement operation.
 type PostcodesBySettlementGetParams struct {
 	// Array of filtered type of post offices.

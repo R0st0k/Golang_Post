@@ -9,7 +9,7 @@ info:
   description: Information System "Post" API
   termsOfService: http://swagger.io/terms/
   title: Information System "Post"
-  version: 0.6.4
+  version: 0.7.0
 tags:
   - name: Get Information
     description: Endpoints to get information
@@ -87,6 +87,31 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/SendingFilterGetResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /employee_filter:
+    get:
+      summary: Get employees that fit the filter
+      description: >
+        Get employees that fit the filter.
+        Require `page` and `elems_on_page`.
+        Return amount of employees that fit the filter and employees on the selected page.
+      tags:
+        - Get Information
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/ElementsOnPage'
+        - $ref: '#/components/parameters/EmployeeFilterFullName'
+        - $ref: '#/components/parameters/PostOfficeFilterSettlement'
+        - $ref: '#/components/parameters/AddressPostcodeFilter'
+        - $ref: '#/components/parameters/EmployeeFilterPosition'
+        - $ref: '#/components/parameters/EmployeeFilterBirthDate'
+        - $ref: '#/components/parameters/EmployeeFilterGender'
+        - $ref: '#/components/parameters/EmployeeFilterPhoneNumber'
+        - $ref: '#/components/parameters/EmployeeSort'
+      responses:
+        '200':
+          $ref: '#/components/responses/EmployeeFilterGetResponse'
         '400':
           $ref: '#/components/responses/BadRequest'
   /data_export_sending:
@@ -247,6 +272,25 @@ components:
           $ref: '#/components/schemas/AddressPostcode'
         employee_id:
           $ref: '#/components/schemas/ObjectID'
+    EmployeePosition:
+      description: Available positions to employee
+      type: string
+      enum:
+        - Сотрудник отделения связи
+        - Сотрудник сортировочного центра
+        - Водитель
+        - Почтальон
+      example: Сотрудник отделения связи
+    EmployeeGender:
+      description: Available gender of employee
+      type: string
+      enum: [ М, Ж ]
+      example: М
+    EmployeePhoneNumber:
+      description: Phone number
+      type: string
+      pattern: '^\d{11}$'
+      example: 89111234567
     Address:
       type: object
       required:
@@ -332,6 +376,17 @@ components:
           type: string
           enum: [ order_id, type, status, date, sender_settlement, receiver_settlement, weight ]
           example: order_id
+    EmployeeSort:
+      type: object
+      properties:
+        sort_type:
+          type: string
+          enum: [ asc, desc ]
+          example: asc
+        sort_field:
+          type: string
+          enum: [ full_name, settlement, postcode, position, birth_date, gender, phone_number ]
+          example: full_name
   parameters:
     SendingOrderID:
       in: query
@@ -487,6 +542,93 @@ components:
       description: Sending sort
       schema:
         $ref: '#/components/schemas/SendingSort'
+    EmployeeFilterFullName:
+      in: query
+      name: full_name
+      description: Full name of employee or a part of it
+      schema:
+        type: object
+        properties:
+          name:
+            description: Name or a part of it
+            type: string
+            minLength: 1
+            example: Ростислав
+          surname:
+            description: Surname or a part of it
+            type: string
+            minLength: 1
+            example: Могилёвский
+          middle_name:
+            description: Middle name or a part of it
+            type: string
+            minLength: 1
+            example: Сергеевич
+    EmployeeFilterPosition:
+      in: query
+      name: position
+      description: Array of filtered positions of employee
+      schema:
+        type: array
+        uniqueItems: true
+        minItems: 1
+        items:
+          $ref: '#/components/schemas/EmployeePosition'
+    EmployeeFilterBirthDate:
+      in: query
+      name: birth_date
+      description: Employee birth date range
+      schema:
+        type: object
+        properties:
+          birth_date_start:
+            description: Start of employee birth date range
+            type: string
+            format: date
+            example: 2022-11-20
+          birth_date_finish:
+            description: Finish of employee birth date range
+            type: string
+            format: date
+            example: 2022-11-23
+    EmployeeFilterGender:
+      in: query
+      name: gender
+      description: Array of filtered gender of employee
+      schema:
+        type: array
+        uniqueItems: true
+        minItems: 1
+        items:
+          $ref: '#/components/schemas/EmployeeGender'
+    EmployeeFilterPhoneNumber:
+      in: query
+      name: phone_number
+      description: Phone number of employee or a part of it
+      schema:
+        type: string
+        pattern: '^\d{1,11}$'
+        example: 89111234567
+    EmployeeSort:
+      in: query
+      name: sort
+      description: Employee sort
+      schema:
+        $ref: '#/components/schemas/EmployeeSort'
+    AddressPostcodeFilter:
+      in: query
+      name: postcode
+      description: Full postcode
+      schema:
+        $ref: '#/components/schemas/AddressPostcode'
+    PostOfficeFilterSettlement:
+      in: query
+      name: settlement
+      description: Full name of post office's settlement or a part of it
+      schema:
+        type: string
+        minLength: 1
+        example: Санкт-Петербург
     PostOfficeTypeMultiple:
       in: query
       name: type
@@ -667,6 +809,63 @@ components:
                       $ref: '#/components/schemas/SendingSize'
                     status:
                       $ref: '#/components/schemas/SendingStatus'
+    EmployeeFilterGetResponse:
+      description: ok
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - total
+              - result
+            properties:
+              total:
+                type: integer
+                format: int64
+                minimum: 0
+                example: 1
+              result:
+                type: array
+                items:
+                  type: object
+                  required:
+                    - name
+                    - surname
+                    - gender
+                    - birth_date
+                    - position
+                    - phone_number
+                    - settlement
+                    - postcode
+                  properties:
+                    name:
+                      type: string
+                      minLength: 1
+                      example: Антон
+                    surname:
+                      type: string
+                      minLength: 1
+                      example: Пустяков
+                    middle_name:
+                      type: string
+                      minLength: 1
+                      example: Олегович
+                    gender:
+                      $ref: '#/components/schemas/EmployeeGender'
+                    birth_date:
+                      type: string
+                      format: date
+                      example: 2022-11-23
+                    position:
+                      $ref: '#/components/schemas/EmployeePosition'
+                    phone_number:
+                      $ref: '#/components/schemas/EmployeePhoneNumber'
+                    settlement:
+                      type: string
+                      minLength: 1
+                      example: Санкт-Петербург
+                    postcode:
+                      $ref: '#/components/schemas/AddressPostcode'
     DataExportSendingResponse:
       description: ok
       content:

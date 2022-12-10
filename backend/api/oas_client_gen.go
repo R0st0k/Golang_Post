@@ -207,6 +207,255 @@ func (c *Client) DataImportSendingPost(ctx context.Context, request []Sending) (
 	return result, nil
 }
 
+// EmployeeFilterGet invokes GET /employee_filter operation.
+//
+// Get employees that fit the filter. Require `page` and `elems_on_page`. Return amount of employees
+// that fit the filter and employees on the selected page.
+//
+// GET /employee_filter
+func (c *Client) EmployeeFilterGet(ctx context.Context, params EmployeeFilterGetParams) (res EmployeeFilterGetRes, err error) {
+	var otelAttrs []attribute.KeyValue
+
+	// Run stopwatch.
+	startTime := time.Now()
+	defer func() {
+		elapsedDuration := time.Since(startTime)
+		c.duration.Record(ctx, elapsedDuration.Microseconds(), otelAttrs...)
+	}()
+
+	// Increment request counter.
+	c.requests.Add(ctx, 1, otelAttrs...)
+
+	// Start a span for this request.
+	ctx, span := c.cfg.Tracer.Start(ctx, "EmployeeFilterGet",
+		clientSpanKind,
+	)
+	// Track stage for error reporting.
+	var stage string
+	defer func() {
+		if err != nil {
+			span.RecordError(err)
+			span.SetStatus(codes.Error, stage)
+			c.errors.Add(ctx, 1, otelAttrs...)
+		}
+		span.End()
+	}()
+
+	stage = "BuildURL"
+	u := uri.Clone(c.requestURL(ctx))
+	u.Path += "/employee_filter"
+
+	stage = "EncodeQueryParams"
+	q := uri.NewQueryEncoder()
+	{
+		// Encode "page" parameter.
+		cfg := uri.QueryParameterEncodingConfig{
+			Name:    "page",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
+			if unwrapped := int64(params.Page); true {
+				return e.EncodeValue(conv.Int64ToString(unwrapped))
+			}
+			return nil
+		}); err != nil {
+			return res, errors.Wrap(err, "encode query")
+		}
+	}
+	{
+		// Encode "elems_on_page" parameter.
+		cfg := uri.QueryParameterEncodingConfig{
+			Name:    "elems_on_page",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
+			if unwrapped := int64(params.ElemsOnPage); true {
+				return e.EncodeValue(conv.Int64ToString(unwrapped))
+			}
+			return nil
+		}); err != nil {
+			return res, errors.Wrap(err, "encode query")
+		}
+	}
+	{
+		// Encode "full_name" parameter.
+		cfg := uri.QueryParameterEncodingConfig{
+			Name:    "full_name",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
+			if val, ok := params.FullName.Get(); ok {
+				return val.EncodeURI(e)
+			}
+			return nil
+		}); err != nil {
+			return res, errors.Wrap(err, "encode query")
+		}
+	}
+	{
+		// Encode "settlement" parameter.
+		cfg := uri.QueryParameterEncodingConfig{
+			Name:    "settlement",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
+			if val, ok := params.Settlement.Get(); ok {
+				return e.EncodeValue(conv.StringToString(val))
+			}
+			return nil
+		}); err != nil {
+			return res, errors.Wrap(err, "encode query")
+		}
+	}
+	{
+		// Encode "postcode" parameter.
+		cfg := uri.QueryParameterEncodingConfig{
+			Name:    "postcode",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
+			if val, ok := params.Postcode.Get(); ok {
+				if unwrapped := string(val); true {
+					return e.EncodeValue(conv.StringToString(unwrapped))
+				}
+				return nil
+			}
+			return nil
+		}); err != nil {
+			return res, errors.Wrap(err, "encode query")
+		}
+	}
+	{
+		// Encode "position" parameter.
+		cfg := uri.QueryParameterEncodingConfig{
+			Name:    "position",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
+			return e.EncodeArray(func(e uri.Encoder) error {
+				for i, item := range params.Position {
+					if err := func() error {
+						return e.EncodeValue(conv.StringToString(string(item)))
+					}(); err != nil {
+						return errors.Wrapf(err, "[%d]", i)
+					}
+				}
+				return nil
+			})
+		}); err != nil {
+			return res, errors.Wrap(err, "encode query")
+		}
+	}
+	{
+		// Encode "birth_date" parameter.
+		cfg := uri.QueryParameterEncodingConfig{
+			Name:    "birth_date",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
+			if val, ok := params.BirthDate.Get(); ok {
+				return val.EncodeURI(e)
+			}
+			return nil
+		}); err != nil {
+			return res, errors.Wrap(err, "encode query")
+		}
+	}
+	{
+		// Encode "gender" parameter.
+		cfg := uri.QueryParameterEncodingConfig{
+			Name:    "gender",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
+			return e.EncodeArray(func(e uri.Encoder) error {
+				for i, item := range params.Gender {
+					if err := func() error {
+						return e.EncodeValue(conv.StringToString(string(item)))
+					}(); err != nil {
+						return errors.Wrapf(err, "[%d]", i)
+					}
+				}
+				return nil
+			})
+		}); err != nil {
+			return res, errors.Wrap(err, "encode query")
+		}
+	}
+	{
+		// Encode "phone_number" parameter.
+		cfg := uri.QueryParameterEncodingConfig{
+			Name:    "phone_number",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
+			if val, ok := params.PhoneNumber.Get(); ok {
+				return e.EncodeValue(conv.StringToString(val))
+			}
+			return nil
+		}); err != nil {
+			return res, errors.Wrap(err, "encode query")
+		}
+	}
+	{
+		// Encode "sort" parameter.
+		cfg := uri.QueryParameterEncodingConfig{
+			Name:    "sort",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
+			if val, ok := params.Sort.Get(); ok {
+				return val.EncodeURI(e)
+			}
+			return nil
+		}); err != nil {
+			return res, errors.Wrap(err, "encode query")
+		}
+	}
+	u.RawQuery = q.Values().Encode()
+
+	stage = "EncodeRequest"
+	r, err := ht.NewRequest(ctx, "GET", u, nil)
+	if err != nil {
+		return res, errors.Wrap(err, "create request")
+	}
+
+	stage = "SendRequest"
+	resp, err := c.cfg.Client.Do(r)
+	if err != nil {
+		return res, errors.Wrap(err, "do request")
+	}
+	defer resp.Body.Close()
+
+	stage = "DecodeResponse"
+	result, err := decodeEmployeeFilterGetResponse(resp)
+	if err != nil {
+		return res, errors.Wrap(err, "decode response")
+	}
+
+	return result, nil
+}
+
 // PostcodesBySettlementGet invokes GET /postcodes_by_settlement operation.
 //
 // Get information about postcodes in cities. Return map with `settlement` key and `postcode` array

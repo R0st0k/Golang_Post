@@ -92,6 +92,24 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 						return
 					}
 				}
+			case 'e': // Prefix: "employee_filter"
+				if l := len("employee_filter"); len(elem) >= l && elem[0:l] == "employee_filter" {
+					elem = elem[l:]
+				} else {
+					break
+				}
+
+				if len(elem) == 0 {
+					// Leaf node.
+					switch r.Method {
+					case "GET":
+						s.handleEmployeeFilterGetRequest([0]string{}, w, r)
+					default:
+						s.notAllowed(w, r, "GET")
+					}
+
+					return
+				}
 			case 'p': // Prefix: "postcodes_by_settlement"
 				if l := len("postcodes_by_settlement"); len(elem) >= l && elem[0:l] == "postcodes_by_settlement" {
 					elem = elem[l:]
@@ -259,6 +277,26 @@ func (s *Server) FindRoute(method, path string) (r Route, _ bool) {
 						default:
 							return
 						}
+					}
+				}
+			case 'e': // Prefix: "employee_filter"
+				if l := len("employee_filter"); len(elem) >= l && elem[0:l] == "employee_filter" {
+					elem = elem[l:]
+				} else {
+					break
+				}
+
+				if len(elem) == 0 {
+					switch method {
+					case "GET":
+						// Leaf: EmployeeFilterGet
+						r.name = "EmployeeFilterGet"
+						r.operationID = ""
+						r.args = args
+						r.count = 0
+						return r, true
+					default:
+						return
 					}
 				}
 			case 'p': // Prefix: "postcodes_by_settlement"

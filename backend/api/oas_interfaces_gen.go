@@ -5,6 +5,10 @@ type DataImportSendingPostRes interface {
 	dataImportSendingPostRes()
 }
 
+type EmployeeFilterGetRes interface {
+	employeeFilterGetRes()
+}
+
 type SendingFilterGetRes interface {
 	sendingFilterGetRes()
 }

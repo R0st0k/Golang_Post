@@ -20,6 +20,13 @@ type Handler interface {
 	//
 	// POST /data_import_sending
 	DataImportSendingPost(ctx context.Context, req []Sending) (DataImportSendingPostRes, error)
+	// EmployeeFilterGet implements GET /employee_filter operation.
+	//
+	// Get employees that fit the filter. Require `page` and `elems_on_page`. Return amount of employees
+	// that fit the filter and employees on the selected page.
+	//
+	// GET /employee_filter
+	EmployeeFilterGet(ctx context.Context, params EmployeeFilterGetParams) (EmployeeFilterGetRes, error)
 	// PostcodesBySettlementGet implements GET /postcodes_by_settlement operation.
 	//
 	// Get information about postcodes in cities. Return map with `settlement` key and `postcode` array

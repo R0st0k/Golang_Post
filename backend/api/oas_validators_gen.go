@@ -192,6 +192,391 @@ func (s ElementsOnPage) Validate() error {
 	}
 	return nil
 }
+func (s EmployeeFilterGetFullName) Validate() error {
+	var failures []validate.FieldError
+	if err := func() error {
+		if s.Name.Set {
+			if err := func() error {
+				if err := (validate.String{
+					MinLength:    1,
+					MinLengthSet: true,
+					MaxLength:    0,
+					MaxLengthSet: false,
+					Email:        false,
+					Hostname:     false,
+					Regex:        nil,
+				}).Validate(string(s.Name.Value)); err != nil {
+					return errors.Wrap(err, "string")
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "name",
+			Error: err,
+		})
+	}
+	if err := func() error {
+		if s.Surname.Set {
+			if err := func() error {
+				if err := (validate.String{
+					MinLength:    1,
+					MinLengthSet: true,
+					MaxLength:    0,
+					MaxLengthSet: false,
+					Email:        false,
+					Hostname:     false,
+					Regex:        nil,
+				}).Validate(string(s.Surname.Value)); err != nil {
+					return errors.Wrap(err, "string")
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "surname",
+			Error: err,
+		})
+	}
+	if err := func() error {
+		if s.MiddleName.Set {
+			if err := func() error {
+				if err := (validate.String{
+					MinLength:    1,
+					MinLengthSet: true,
+					MaxLength:    0,
+					MaxLengthSet: false,
+					Email:        false,
+					Hostname:     false,
+					Regex:        nil,
+				}).Validate(string(s.MiddleName.Value)); err != nil {
+					return errors.Wrap(err, "string")
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "middle_name",
+			Error: err,
+		})
+	}
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
+	}
+	return nil
+}
+func (s EmployeeFilterGetResponse) Validate() error {
+	var failures []validate.FieldError
+	if err := func() error {
+		if err := (validate.Int{
+			MinSet:        true,
+			Min:           0,
+			MaxSet:        false,
+			Max:           0,
+			MinExclusive:  false,
+			MaxExclusive:  false,
+			MultipleOfSet: false,
+			MultipleOf:    0,
+		}).Validate(int64(s.Total)); err != nil {
+			return errors.Wrap(err, "int")
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "total",
+			Error: err,
+		})
+	}
+	if err := func() error {
+		if s.Result == nil {
+			return errors.New("nil is invalid value")
+		}
+		var failures []validate.FieldError
+		for i, elem := range s.Result {
+			if err := func() error {
+				if err := elem.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				failures = append(failures, validate.FieldError{
+					Name:  fmt.Sprintf("[%d]", i),
+					Error: err,
+				})
+			}
+		}
+		if len(failures) > 0 {
+			return &validate.Error{Fields: failures}
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "result",
+			Error: err,
+		})
+	}
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
+	}
+	return nil
+}
+func (s EmployeeFilterGetResponseResultItem) Validate() error {
+	var failures []validate.FieldError
+	if err := func() error {
+		if err := (validate.String{
+			MinLength:    1,
+			MinLengthSet: true,
+			MaxLength:    0,
+			MaxLengthSet: false,
+			Email:        false,
+			Hostname:     false,
+			Regex:        nil,
+		}).Validate(string(s.Name)); err != nil {
+			return errors.Wrap(err, "string")
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "name",
+			Error: err,
+		})
+	}
+	if err := func() error {
+		if err := (validate.String{
+			MinLength:    1,
+			MinLengthSet: true,
+			MaxLength:    0,
+			MaxLengthSet: false,
+			Email:        false,
+			Hostname:     false,
+			Regex:        nil,
+		}).Validate(string(s.Surname)); err != nil {
+			return errors.Wrap(err, "string")
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "surname",
+			Error: err,
+		})
+	}
+	if err := func() error {
+		if s.MiddleName.Set {
+			if err := func() error {
+				if err := (validate.String{
+					MinLength:    1,
+					MinLengthSet: true,
+					MaxLength:    0,
+					MaxLengthSet: false,
+					Email:        false,
+					Hostname:     false,
+					Regex:        nil,
+				}).Validate(string(s.MiddleName.Value)); err != nil {
+					return errors.Wrap(err, "string")
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "middle_name",
+			Error: err,
+		})
+	}
+	if err := func() error {
+		if err := s.Gender.Validate(); err != nil {
+			return err
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "gender",
+			Error: err,
+		})
+	}
+	if err := func() error {
+		if err := s.Position.Validate(); err != nil {
+			return err
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "position",
+			Error: err,
+		})
+	}
+	if err := func() error {
+		if err := s.PhoneNumber.Validate(); err != nil {
+			return err
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "phone_number",
+			Error: err,
+		})
+	}
+	if err := func() error {
+		if err := (validate.String{
+			MinLength:    1,
+			MinLengthSet: true,
+			MaxLength:    0,
+			MaxLengthSet: false,
+			Email:        false,
+			Hostname:     false,
+			Regex:        nil,
+		}).Validate(string(s.Settlement)); err != nil {
+			return errors.Wrap(err, "string")
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "settlement",
+			Error: err,
+		})
+	}
+	if err := func() error {
+		if err := s.Postcode.Validate(); err != nil {
+			return err
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "postcode",
+			Error: err,
+		})
+	}
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
+	}
+	return nil
+}
+func (s EmployeeGender) Validate() error {
+	switch s {
+	case "М":
+		return nil
+	case "Ж":
+		return nil
+	default:
+		return errors.Errorf("invalid value: %v", s)
+	}
+}
+func (s EmployeePhoneNumber) Validate() error {
+	if err := (validate.String{
+		MinLength:    0,
+		MinLengthSet: false,
+		MaxLength:    0,
+		MaxLengthSet: false,
+		Email:        false,
+		Hostname:     false,
+		Regex:        regexMap["^\\d{11}$"],
+	}).Validate(string(s)); err != nil {
+		return errors.Wrap(err, "string")
+	}
+	return nil
+}
+func (s EmployeePosition) Validate() error {
+	switch s {
+	case "Сотрудник отделения связи":
+		return nil
+	case "Сотрудник сортировочного центра":
+		return nil
+	case "Водитель":
+		return nil
+	case "Почтальон":
+		return nil
+	default:
+		return errors.Errorf("invalid value: %v", s)
+	}
+}
+func (s EmployeeSort) Validate() error {
+	var failures []validate.FieldError
+	if err := func() error {
+		if s.SortType.Set {
+			if err := func() error {
+				if err := s.SortType.Value.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "sort_type",
+			Error: err,
+		})
+	}
+	if err := func() error {
+		if s.SortField.Set {
+			if err := func() error {
+				if err := s.SortField.Value.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "sort_field",
+			Error: err,
+		})
+	}
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
+	}
+	return nil
+}
+func (s EmployeeSortSortField) Validate() error {
+	switch s {
+	case "full_name":
+		return nil
+	case "settlement":
+		return nil
+	case "postcode":
+		return nil
+	case "position":
+		return nil
+	case "birth_date":
+		return nil
+	case "gender":
+		return nil
+	case "phone_number":
+		return nil
+	default:
+		return errors.Errorf("invalid value: %v", s)
+	}
+}
+func (s EmployeeSortSortType) Validate() error {
+	switch s {
+	case "asc":
+		return nil
+	case "desc":
+		return nil
+	default:
+		return errors.Errorf("invalid value: %v", s)
+	}
+}
 func (s ObjectID) Validate() error {
 	var failures []validate.FieldError
 	if err := func() error {
