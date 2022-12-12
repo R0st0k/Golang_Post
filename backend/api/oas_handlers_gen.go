@@ -679,3 +679,99 @@ func (s *Server) handleSendingPostRequest(args [0]string, w http.ResponseWriter,
 		return
 	}
 }
+
+// handleSendingStatisticsGetRequest handles GET /sending_statistics operation.
+//
+// Get statistics of sendings. Return array of keys and statistic value.
+//
+// GET /sending_statistics
+func (s *Server) handleSendingStatisticsGetRequest(args [0]string, w http.ResponseWriter, r *http.Request) {
+	var otelAttrs []attribute.KeyValue
+
+	// Start a span for this request.
+	ctx, span := s.cfg.Tracer.Start(r.Context(), "SendingStatisticsGet",
+		serverSpanKind,
+	)
+	defer span.End()
+
+	// Run stopwatch.
+	startTime := time.Now()
+	defer func() {
+		elapsedDuration := time.Since(startTime)
+		s.duration.Record(ctx, elapsedDuration.Microseconds(), otelAttrs...)
+	}()
+
+	// Increment request counter.
+	s.requests.Add(ctx, 1, otelAttrs...)
+
+	var (
+		recordError = func(stage string, err error) {
+			span.RecordError(err)
+			span.SetStatus(codes.Error, stage)
+			s.errors.Add(ctx, 1, otelAttrs...)
+		}
+		err          error
+		opErrContext = ogenerrors.OperationContext{
+			Name: "SendingStatisticsGet",
+			ID:   "",
+		}
+	)
+	params, err := decodeSendingStatisticsGetParams(args, r)
+	if err != nil {
+		err = &ogenerrors.DecodeParamsError{
+			OperationContext: opErrContext,
+			Err:              err,
+		}
+		recordError("DecodeParams", err)
+		s.cfg.ErrorHandler(ctx, w, r, err)
+		return
+	}
+
+	var response SendingStatisticsGetRes
+	if m := s.cfg.Middleware; m != nil {
+		mreq := middleware.Request{
+			Context:       ctx,
+			OperationName: "SendingStatisticsGet",
+			OperationID:   "",
+			Body:          nil,
+			Params: map[string]any{
+				"settlement": params.Settlement,
+				"type":       params.Type,
+				"direction":  params.Direction,
+				"statistics": params.Statistics,
+			},
+			Raw: r,
+		}
+
+		type (
+			Request  = struct{}
+			Params   = SendingStatisticsGetParams
+			Response = SendingStatisticsGetRes
+		)
+		response, err = middleware.HookMiddleware[
+			Request,
+			Params,
+			Response,
+		](
+			m,
+			mreq,
+			unpackSendingStatisticsGetParams,
+			func(ctx context.Context, request Request, params Params) (Response, error) {
+				return s.h.SendingStatisticsGet(ctx, params)
+			},
+		)
+	} else {
+		response, err = s.h.SendingStatisticsGet(ctx, params)
+	}
+	if err != nil {
+		recordError("Internal", err)
+		s.cfg.ErrorHandler(ctx, w, r, err)
+		return
+	}
+
+	if err := encodeSendingStatisticsGetResponse(response, w, span); err != nil {
+		recordError("EncodeResponse", err)
+		s.cfg.ErrorHandler(ctx, w, r, err)
+		return
+	}
+}

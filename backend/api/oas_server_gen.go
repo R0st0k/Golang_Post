@@ -55,6 +55,12 @@ type Handler interface {
 	//
 	// POST /sending
 	SendingPost(ctx context.Context, req SendingPostReq) (SendingPostRes, error)
+	// SendingStatisticsGet implements GET /sending_statistics operation.
+	//
+	// Get statistics of sendings. Return array of keys and statistic value.
+	//
+	// GET /sending_statistics
+	SendingStatisticsGet(ctx context.Context, params SendingStatisticsGetParams) (SendingStatisticsGetRes, error)
 }
 
 // Server implements http server based on OpenAPI v3 specification and

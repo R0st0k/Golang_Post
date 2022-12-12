@@ -80,3 +80,12 @@ func (UnimplementedHandler) SendingGet(ctx context.Context, params SendingGetPar
 func (UnimplementedHandler) SendingPost(ctx context.Context, req SendingPostReq) (r SendingPostRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
+
+// SendingStatisticsGet implements GET /sending_statistics operation.
+//
+// Get statistics of sendings. Return array of keys and statistic value.
+//
+// GET /sending_statistics
+func (UnimplementedHandler) SendingStatisticsGet(ctx context.Context, params SendingStatisticsGetParams) (r SendingStatisticsGetRes, _ error) {
+	return r, ht.ErrNotImplemented
+}

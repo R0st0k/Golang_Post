@@ -379,6 +379,7 @@ func (*Error) dataImportSendingPostRes() {}
 func (*Error) employeeFilterGetRes()     {}
 func (*Error) sendingFilterGetRes()      {}
 func (*Error) sendingPostRes()           {}
+func (*Error) sendingStatisticsGetRes()  {}
 
 // ObjectID of sending (24 byte hex string).
 // Ref: #/components/schemas/ObjectID
@@ -2091,6 +2092,50 @@ func (s SendingStageTimestamp) GetDate() time.Time {
 func (s *SendingStageTimestamp) SetDate(val time.Time) {
 	s.Date = val
 }
+
+type SendingStatGetResponseItem struct {
+	Key   string `json:"key"`
+	Value int64  `json:"value"`
+}
+
+// GetKey returns the value of Key.
+func (s SendingStatGetResponseItem) GetKey() string {
+	return s.Key
+}
+
+// GetValue returns the value of Value.
+func (s SendingStatGetResponseItem) GetValue() int64 {
+	return s.Value
+}
+
+// SetKey sets the value of Key.
+func (s *SendingStatGetResponseItem) SetKey(val string) {
+	s.Key = val
+}
+
+// SetValue sets the value of Value.
+func (s *SendingStatGetResponseItem) SetValue(val int64) {
+	s.Value = val
+}
+
+type SendingStatisticsGetDirection string
+
+const (
+	SendingStatisticsGetDirection_0 SendingStatisticsGetDirection = "Отправления"
+	SendingStatisticsGetDirection_1 SendingStatisticsGetDirection = "Получения"
+)
+
+type SendingStatisticsGetOKApplicationJSON []SendingStatGetResponseItem
+
+func (SendingStatisticsGetOKApplicationJSON) sendingStatisticsGetRes() {}
+
+type SendingStatisticsGetStatistics string
+
+const (
+	SendingStatisticsGetStatistics_0 SendingStatisticsGetStatistics = "Количество"
+	SendingStatisticsGetStatistics_1 SendingStatisticsGetStatistics = "Время"
+	SendingStatisticsGetStatistics_2 SendingStatisticsGetStatistics = "Вес"
+)
 
 // Ref: #/components/schemas/SendingStatus
 type SendingStatus string

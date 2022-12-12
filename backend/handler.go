@@ -697,3 +697,54 @@ func (p *postService) EmployeeFilterGet(ctx context.Context, params post.Employe
 
 	return &response, nil
 }
+
+func (p *postService) ExportSendingStatistics(params post.SendingStatisticsGetParams) map[string]interface{} {
+	sendingStatistics := make(map[string]interface{})
+
+	if len(params.Settlement) > 0 {
+		result := []string{}
+		for _, data := range params.Settlement {
+			result = append(result, data)
+		}
+		sendingStatistics["settlement"] = result
+	}
+	if len(params.Type) > 0 {
+		result := []string{}
+		for _, data := range params.Type {
+			result = append(result, string(data))
+		}
+		sendingStatistics["type"] = result
+	}
+	sendingStatistics["direction"] = string(params.Direction)
+	sendingStatistics["statistics"] = string(params.Statistics)
+
+	return sendingStatistics
+}
+
+func (p *postService) SendingStatisticsGet(ctx context.Context, params post.SendingStatisticsGetParams) (post.SendingStatisticsGetRes, error) {
+	p.mux.Lock()
+	defer p.mux.Unlock()
+
+	sendingStatistics := p.ExportSendingStatistics(params)
+
+	s := new(models.Sending)
+	resultSending, err := s.StatisticsSending(sendingStatistics)
+	if err != nil {
+		return nil, err
+	}
+
+	var items []post.SendingStatGetResponseItem
+
+	for _, data := range resultSending {
+		item := new(post.SendingStatGetResponseItem)
+		item.SetKey(data.Key)
+		item.SetValue(data.Value)
+
+		items = append(items, *item)
+	}
+
+	response := post.SendingStatisticsGetOKApplicationJSON(items)
+
+	return &response, nil
+
+}

@@ -89,6 +89,24 @@ paths:
           $ref: '#/components/responses/SendingFilterGetResponse'
         '400':
           $ref: '#/components/responses/BadRequest'
+  /sending_statistics:
+    get:
+      summary: Get statistics of sendings
+      description: >
+        Get statistics of sendings.
+        Return array of keys and statistic value.
+      tags:
+        - Get Information
+      parameters:
+        - $ref: '#/components/parameters/SendingStatSettlements'
+        - $ref: '#/components/parameters/SendingStatType'
+        - $ref: '#/components/parameters/SendingStatDirection'
+        - $ref: '#/components/parameters/SendingStatStatistics'
+      responses:
+        '200':
+          $ref: '#/components/responses/SendingStatGetResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
   /employee_filter:
     get:
       summary: Get employees that fit the filter
@@ -542,6 +560,48 @@ components:
       description: Sending sort
       schema:
         $ref: '#/components/schemas/SendingSort'
+    SendingStatSettlements:
+      in: query
+      name: settlement
+      description: Settlements to statistics
+      required: true
+      schema:
+        type: array
+        uniqueItems: true
+        minItems: 1
+        items:
+          type: string
+          minLength: 1
+        example: [ Санкт-Петербург, Москва ]
+    SendingStatType:
+      in: query
+      name: type
+      description: Types to statistics
+      required: true
+      schema:
+        type: array
+        uniqueItems: true
+        minItems: 1
+        items:
+          $ref: '#/components/schemas/SendingType'
+    SendingStatDirection:
+      in: query
+      name: direction
+      description: Type of settlement to statistics
+      required: true
+      schema:
+        type: string
+        enum: [ Отправления, Получения ]
+        example: Отправления
+    SendingStatStatistics:
+      in: query
+      name: statistics
+      description: Type of statistics
+      required: true
+      schema:
+        type: string
+        enum: [ Количество, Время, Вес ]
+        example: Количество
     EmployeeFilterFullName:
       in: query
       name: full_name
@@ -809,6 +869,27 @@ components:
                       $ref: '#/components/schemas/SendingSize'
                     status:
                       $ref: '#/components/schemas/SendingStatus'
+    SendingStatGetResponse:
+      description: ok
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              type: object
+              required:
+                - key
+                - value
+              properties:
+                key:
+                  type: string
+                  minLength: 1
+                  example: Санкт-Петербург
+                value:
+                  type: integer
+                  format: int64
+                  minimum: 0
+                  example: 10
     EmployeeFilterGetResponse:
       description: ok
       content:

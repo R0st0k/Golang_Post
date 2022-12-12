@@ -1304,3 +1304,252 @@ func decodeSendingGetParams(args [0]string, r *http.Request) (params SendingGetP
 	}
 	return params, nil
 }
+
+// SendingStatisticsGetParams is parameters of GET /sending_statistics operation.
+type SendingStatisticsGetParams struct {
+	// Settlements to statistics.
+	Settlement []string
+	// Types to statistics.
+	Type []SendingType
+	// Type of settlement to statistics.
+	Direction SendingStatisticsGetDirection
+	// Type of statistics.
+	Statistics SendingStatisticsGetStatistics
+}
+
+func unpackSendingStatisticsGetParams(packed map[string]any) (params SendingStatisticsGetParams) {
+	params.Settlement = packed["settlement"].([]string)
+	params.Type = packed["type"].([]SendingType)
+	params.Direction = packed["direction"].(SendingStatisticsGetDirection)
+	params.Statistics = packed["statistics"].(SendingStatisticsGetStatistics)
+	return params
+}
+
+func decodeSendingStatisticsGetParams(args [0]string, r *http.Request) (params SendingStatisticsGetParams, _ error) {
+	q := uri.NewQueryDecoder(r.URL.Query())
+	// Decode query: settlement.
+	{
+		cfg := uri.QueryParameterDecodingConfig{
+			Name:    "settlement",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.HasParam(cfg); err == nil {
+			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
+				return d.DecodeArray(func(d uri.Decoder) error {
+					var paramsDotSettlementVal string
+					if err := func() error {
+						val, err := d.DecodeValue()
+						if err != nil {
+							return err
+						}
+
+						c, err := conv.ToString(val)
+						if err != nil {
+							return err
+						}
+
+						paramsDotSettlementVal = c
+						return nil
+					}(); err != nil {
+						return err
+					}
+					params.Settlement = append(params.Settlement, paramsDotSettlementVal)
+					return nil
+				})
+			}); err != nil {
+				return params, errors.Wrap(err, "query: settlement: parse")
+			}
+			if err := func() error {
+				if params.Settlement == nil {
+					return errors.New("nil is invalid value")
+				}
+				if err := (validate.Array{
+					MinLength:    1,
+					MinLengthSet: true,
+					MaxLength:    0,
+					MaxLengthSet: false,
+				}).ValidateLength(len(params.Settlement)); err != nil {
+					return errors.Wrap(err, "array")
+				}
+				var failures []validate.FieldError
+				for i, elem := range params.Settlement {
+					if err := func() error {
+						if err := (validate.String{
+							MinLength:    1,
+							MinLengthSet: true,
+							MaxLength:    0,
+							MaxLengthSet: false,
+							Email:        false,
+							Hostname:     false,
+							Regex:        nil,
+						}).Validate(string(elem)); err != nil {
+							return errors.Wrap(err, "string")
+						}
+						return nil
+					}(); err != nil {
+						failures = append(failures, validate.FieldError{
+							Name:  fmt.Sprintf("[%d]", i),
+							Error: err,
+						})
+					}
+				}
+				if len(failures) > 0 {
+					return &validate.Error{Fields: failures}
+				}
+				return nil
+			}(); err != nil {
+				return params, errors.Wrap(err, "query: settlement: invalid")
+			}
+		} else {
+			return params, errors.Wrap(err, "query")
+		}
+	}
+	// Decode query: type.
+	{
+		cfg := uri.QueryParameterDecodingConfig{
+			Name:    "type",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.HasParam(cfg); err == nil {
+			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
+				return d.DecodeArray(func(d uri.Decoder) error {
+					var paramsDotTypeVal SendingType
+					if err := func() error {
+						val, err := d.DecodeValue()
+						if err != nil {
+							return err
+						}
+
+						c, err := conv.ToString(val)
+						if err != nil {
+							return err
+						}
+
+						paramsDotTypeVal = SendingType(c)
+						return nil
+					}(); err != nil {
+						return err
+					}
+					params.Type = append(params.Type, paramsDotTypeVal)
+					return nil
+				})
+			}); err != nil {
+				return params, errors.Wrap(err, "query: type: parse")
+			}
+			if err := func() error {
+				if params.Type == nil {
+					return errors.New("nil is invalid value")
+				}
+				if err := (validate.Array{
+					MinLength:    1,
+					MinLengthSet: true,
+					MaxLength:    0,
+					MaxLengthSet: false,
+				}).ValidateLength(len(params.Type)); err != nil {
+					return errors.Wrap(err, "array")
+				}
+				var failures []validate.FieldError
+				for i, elem := range params.Type {
+					if err := func() error {
+						if err := elem.Validate(); err != nil {
+							return err
+						}
+						return nil
+					}(); err != nil {
+						failures = append(failures, validate.FieldError{
+							Name:  fmt.Sprintf("[%d]", i),
+							Error: err,
+						})
+					}
+				}
+				if len(failures) > 0 {
+					return &validate.Error{Fields: failures}
+				}
+				return nil
+			}(); err != nil {
+				return params, errors.Wrap(err, "query: type: invalid")
+			}
+		} else {
+			return params, errors.Wrap(err, "query")
+		}
+	}
+	// Decode query: direction.
+	{
+		cfg := uri.QueryParameterDecodingConfig{
+			Name:    "direction",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.HasParam(cfg); err == nil {
+			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
+				val, err := d.DecodeValue()
+				if err != nil {
+					return err
+				}
+
+				c, err := conv.ToString(val)
+				if err != nil {
+					return err
+				}
+
+				params.Direction = SendingStatisticsGetDirection(c)
+				return nil
+			}); err != nil {
+				return params, errors.Wrap(err, "query: direction: parse")
+			}
+			if err := func() error {
+				if err := params.Direction.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return params, errors.Wrap(err, "query: direction: invalid")
+			}
+		} else {
+			return params, errors.Wrap(err, "query")
+		}
+	}
+	// Decode query: statistics.
+	{
+		cfg := uri.QueryParameterDecodingConfig{
+			Name:    "statistics",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.HasParam(cfg); err == nil {
+			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
+				val, err := d.DecodeValue()
+				if err != nil {
+					return err
+				}
+
+				c, err := conv.ToString(val)
+				if err != nil {
+					return err
+				}
+
+				params.Statistics = SendingStatisticsGetStatistics(c)
+				return nil
+			}); err != nil {
+				return params, errors.Wrap(err, "query: statistics: parse")
+			}
+			if err := func() error {
+				if err := params.Statistics.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return params, errors.Wrap(err, "query: statistics: invalid")
+			}
+		} else {
+			return params, errors.Wrap(err, "query")
+		}
+	}
+	return params, nil
+}

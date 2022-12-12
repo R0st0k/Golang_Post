@@ -20,3 +20,7 @@ type SendingGetRes interface {
 type SendingPostRes interface {
 	sendingPostRes()
 }
+
+type SendingStatisticsGetRes interface {
+	sendingStatisticsGetRes()
+}
