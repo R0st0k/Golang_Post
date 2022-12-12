@@ -588,3 +588,163 @@ func (p *postService) DataImportSendingPost(ctx context.Context, req []post.Send
 
 	return new(post.DataImportSendingPostOK), nil
 }
+
+func (p *postService) ExportEmployeeFilter(params post.EmployeeFilterGetParams) map[string]interface{} {
+	employeeFilter := make(map[string]interface{})
+	employeeFilter["page"] = int64(params.Page)
+	employeeFilter["elems"] = int64(params.ElemsOnPage)
+
+	if fullName, ok := params.FullName.Get(); ok {
+		if name, ok := fullName.GetName().Get(); ok {
+			employeeFilter["name"] = name
+		}
+		if surname, ok := fullName.GetSurname().Get(); ok {
+			employeeFilter["surname"] = surname
+		}
+		if middleName, ok := fullName.GetMiddleName().Get(); ok {
+			employeeFilter["middle_name"] = middleName
+		}
+	}
+	if settlement, ok := params.Settlement.Get(); ok {
+		employeeFilter["settlement"] = settlement
+	}
+	if postcode, ok := params.Postcode.Get(); ok {
+		employeeFilter["postcode"] = string(postcode)
+	}
+	if len(params.Position) > 0 {
+		result := []string{}
+		for _, data := range params.Position {
+			result = append(result, string(data))
+		}
+		employeeFilter["position"] = result
+	}
+	if birthDate, ok := params.BirthDate.Get(); ok {
+		if dateStart, ok := birthDate.GetBirthDateStart().Get(); ok {
+			employeeFilter["birth_date_start"] = dateStart
+		}
+		if dateFinish, ok := birthDate.GetBirthDateFinish().Get(); ok {
+			employeeFilter["birth_date_finish"] = dateFinish
+		}
+	}
+	if len(params.Gender) > 0 {
+		result := []string{}
+		for _, data := range params.Gender {
+			result = append(result, string(data))
+		}
+		employeeFilter["gender"] = result
+	}
+	if phoneNumber, ok := params.PhoneNumber.Get(); ok {
+		employeeFilter["phone_number"] = phoneNumber
+	}
+
+	if Sort, ok := params.Sort.Get(); ok {
+		if SortType, ok := Sort.GetSortType().Get(); ok {
+			employeeFilter["sort_type"] = string(SortType)
+		}
+		if SortField, ok := Sort.GetSortField().Get(); ok {
+			employeeFilter["sort_field"] = string(SortField)
+		}
+	}
+
+	return employeeFilter
+}
+
+func (p *postService) ModelToEmployeeFilterGetResponseResultItem(employee models.EmployeeDemonstration) (post.EmployeeFilterGetResponseResultItem, error) {
+	var employeeItem post.EmployeeFilterGetResponseResultItem
+
+	employeeItem.SetName(employee.Name)
+	employeeItem.SetSurname(employee.Surname)
+	if employee.MiddleName != "" {
+		value := new(post.OptString)
+		value.SetTo(employee.MiddleName)
+		employeeItem.SetMiddleName(*value)
+	}
+	employeeItem.SetGender(post.EmployeeGender(employee.Gender))
+	employeeItem.SetBirthDate(employee.BirthDate)
+	employeeItem.SetPosition(post.EmployeePosition(employee.Position))
+	employeeItem.SetPhoneNumber(post.EmployeePhoneNumber(employee.PhoneNumber))
+	employeeItem.SetSettlement(employee.Settlement)
+	employeeItem.SetPostcode(post.AddressPostcode(employee.Postcode))
+
+	return employeeItem, nil
+}
+
+func (p *postService) EmployeeFilterGet(ctx context.Context, params post.EmployeeFilterGetParams) (post.EmployeeFilterGetRes, error) {
+	p.mux.Lock()
+	defer p.mux.Unlock()
+
+	employeeFilter := p.ExportEmployeeFilter(params)
+
+	e := new(models.Employee)
+	total, resultEmployee, err := e.FilterEmployee(employeeFilter)
+	if err != nil {
+		return nil, err
+	}
+
+	var response post.EmployeeFilterGetResponse
+	result := []post.EmployeeFilterGetResponseResultItem{}
+
+	for i := range resultEmployee {
+		item, err := p.ModelToEmployeeFilterGetResponseResultItem(resultEmployee[i])
+		if err != nil {
+			return nil, err
+		}
+		result = append(result, item)
+	}
+
+	response.SetTotal(total)
+	response.SetResult(result)
+
+	return &response, nil
+}
+
+func (p *postService) ExportSendingStatistics(params post.SendingStatisticsGetParams) map[string]interface{} {
+	sendingStatistics := make(map[string]interface{})
+
+	if len(params.Settlement) > 0 {
+		result := []string{}
+		for _, data := range params.Settlement {
+			result = append(result, data)
+		}
+		sendingStatistics["settlement"] = result
+	}
+	if len(params.Type) > 0 {
+		result := []string{}
+		for _, data := range params.Type {
+			result = append(result, string(data))
+		}
+		sendingStatistics["type"] = result
+	}
+	sendingStatistics["direction"] = string(params.Direction)
+	sendingStatistics["statistics"] = string(params.Statistics)
+
+	return sendingStatistics
+}
+
+func (p *postService) SendingStatisticsGet(ctx context.Context, params post.SendingStatisticsGetParams) (post.SendingStatisticsGetRes, error) {
+	p.mux.Lock()
+	defer p.mux.Unlock()
+
+	sendingStatistics := p.ExportSendingStatistics(params)
+
+	s := new(models.Sending)
+	resultSending, err := s.StatisticsSending(sendingStatistics)
+	if err != nil {
+		return nil, err
+	}
+
+	var items []post.SendingStatGetResponseItem
+
+	for _, data := range resultSending {
+		item := new(post.SendingStatGetResponseItem)
+		item.SetKey(data.Key)
+		item.SetValue(data.Value)
+
+		items = append(items, *item)
+	}
+
+	response := post.SendingStatisticsGetOKApplicationJSON(items)
+
+	return &response, nil
+
+}

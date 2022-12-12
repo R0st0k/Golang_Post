@@ -31,6 +31,16 @@ func (UnimplementedHandler) DataImportSendingPost(ctx context.Context, req []Sen
 	return r, ht.ErrNotImplemented
 }
 
+// EmployeeFilterGet implements GET /employee_filter operation.
+//
+// Get employees that fit the filter. Require `page` and `elems_on_page`. Return amount of employees
+// that fit the filter and employees on the selected page.
+//
+// GET /employee_filter
+func (UnimplementedHandler) EmployeeFilterGet(ctx context.Context, params EmployeeFilterGetParams) (r EmployeeFilterGetRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
 // PostcodesBySettlementGet implements GET /postcodes_by_settlement operation.
 //
 // Get information about postcodes in cities. Return map with `settlement` key and `postcode` array
@@ -68,5 +78,14 @@ func (UnimplementedHandler) SendingGet(ctx context.Context, params SendingGetPar
 //
 // POST /sending
 func (UnimplementedHandler) SendingPost(ctx context.Context, req SendingPostReq) (r SendingPostRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
+// SendingStatisticsGet implements GET /sending_statistics operation.
+//
+// Get statistics of sendings. Return array of keys and statistic value.
+//
+// GET /sending_statistics
+func (UnimplementedHandler) SendingStatisticsGet(ctx context.Context, params SendingStatisticsGetParams) (r SendingStatisticsGetRes, _ error) {
 	return r, ht.ErrNotImplemented
 }

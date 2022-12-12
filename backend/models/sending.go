@@ -49,6 +49,12 @@ type Sending struct {
 	Status           string             `bson:"status" json:"status" example:"Доставлено"`
 }
 
+type SendingStatistics struct {
+	ID    primitive.ObjectID `bson:"_id,omitempty" json:"_id,omitempty"`
+	Key   string             `bson:"key" json:"key" example:"пос. Нугуш"`
+	Value int64              `bson:"value,truncate" json:"value,truncate" example:"10"`
+}
+
 func (s *Sending) GetSendingByOrderID(orderID uuid.UUID) (Sending, error) {
 	client := db.GetDB()
 	sendingCollection := client.Database("post").Collection("sendings")
@@ -288,6 +294,196 @@ func (s *Sending) FilterSending(sendingFilter map[string]interface{}) (int64, []
 	}
 
 	return total, results, nil
+}
+
+func (s *Sending) StatisticsSending(sendingFilter map[string]interface{}) ([]SendingStatistics, error) {
+	client := db.GetDB()
+	sendingCollection := client.Database("post").Collection("sendings")
+
+	var err error
+	var settlementField string
+
+	matchPipeline := mongo.Pipeline{}
+	groupPipeline := mongo.Pipeline{}
+	projectPipeline := mongo.Pipeline{}
+
+	if direction, ok := sendingFilter["direction"]; ok {
+		switch direction.(string) {
+		case "Отправления":
+			settlementField = "sender.address.settlement"
+			err = matchArray(sendingFilter, "settlement", settlementField, "string", &matchPipeline)
+
+		case "Получения":
+			settlementField = "receiver.address.settlement"
+			err = matchArray(sendingFilter, "settlement", settlementField, "string", &matchPipeline)
+		}
+		if err != nil {
+			return nil, err
+		}
+	}
+	err = matchArray(sendingFilter, "type", "type", "string", &matchPipeline)
+	if err != nil {
+		return nil, err
+	}
+
+	if statistics, ok := sendingFilter["statistics"]; ok {
+		switch statistics.(string) {
+		case "Количество":
+			group := bson.D{{
+				"$group", bson.D{
+					{"_id", fmt.Sprintf("$%s", settlementField)},
+					{"shipments_number", bson.D{{"$sum", 1}}},
+				},
+			}}
+			groupPipeline = append(groupPipeline, group)
+
+			project := bson.D{{
+				"$project", bson.D{
+					{"_id", 0},
+					{"key", "$_id"},
+					{"value", "$shipments_number"},
+				},
+			}}
+			projectPipeline = append(projectPipeline, project)
+
+		case "Время":
+			match := bson.D{{
+				"$match", bson.D{
+					{"status", "Доставлено"},
+				},
+			}}
+			matchPipeline = append(matchPipeline, match)
+
+			group := bson.D{{
+				"$group", bson.D{
+					{"_id", bson.D{{"settlement", fmt.Sprintf("$%s", settlementField)}}},
+					{"average_time", bson.D{
+						{"$avg", bson.D{
+							{"$dateDiff", bson.D{
+								{"startDate", "$registration_date"},
+								{"endDate", bson.D{
+									{"$getField", bson.D{
+										{"field", "timestamp"},
+										{"input", bson.D{
+											{"$last", "$stages"},
+										}},
+									}},
+								}},
+								{"unit", "hour"},
+								{"timezone", "GMT"},
+								{"startOfWeek", "mon"},
+							}},
+						}},
+					}},
+				},
+			}}
+			groupPipeline = append(groupPipeline, group)
+
+			project := bson.D{{
+				"$project", bson.D{
+					{"_id", 0},
+					{"key", "$_id.settlement"},
+					{"value", "$average_time"},
+				},
+			}}
+			projectPipeline = append(projectPipeline, project)
+
+		case "Вес":
+			group := bson.D{{
+				"$group", bson.D{
+					{"_id", bson.D{{"type", "$type"}}},
+					{"average_weight", bson.D{{"$avg", "$weight"}}},
+				},
+			}}
+			groupPipeline = append(groupPipeline, group)
+
+			project := bson.D{{
+				"$project", bson.D{
+					{"_id", 0},
+					{"key", "$_id.type"},
+					{"value", "$average_weight"},
+				},
+			}}
+			projectPipeline = append(projectPipeline, project)
+		}
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	resultPipeline := mongo.Pipeline{}
+	resultPipeline = append(resultPipeline, matchPipeline...)
+	resultPipeline = append(resultPipeline, groupPipeline...)
+	resultPipeline = append(resultPipeline, projectPipeline...)
+
+	cursor, err := sendingCollection.Aggregate(ctx, resultPipeline)
+	if err != nil {
+		return nil, fmt.Errorf("FindSendings: %v", err)
+	}
+	var results []SendingStatistics
+	if err = cursor.All(ctx, &results); err != nil {
+		return nil, fmt.Errorf("FindSendings: %v", err)
+	}
+
+	// Add not founded keys with "0" value
+	if statistics, ok := sendingFilter["statistics"]; ok {
+		switch statistics.(string) {
+		case "Количество":
+			for _, data := range sendingFilter["settlement"].([]string) {
+				find := false
+				for _, dataResult := range results {
+					if data == dataResult.Key {
+						find = true
+						break
+					}
+				}
+				if find != true {
+					addResult := new(SendingStatistics)
+					addResult.Key = data
+					addResult.Value = 0
+
+					results = append(results, *addResult)
+				}
+			}
+		case "Время":
+			for _, data := range sendingFilter["settlement"].([]string) {
+				find := false
+				for _, dataResult := range results {
+					if data == dataResult.Key {
+						find = true
+						break
+					}
+				}
+				if find != true {
+					addResult := new(SendingStatistics)
+					addResult.Key = data
+					addResult.Value = 0
+
+					results = append(results, *addResult)
+				}
+			}
+		case "Вес":
+			for _, data := range sendingFilter["type"].([]string) {
+				find := false
+				for _, dataResult := range results {
+					if data == dataResult.Key {
+						find = true
+						break
+					}
+				}
+				if find != true {
+					addResult := new(SendingStatistics)
+					addResult.Key = data
+					addResult.Value = 0
+
+					results = append(results, *addResult)
+				}
+			}
+		}
+	}
+
+	return results, nil
+
 }
 
 func (s *Sending) Export() (string, error) {

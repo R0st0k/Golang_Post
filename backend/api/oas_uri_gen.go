@@ -11,6 +11,318 @@ import (
 	"github.com/ogen-go/ogen/uri"
 )
 
+// EncodeURI encodes EmployeeFilterGetBirthDate as URI form.
+func (s EmployeeFilterGetBirthDate) EncodeURI(e uri.Encoder) error {
+	if err := e.EncodeField("birth_date_start", func(e uri.Encoder) error {
+		if val, ok := s.BirthDateStart.Get(); ok {
+			return e.EncodeValue(conv.DateToString(val))
+		}
+		return nil
+	}); err != nil {
+		return errors.Wrap(err, "encode field \"birth_date_start\"")
+	}
+	if err := e.EncodeField("birth_date_finish", func(e uri.Encoder) error {
+		if val, ok := s.BirthDateFinish.Get(); ok {
+			return e.EncodeValue(conv.DateToString(val))
+		}
+		return nil
+	}); err != nil {
+		return errors.Wrap(err, "encode field \"birth_date_finish\"")
+	}
+	return nil
+}
+
+var uriFieldsNameOfEmployeeFilterGetBirthDate = [2]string{
+	0: "birth_date_start",
+	1: "birth_date_finish",
+}
+
+// DecodeURI decodes EmployeeFilterGetBirthDate from URI form.
+func (s *EmployeeFilterGetBirthDate) DecodeURI(d uri.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode EmployeeFilterGetBirthDate to nil")
+	}
+
+	if err := d.DecodeFields(func(k string, d uri.Decoder) error {
+		switch k {
+		case "birth_date_start":
+			if err := func() error {
+				var sDotBirthDateStartVal time.Time
+				if err := func() error {
+					val, err := d.DecodeValue()
+					if err != nil {
+						return err
+					}
+
+					c, err := conv.ToDate(val)
+					if err != nil {
+						return err
+					}
+
+					sDotBirthDateStartVal = c
+					return nil
+				}(); err != nil {
+					return err
+				}
+				s.BirthDateStart.SetTo(sDotBirthDateStartVal)
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"birth_date_start\"")
+			}
+		case "birth_date_finish":
+			if err := func() error {
+				var sDotBirthDateFinishVal time.Time
+				if err := func() error {
+					val, err := d.DecodeValue()
+					if err != nil {
+						return err
+					}
+
+					c, err := conv.ToDate(val)
+					if err != nil {
+						return err
+					}
+
+					sDotBirthDateFinishVal = c
+					return nil
+				}(); err != nil {
+					return err
+				}
+				s.BirthDateFinish.SetTo(sDotBirthDateFinishVal)
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"birth_date_finish\"")
+			}
+		default:
+			return nil
+		}
+		return nil
+	}); err != nil {
+		return errors.Wrap(err, "decode EmployeeFilterGetBirthDate")
+	}
+
+	return nil
+}
+
+// EncodeURI encodes EmployeeFilterGetFullName as URI form.
+func (s EmployeeFilterGetFullName) EncodeURI(e uri.Encoder) error {
+	if err := e.EncodeField("name", func(e uri.Encoder) error {
+		if val, ok := s.Name.Get(); ok {
+			return e.EncodeValue(conv.StringToString(val))
+		}
+		return nil
+	}); err != nil {
+		return errors.Wrap(err, "encode field \"name\"")
+	}
+	if err := e.EncodeField("surname", func(e uri.Encoder) error {
+		if val, ok := s.Surname.Get(); ok {
+			return e.EncodeValue(conv.StringToString(val))
+		}
+		return nil
+	}); err != nil {
+		return errors.Wrap(err, "encode field \"surname\"")
+	}
+	if err := e.EncodeField("middle_name", func(e uri.Encoder) error {
+		if val, ok := s.MiddleName.Get(); ok {
+			return e.EncodeValue(conv.StringToString(val))
+		}
+		return nil
+	}); err != nil {
+		return errors.Wrap(err, "encode field \"middle_name\"")
+	}
+	return nil
+}
+
+var uriFieldsNameOfEmployeeFilterGetFullName = [3]string{
+	0: "name",
+	1: "surname",
+	2: "middle_name",
+}
+
+// DecodeURI decodes EmployeeFilterGetFullName from URI form.
+func (s *EmployeeFilterGetFullName) DecodeURI(d uri.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode EmployeeFilterGetFullName to nil")
+	}
+
+	if err := d.DecodeFields(func(k string, d uri.Decoder) error {
+		switch k {
+		case "name":
+			if err := func() error {
+				var sDotNameVal string
+				if err := func() error {
+					val, err := d.DecodeValue()
+					if err != nil {
+						return err
+					}
+
+					c, err := conv.ToString(val)
+					if err != nil {
+						return err
+					}
+
+					sDotNameVal = c
+					return nil
+				}(); err != nil {
+					return err
+				}
+				s.Name.SetTo(sDotNameVal)
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"name\"")
+			}
+		case "surname":
+			if err := func() error {
+				var sDotSurnameVal string
+				if err := func() error {
+					val, err := d.DecodeValue()
+					if err != nil {
+						return err
+					}
+
+					c, err := conv.ToString(val)
+					if err != nil {
+						return err
+					}
+
+					sDotSurnameVal = c
+					return nil
+				}(); err != nil {
+					return err
+				}
+				s.Surname.SetTo(sDotSurnameVal)
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"surname\"")
+			}
+		case "middle_name":
+			if err := func() error {
+				var sDotMiddleNameVal string
+				if err := func() error {
+					val, err := d.DecodeValue()
+					if err != nil {
+						return err
+					}
+
+					c, err := conv.ToString(val)
+					if err != nil {
+						return err
+					}
+
+					sDotMiddleNameVal = c
+					return nil
+				}(); err != nil {
+					return err
+				}
+				s.MiddleName.SetTo(sDotMiddleNameVal)
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"middle_name\"")
+			}
+		default:
+			return nil
+		}
+		return nil
+	}); err != nil {
+		return errors.Wrap(err, "decode EmployeeFilterGetFullName")
+	}
+
+	return nil
+}
+
+// EncodeURI encodes EmployeeSort as URI form.
+func (s EmployeeSort) EncodeURI(e uri.Encoder) error {
+	if err := e.EncodeField("sort_type", func(e uri.Encoder) error {
+		if val, ok := s.SortType.Get(); ok {
+			return e.EncodeValue(conv.StringToString(string(val)))
+		}
+		return nil
+	}); err != nil {
+		return errors.Wrap(err, "encode field \"sort_type\"")
+	}
+	if err := e.EncodeField("sort_field", func(e uri.Encoder) error {
+		if val, ok := s.SortField.Get(); ok {
+			return e.EncodeValue(conv.StringToString(string(val)))
+		}
+		return nil
+	}); err != nil {
+		return errors.Wrap(err, "encode field \"sort_field\"")
+	}
+	return nil
+}
+
+var uriFieldsNameOfEmployeeSort = [2]string{
+	0: "sort_type",
+	1: "sort_field",
+}
+
+// DecodeURI decodes EmployeeSort from URI form.
+func (s *EmployeeSort) DecodeURI(d uri.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode EmployeeSort to nil")
+	}
+
+	if err := d.DecodeFields(func(k string, d uri.Decoder) error {
+		switch k {
+		case "sort_type":
+			if err := func() error {
+				var sDotSortTypeVal EmployeeSortSortType
+				if err := func() error {
+					val, err := d.DecodeValue()
+					if err != nil {
+						return err
+					}
+
+					c, err := conv.ToString(val)
+					if err != nil {
+						return err
+					}
+
+					sDotSortTypeVal = EmployeeSortSortType(c)
+					return nil
+				}(); err != nil {
+					return err
+				}
+				s.SortType.SetTo(sDotSortTypeVal)
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"sort_type\"")
+			}
+		case "sort_field":
+			if err := func() error {
+				var sDotSortFieldVal EmployeeSortSortField
+				if err := func() error {
+					val, err := d.DecodeValue()
+					if err != nil {
+						return err
+					}
+
+					c, err := conv.ToString(val)
+					if err != nil {
+						return err
+					}
+
+					sDotSortFieldVal = EmployeeSortSortField(c)
+					return nil
+				}(); err != nil {
+					return err
+				}
+				s.SortField.SetTo(sDotSortFieldVal)
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"sort_field\"")
+			}
+		default:
+			return nil
+		}
+		return nil
+	}); err != nil {
+		return errors.Wrap(err, "decode EmployeeSort")
+	}
+
+	return nil
+}
+
 // EncodeURI encodes SendingFilterGetDate as URI form.
 func (s SendingFilterGetDate) EncodeURI(e uri.Encoder) error {
 	if err := e.EncodeField("date_start", func(e uri.Encoder) error {
