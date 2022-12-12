@@ -176,7 +176,10 @@ export default function SendingsTable(props) {
                                         <TableCell align="center">{row.size.length}x{row.size.width}x{row.size.height}</TableCell>
                                         <TableCell align="center">
                                             {
-                                                row.status === "В пути" ? <Typography color="#ED8000">{row.status}</Typography> :  <Typography color="#6FD600">{row.status}</Typography>
+                                                row.status === "В пути" ?
+                                                    <Typography color="#ED8000">{row.status}</Typography> :
+                                                    row.status === "Утеряно" ? <Typography color="#d60909">{row.status}</Typography>
+                                                    : <Typography color="#6FD600">{row.status}</Typography>
                                             }
                                         </TableCell>
                                     </TableRow>

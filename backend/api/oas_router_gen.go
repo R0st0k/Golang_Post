@@ -44,6 +44,72 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				break
 			}
 			switch elem[0] {
+			case 'd': // Prefix: "data_"
+				if l := len("data_"); len(elem) >= l && elem[0:l] == "data_" {
+					elem = elem[l:]
+				} else {
+					break
+				}
+
+				if len(elem) == 0 {
+					break
+				}
+				switch elem[0] {
+				case 'e': // Prefix: "export_sending"
+					if l := len("export_sending"); len(elem) >= l && elem[0:l] == "export_sending" {
+						elem = elem[l:]
+					} else {
+						break
+					}
+
+					if len(elem) == 0 {
+						// Leaf node.
+						switch r.Method {
+						case "GET":
+							s.handleDataExportSendingGetRequest([0]string{}, w, r)
+						default:
+							s.notAllowed(w, r, "GET")
+						}
+
+						return
+					}
+				case 'i': // Prefix: "import_sending"
+					if l := len("import_sending"); len(elem) >= l && elem[0:l] == "import_sending" {
+						elem = elem[l:]
+					} else {
+						break
+					}
+
+					if len(elem) == 0 {
+						// Leaf node.
+						switch r.Method {
+						case "POST":
+							s.handleDataImportSendingPostRequest([0]string{}, w, r)
+						default:
+							s.notAllowed(w, r, "POST")
+						}
+
+						return
+					}
+				}
+			case 'e': // Prefix: "employee_filter"
+				if l := len("employee_filter"); len(elem) >= l && elem[0:l] == "employee_filter" {
+					elem = elem[l:]
+				} else {
+					break
+				}
+
+				if len(elem) == 0 {
+					// Leaf node.
+					switch r.Method {
+					case "GET":
+						s.handleEmployeeFilterGetRequest([0]string{}, w, r)
+					default:
+						s.notAllowed(w, r, "GET")
+					}
+
+					return
+				}
 			case 'p': // Prefix: "postcodes_by_settlement"
 				if l := len("postcodes_by_settlement"); len(elem) >= l && elem[0:l] == "postcodes_by_settlement" {
 					elem = elem[l:]
@@ -82,23 +148,53 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 					return
 				}
 				switch elem[0] {
-				case '_': // Prefix: "_filter"
-					if l := len("_filter"); len(elem) >= l && elem[0:l] == "_filter" {
+				case '_': // Prefix: "_"
+					if l := len("_"); len(elem) >= l && elem[0:l] == "_" {
 						elem = elem[l:]
 					} else {
 						break
 					}
 
 					if len(elem) == 0 {
-						// Leaf node.
-						switch r.Method {
-						case "GET":
-							s.handleSendingFilterGetRequest([0]string{}, w, r)
-						default:
-							s.notAllowed(w, r, "GET")
+						break
+					}
+					switch elem[0] {
+					case 'f': // Prefix: "filter"
+						if l := len("filter"); len(elem) >= l && elem[0:l] == "filter" {
+							elem = elem[l:]
+						} else {
+							break
 						}
 
-						return
+						if len(elem) == 0 {
+							// Leaf node.
+							switch r.Method {
+							case "GET":
+								s.handleSendingFilterGetRequest([0]string{}, w, r)
+							default:
+								s.notAllowed(w, r, "GET")
+							}
+
+							return
+						}
+					case 's': // Prefix: "statistics"
+						if l := len("statistics"); len(elem) >= l && elem[0:l] == "statistics" {
+							elem = elem[l:]
+						} else {
+							break
+						}
+
+						if len(elem) == 0 {
+							// Leaf node.
+							switch r.Method {
+							case "GET":
+								s.handleSendingStatisticsGetRequest([0]string{}, w, r)
+							default:
+								s.notAllowed(w, r, "GET")
+							}
+
+							return
+						}
 					}
 				}
 			}
@@ -161,6 +257,78 @@ func (s *Server) FindRoute(method, path string) (r Route, _ bool) {
 				break
 			}
 			switch elem[0] {
+			case 'd': // Prefix: "data_"
+				if l := len("data_"); len(elem) >= l && elem[0:l] == "data_" {
+					elem = elem[l:]
+				} else {
+					break
+				}
+
+				if len(elem) == 0 {
+					break
+				}
+				switch elem[0] {
+				case 'e': // Prefix: "export_sending"
+					if l := len("export_sending"); len(elem) >= l && elem[0:l] == "export_sending" {
+						elem = elem[l:]
+					} else {
+						break
+					}
+
+					if len(elem) == 0 {
+						switch method {
+						case "GET":
+							// Leaf: DataExportSendingGet
+							r.name = "DataExportSendingGet"
+							r.operationID = ""
+							r.args = args
+							r.count = 0
+							return r, true
+						default:
+							return
+						}
+					}
+				case 'i': // Prefix: "import_sending"
+					if l := len("import_sending"); len(elem) >= l && elem[0:l] == "import_sending" {
+						elem = elem[l:]
+					} else {
+						break
+					}
+
+					if len(elem) == 0 {
+						switch method {
+						case "POST":
+							// Leaf: DataImportSendingPost
+							r.name = "DataImportSendingPost"
+							r.operationID = ""
+							r.args = args
+							r.count = 0
+							return r, true
+						default:
+							return
+						}
+					}
+				}
+			case 'e': // Prefix: "employee_filter"
+				if l := len("employee_filter"); len(elem) >= l && elem[0:l] == "employee_filter" {
+					elem = elem[l:]
+				} else {
+					break
+				}
+
+				if len(elem) == 0 {
+					switch method {
+					case "GET":
+						// Leaf: EmployeeFilterGet
+						r.name = "EmployeeFilterGet"
+						r.operationID = ""
+						r.args = args
+						r.count = 0
+						return r, true
+					default:
+						return
+					}
+				}
 			case 'p': // Prefix: "postcodes_by_settlement"
 				if l := len("postcodes_by_settlement"); len(elem) >= l && elem[0:l] == "postcodes_by_settlement" {
 					elem = elem[l:]
@@ -207,24 +375,56 @@ func (s *Server) FindRoute(method, path string) (r Route, _ bool) {
 					}
 				}
 				switch elem[0] {
-				case '_': // Prefix: "_filter"
-					if l := len("_filter"); len(elem) >= l && elem[0:l] == "_filter" {
+				case '_': // Prefix: "_"
+					if l := len("_"); len(elem) >= l && elem[0:l] == "_" {
 						elem = elem[l:]
 					} else {
 						break
 					}
 
 					if len(elem) == 0 {
-						switch method {
-						case "GET":
-							// Leaf: SendingFilterGet
-							r.name = "SendingFilterGet"
-							r.operationID = ""
-							r.args = args
-							r.count = 0
-							return r, true
-						default:
-							return
+						break
+					}
+					switch elem[0] {
+					case 'f': // Prefix: "filter"
+						if l := len("filter"); len(elem) >= l && elem[0:l] == "filter" {
+							elem = elem[l:]
+						} else {
+							break
+						}
+
+						if len(elem) == 0 {
+							switch method {
+							case "GET":
+								// Leaf: SendingFilterGet
+								r.name = "SendingFilterGet"
+								r.operationID = ""
+								r.args = args
+								r.count = 0
+								return r, true
+							default:
+								return
+							}
+						}
+					case 's': // Prefix: "statistics"
+						if l := len("statistics"); len(elem) >= l && elem[0:l] == "statistics" {
+							elem = elem[l:]
+						} else {
+							break
+						}
+
+						if len(elem) == 0 {
+							switch method {
+							case "GET":
+								// Leaf: SendingStatisticsGet
+								r.name = "SendingStatisticsGet"
+								r.operationID = ""
+								r.args = args
+								r.count = 0
+								return r, true
+							default:
+								return
+							}
 						}
 					}
 				}

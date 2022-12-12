@@ -4,8 +4,12 @@ import (
 	post "backend/api"
 	"backend/models"
 	"context"
+	"encoding/json"
 	"github.com/google/uuid"
+	"log"
+	"os"
 	"sync"
+	"time"
 )
 
 type postService struct {
@@ -32,10 +36,10 @@ func (p *postService) SendingGet(ctx context.Context, params post.SendingGetPara
 	response.SetType(post.SendingType(sending.Type))
 	response.SetStatus(post.SendingStatus(sending.Status))
 
-	stages := []post.SendingStage{}
+	stages := []post.SendingGetResponseStagesItem{}
 	for i := range sending.Stages {
-		newStage := new(post.SendingStage)
-		newStage.SetName(post.SendingStageName(sending.Stages[i].Name))
+		newStage := new(post.SendingGetResponseStagesItem)
+		newStage.SetName(post.SendingGetResponseStagesItemName(sending.Stages[i].Name))
 		newStage.SetDate(sending.Stages[i].Timestamp)
 		newStage.SetPostcode(post.AddressPostcode(sending.Stages[i].Postcode))
 		newStage.SetSettlement(settlementByPostcode[sending.Stages[i].Postcode])
@@ -88,12 +92,28 @@ func (p *postService) SendingPost(ctx context.Context, req post.SendingPostReq) 
 
 }
 
-func (p *postService) PostcodesBySettlementGet(ctx context.Context) (post.PostcodesBySettlementGetResponse, error) {
+func (p *postService) ExportPostOfficeTypeMultiple(params []post.PostOfficeType) map[string]interface{} {
+	types := map[string]interface{}{}
+
+	if len(params) > 0 {
+		result := []string{}
+		for _, data := range params {
+			result = append(result, string(data))
+		}
+		types["type"] = result
+	}
+
+	return types
+}
+
+func (p *postService) PostcodesBySettlementGet(ctx context.Context, params post.PostcodesBySettlementGetParams) (post.PostcodesBySettlementGetResponse, error) {
 	p.mux.Lock()
 	defer p.mux.Unlock()
 
+	types := p.ExportPostOfficeTypeMultiple(params.Type)
+
 	po := new(models.PostOffice)
-	postcodesBySettlement, err := po.GetPostcodesBySettlement()
+	postcodesBySettlement, err := po.GetPostcodesBySettlement(types)
 	if err != nil {
 		return nil, err
 	}
@@ -116,44 +136,78 @@ func (p *postService) ExportSendingFilter(params post.SendingFilterGetParams) ma
 	sendingFilter["page"] = int64(params.Page)
 	sendingFilter["elems"] = int64(params.ElemsOnPage)
 
-	if OrderID, ok := params.Filter.OrderID.Get(); ok {
+	if OrderID, ok := params.OrderID.Get(); ok {
 		sendingFilter["order_id"] = OrderID
 	}
-	if Type, ok := params.Filter.Type.Get(); ok {
-		sendingFilter["type"] = string(Type)
+	if len(params.Type) > 0 {
+		result := []string{}
+		for _, data := range params.Type {
+			result = append(result, string(data))
+		}
+		sendingFilter["type"] = result
 	}
-	if Status, ok := params.Filter.Status.Get(); ok {
-		sendingFilter["status"] = string(Status)
+	if len(params.Status) > 0 {
+		result := []string{}
+		for _, data := range params.Status {
+			result = append(result, string(data))
+		}
+		sendingFilter["status"] = result
 	}
-	if DateStart, ok := params.Filter.DateStart.Get(); ok {
-		sendingFilter["date_start"] = DateStart
+	if Date, ok := params.Date.Get(); ok {
+		if DateStart, ok := Date.GetDateStart().Get(); ok {
+			sendingFilter["date_start"] = DateStart
+		}
+		if DateFinish, ok := Date.GetDateFinish().Get(); ok {
+			sendingFilter["date_finish"] = DateFinish
+		}
 	}
-	if DateFinish, ok := params.Filter.DateFinish.Get(); ok {
-		sendingFilter["date_finish"] = DateFinish
+	if Settlements, ok := params.Settlements.Get(); ok {
+		if SenderSettlement, ok := Settlements.GetSenderSettlement().Get(); ok {
+			sendingFilter["sender_settlement"] = SenderSettlement
+		}
+		if ReceiverSettlement, ok := Settlements.GetReceiverSettlement().Get(); ok {
+			sendingFilter["receiver_settlement"] = ReceiverSettlement
+		}
 	}
-	if SenderSettlement, ok := params.Filter.SenderSettlement.Get(); ok {
-		sendingFilter["sender_settlement"] = SenderSettlement
+	if Length, ok := params.Length.Get(); ok {
+		if LengthMin, ok := Length.GetLengthMin().Get(); ok {
+			sendingFilter["length_min"] = LengthMin
+		}
+		if LengthMax, ok := Length.GetLengthMax().Get(); ok {
+			sendingFilter["length_max"] = LengthMax
+		}
 	}
-	if ReceiverSettlement, ok := params.Filter.ReceiverSettlement.Get(); ok {
-		sendingFilter["receiver_settlement"] = ReceiverSettlement
+	if Width, ok := params.Width.Get(); ok {
+		if WidthMin, ok := Width.GetWidthMin().Get(); ok {
+			sendingFilter["width_min"] = WidthMin
+		}
+		if WidthMax, ok := Width.GetWidthMax().Get(); ok {
+			sendingFilter["width_max"] = WidthMax
+		}
 	}
-	if Length, ok := params.Filter.Length.Get(); ok {
-		sendingFilter["length"] = Length
+	if Height, ok := params.Height.Get(); ok {
+		if HeightMin, ok := Height.GetHeightMin().Get(); ok {
+			sendingFilter["height_min"] = HeightMin
+		}
+		if HeightMax, ok := Height.GetHeightMax().Get(); ok {
+			sendingFilter["height_max"] = HeightMax
+		}
 	}
-	if Width, ok := params.Filter.Width.Get(); ok {
-		sendingFilter["width"] = Width
+	if Weight, ok := params.Weight.Get(); ok {
+		if WeightMin, ok := Weight.GetWeightMin().Get(); ok {
+			sendingFilter["weight_min"] = int64(WeightMin)
+		}
+		if WeightMax, ok := Weight.GetWeightMax().Get(); ok {
+			sendingFilter["weight_max"] = int64(WeightMax)
+		}
 	}
-	if Height, ok := params.Filter.Height.Get(); ok {
-		sendingFilter["height"] = Height
-	}
-	if Weight, ok := params.Filter.Weight.Get(); ok {
-		sendingFilter["weight"] = int64(Weight)
-	}
-	if SortType, ok := params.Sort.SortType.Get(); ok {
-		sendingFilter["sort_type"] = string(SortType)
-	}
-	if SortField, ok := params.Sort.SortField.Get(); ok {
-		sendingFilter["sort_field"] = string(SortField)
+	if Sort, ok := params.Sort.Get(); ok {
+		if SortType, ok := Sort.GetSortType().Get(); ok {
+			sendingFilter["sort_type"] = string(SortType)
+		}
+		if SortField, ok := Sort.GetSortField().Get(); ok {
+			sendingFilter["sort_field"] = string(SortField)
+		}
 	}
 
 	return sendingFilter
@@ -208,4 +262,489 @@ func (p *postService) SendingFilterGet(ctx context.Context, params post.SendingF
 	response.SetResult(result)
 
 	return &response, nil
+}
+
+func (p *postService) ImportPostClient(params map[string]interface{}) (post.PostClient, error) {
+	client := new(post.PostClient)
+	if name, ok := params["name"]; ok {
+		client.SetName(name.(string))
+	}
+	if surname, ok := params["surname"]; ok {
+		client.SetSurname(surname.(string))
+	}
+	if middleName, ok := params["middle_name"]; ok {
+		value := new(post.OptString)
+		value.SetTo(middleName.(string))
+		client.SetMiddleName(*value)
+	}
+
+	if value, ok := params["address"]; ok {
+		address, err := p.ImportAddress(value.(map[string]interface{}))
+		if err != nil {
+			return post.PostClient{}, err
+		}
+		client.SetAddress(address)
+	}
+
+	return *client, nil
+}
+
+func (p *postService) ImportAddress(params map[string]interface{}) (post.Address, error) {
+	address := new(post.Address)
+
+	if value, ok := params["postcode"]; ok {
+		address.SetPostcode(post.AddressPostcode(value.(string)))
+	}
+	if value, ok := params["region"]; ok {
+		region := new(post.OptString)
+		region.SetTo(value.(string))
+		address.SetRegion(*region)
+	}
+	if value, ok := params["district"]; ok {
+		district := new(post.OptString)
+		district.SetTo(value.(string))
+		address.SetDistrict(*district)
+	}
+	if value, ok := params["settlement"]; ok {
+		address.SetSettlement(value.(string))
+	}
+	if value, ok := params["street"]; ok {
+		address.SetStreet(value.(string))
+	}
+	if value, ok := params["building"]; ok {
+		address.SetBuilding(value.(string))
+	}
+	if value, ok := params["apartment"]; ok {
+		apartment := new(post.OptString)
+		apartment.SetTo(value.(string))
+		address.SetApartment(*apartment)
+	}
+
+	return *address, nil
+}
+
+func (p *postService) ImportStages(params []interface{}) ([]post.SendingStage, error) {
+	answer := []post.SendingStage{}
+
+	for _, stageJSON := range params {
+		stage := new(post.SendingStage)
+		if name, ok := stageJSON.(map[string]interface{})["name"]; ok {
+			stage.SetName(post.SendingStageName(name.(string)))
+		}
+		if value, ok := stageJSON.(map[string]interface{})["timestamp"]; ok {
+			if timestamp, ok := value.(map[string]interface{})["$date"]; ok {
+				time, err := time.Parse(time.RFC3339, timestamp.(string))
+				if err != nil {
+					return []post.SendingStage{}, err
+				}
+				stage.SetTimestamp(post.SendingStageTimestamp{Date: time})
+			}
+		}
+		if postcode, ok := stageJSON.(map[string]interface{})["postcode"]; ok {
+			stage.SetPostcode(post.AddressPostcode(postcode.(string)))
+		}
+		if value, ok := stageJSON.(map[string]interface{})["employee_id"]; ok {
+			if id, ok := value.(map[string]interface{})["$oid"]; ok {
+				stage.SetEmployeeID(post.ObjectID{Oid: id.(string)})
+			}
+		}
+
+		answer = append(answer, *stage)
+	}
+
+	return answer, nil
+}
+
+func (p *postService) ImportSendings(params []map[string]interface{}) ([]post.Sending, error) {
+	answer := []post.Sending{}
+
+	for _, json := range params {
+		sending := new(post.Sending)
+
+		if value, ok := json["_id"]; ok {
+			if id, ok := value.(map[string]interface{})["$oid"]; ok {
+				sending.SetID(post.ObjectID{Oid: id.(string)})
+			}
+		}
+		if value, ok := json["order_id"]; ok {
+			uuid, err := uuid.Parse(value.(string))
+			if err != nil {
+				return []post.Sending{}, err
+			}
+			sending.SetOrderID(post.SendingOrderID(uuid))
+		}
+		if value, ok := json["registration_date"]; ok {
+			if date, ok := value.(map[string]interface{})["$date"]; ok {
+				time, err := time.Parse(time.RFC3339, date.(string))
+				if err != nil {
+					return []post.Sending{}, err
+				}
+				sending.SetRegistrationDate(post.SendingRegistrationDate{Date: time})
+			}
+		}
+		if jsonSender, ok := json["sender"]; ok {
+			sender, err := p.ImportPostClient(jsonSender.(map[string]interface{}))
+			if err != nil {
+				return []post.Sending{}, err
+			}
+			sending.SetSender(sender)
+		}
+		if jsonReceiver, ok := json["receiver"]; ok {
+			receiver, err := p.ImportPostClient(jsonReceiver.(map[string]interface{}))
+			if err != nil {
+				return []post.Sending{}, err
+			}
+			sending.SetReceiver(receiver)
+		}
+		if value, ok := json["type"]; ok {
+			sending.SetType(post.SendingType(value.(string)))
+		}
+		if size, ok := json["size"].(map[string]interface{}); ok {
+			newSize := new(post.SendingSize)
+			if length, ok := size["length"]; ok {
+				newSize.SetLength(int64(length.(float64)))
+			}
+			if width, ok := size["width"]; ok {
+				newSize.SetWidth(int64(width.(float64)))
+			}
+			if height, ok := size["height"]; ok {
+				newSize.SetHeight(int64(height.(float64)))
+			}
+			sending.SetSize(*newSize)
+		}
+		if value, ok := json["weight"]; ok {
+			sending.SetWeight(post.SendingWeight(int64(value.(float64))))
+		}
+		if value, ok := json["stages"]; ok {
+			stages, err := p.ImportStages(value.([]interface{}))
+			if err != nil {
+				return []post.Sending{}, err
+			}
+			sending.SetStages(stages)
+		}
+		if value, ok := json["status"]; ok {
+			sending.SetStatus(post.SendingStatus(value.(string)))
+		}
+
+		answer = append(answer, *sending)
+	}
+
+	return answer, nil
+}
+
+func (p *postService) DataExportSendingGet(ctx context.Context) ([]post.Sending, error) {
+	p.mux.Lock()
+	defer p.mux.Unlock()
+
+	s := new(models.Sending)
+	fileName, err := s.Export()
+	if err != nil {
+		return nil, err
+	}
+	defer os.Remove(fileName) // clean up
+
+	data, err := os.ReadFile(fileName)
+	if err != nil {
+		return nil, err
+	}
+
+	var result []map[string]interface{}
+	err = json.Unmarshal([]byte(data), &result)
+	if err != nil {
+		return nil, err
+	}
+
+	answer, err := p.ImportSendings(result)
+	if err != nil {
+		return nil, err
+	}
+
+	return answer, nil
+}
+
+func (p *postService) ExportAddress(params post.Address) (map[string]interface{}, error) {
+	address := map[string]interface{}{}
+	address["postcode"] = params.GetPostcode()
+	if region, ok := params.GetRegion().Get(); ok {
+		address["region"] = region
+	}
+	if district, ok := params.GetDistrict().Get(); ok {
+		address["district"] = district
+	}
+	address["settlement"] = params.GetSettlement()
+	address["street"] = params.GetStreet()
+	address["building"] = params.GetBuilding()
+	if apartment, ok := params.GetApartment().Get(); ok {
+		address["apartment"] = apartment
+	}
+
+	return address, nil
+}
+
+func (p *postService) ExportPostClient(params post.PostClient) (map[string]interface{}, error) {
+	client := map[string]interface{}{}
+	client["name"] = params.GetName()
+	client["surname"] = params.GetSurname()
+	if middleName, ok := params.GetMiddleName().Get(); ok {
+		client["middle_name"] = middleName
+	}
+	var err error
+	client["address"], err = p.ExportAddress(params.Address)
+	if err != nil {
+		return nil, err
+	}
+
+	return client, nil
+}
+
+func (p *postService) ExportStages(params []post.SendingStage) ([]map[string]interface{}, error) {
+	answer := []map[string]interface{}{}
+
+	for _, stage := range params {
+		json := map[string]interface{}{}
+		json["name"] = string(stage.GetName())
+		json["timestamp"] = map[string]string{"$date": stage.GetTimestamp().GetDate().Format(time.RFC3339)}
+		json["postcode"] = string(stage.GetPostcode())
+		json["employee_id"] = map[string]string{"$oid": stage.GetEmployeeID().GetOid()}
+		answer = append(answer, json)
+	}
+
+	return answer, nil
+}
+
+func (p *postService) ExportSending(params []post.Sending) ([]map[string]interface{}, error) {
+	answer := []map[string]interface{}{}
+	var err error
+
+	for _, sending := range params {
+		json := map[string]interface{}{}
+		json["_id"] = map[string]string{"$oid": sending.GetID().GetOid()}
+		json["order_id"] = uuid.UUID(sending.GetOrderID()).String()
+		json["registration_date"] = map[string]string{"$date": sending.GetRegistrationDate().GetDate().Format(time.RFC3339)}
+		json["sender"], err = p.ExportPostClient(sending.GetSender())
+		if err != nil {
+			return nil, err
+		}
+		json["receiver"], err = p.ExportPostClient(sending.GetReceiver())
+		if err != nil {
+			return nil, err
+		}
+		json["type"] = string(sending.GetType())
+		{
+			size := map[string]interface{}{}
+			size["length"] = sending.GetSize().GetLength()
+			size["width"] = sending.GetSize().GetWidth()
+			size["height"] = sending.GetSize().GetHeight()
+			json["size"] = size
+		}
+		json["weight"] = int64(sending.GetWeight())
+		json["stages"], err = p.ExportStages(sending.GetStages())
+		if err != nil {
+			return nil, err
+		}
+		json["status"] = string(sending.GetStatus())
+
+		answer = append(answer, json)
+	}
+
+	return answer, nil
+}
+
+func (p *postService) DataImportSendingPost(ctx context.Context, req []post.Sending) (post.DataImportSendingPostRes, error) {
+	p.mux.Lock()
+	defer p.mux.Unlock()
+
+	data, err := p.ExportSending(req)
+	if err != nil {
+		return nil, err
+	}
+
+	f, err := os.CreateTemp("", "sendings")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer os.Remove(f.Name()) // clean up
+
+	asJSON, err := json.MarshalIndent(data, "", "\t")
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = f.Write(asJSON)
+	if err != nil {
+		return nil, err
+	}
+
+	err = f.Close()
+	if err != nil {
+		return nil, err
+	}
+
+	s := new(models.Sending)
+	err = s.Import(f.Name())
+	if err != nil {
+		return nil, err
+	}
+
+	return new(post.DataImportSendingPostOK), nil
+}
+
+func (p *postService) ExportEmployeeFilter(params post.EmployeeFilterGetParams) map[string]interface{} {
+	employeeFilter := make(map[string]interface{})
+	employeeFilter["page"] = int64(params.Page)
+	employeeFilter["elems"] = int64(params.ElemsOnPage)
+
+	if fullName, ok := params.FullName.Get(); ok {
+		if name, ok := fullName.GetName().Get(); ok {
+			employeeFilter["name"] = name
+		}
+		if surname, ok := fullName.GetSurname().Get(); ok {
+			employeeFilter["surname"] = surname
+		}
+		if middleName, ok := fullName.GetMiddleName().Get(); ok {
+			employeeFilter["middle_name"] = middleName
+		}
+	}
+	if settlement, ok := params.Settlement.Get(); ok {
+		employeeFilter["settlement"] = settlement
+	}
+	if postcode, ok := params.Postcode.Get(); ok {
+		employeeFilter["postcode"] = string(postcode)
+	}
+	if len(params.Position) > 0 {
+		result := []string{}
+		for _, data := range params.Position {
+			result = append(result, string(data))
+		}
+		employeeFilter["position"] = result
+	}
+	if birthDate, ok := params.BirthDate.Get(); ok {
+		if dateStart, ok := birthDate.GetBirthDateStart().Get(); ok {
+			employeeFilter["birth_date_start"] = dateStart
+		}
+		if dateFinish, ok := birthDate.GetBirthDateFinish().Get(); ok {
+			employeeFilter["birth_date_finish"] = dateFinish
+		}
+	}
+	if len(params.Gender) > 0 {
+		result := []string{}
+		for _, data := range params.Gender {
+			result = append(result, string(data))
+		}
+		employeeFilter["gender"] = result
+	}
+	if phoneNumber, ok := params.PhoneNumber.Get(); ok {
+		employeeFilter["phone_number"] = phoneNumber
+	}
+
+	if Sort, ok := params.Sort.Get(); ok {
+		if SortType, ok := Sort.GetSortType().Get(); ok {
+			employeeFilter["sort_type"] = string(SortType)
+		}
+		if SortField, ok := Sort.GetSortField().Get(); ok {
+			employeeFilter["sort_field"] = string(SortField)
+		}
+	}
+
+	return employeeFilter
+}
+
+func (p *postService) ModelToEmployeeFilterGetResponseResultItem(employee models.EmployeeDemonstration) (post.EmployeeFilterGetResponseResultItem, error) {
+	var employeeItem post.EmployeeFilterGetResponseResultItem
+
+	employeeItem.SetName(employee.Name)
+	employeeItem.SetSurname(employee.Surname)
+	if employee.MiddleName != "" {
+		value := new(post.OptString)
+		value.SetTo(employee.MiddleName)
+		employeeItem.SetMiddleName(*value)
+	}
+	employeeItem.SetGender(post.EmployeeGender(employee.Gender))
+	employeeItem.SetBirthDate(employee.BirthDate)
+	employeeItem.SetPosition(post.EmployeePosition(employee.Position))
+	employeeItem.SetPhoneNumber(post.EmployeePhoneNumber(employee.PhoneNumber))
+	employeeItem.SetSettlement(employee.Settlement)
+	employeeItem.SetPostcode(post.AddressPostcode(employee.Postcode))
+
+	return employeeItem, nil
+}
+
+func (p *postService) EmployeeFilterGet(ctx context.Context, params post.EmployeeFilterGetParams) (post.EmployeeFilterGetRes, error) {
+	p.mux.Lock()
+	defer p.mux.Unlock()
+
+	employeeFilter := p.ExportEmployeeFilter(params)
+
+	e := new(models.Employee)
+	total, resultEmployee, err := e.FilterEmployee(employeeFilter)
+	if err != nil {
+		return nil, err
+	}
+
+	var response post.EmployeeFilterGetResponse
+	result := []post.EmployeeFilterGetResponseResultItem{}
+
+	for i := range resultEmployee {
+		item, err := p.ModelToEmployeeFilterGetResponseResultItem(resultEmployee[i])
+		if err != nil {
+			return nil, err
+		}
+		result = append(result, item)
+	}
+
+	response.SetTotal(total)
+	response.SetResult(result)
+
+	return &response, nil
+}
+
+func (p *postService) ExportSendingStatistics(params post.SendingStatisticsGetParams) map[string]interface{} {
+	sendingStatistics := make(map[string]interface{})
+
+	if len(params.Settlement) > 0 {
+		result := []string{}
+		for _, data := range params.Settlement {
+			result = append(result, data)
+		}
+		sendingStatistics["settlement"] = result
+	}
+	if len(params.Type) > 0 {
+		result := []string{}
+		for _, data := range params.Type {
+			result = append(result, string(data))
+		}
+		sendingStatistics["type"] = result
+	}
+	sendingStatistics["direction"] = string(params.Direction)
+	sendingStatistics["statistics"] = string(params.Statistics)
+
+	return sendingStatistics
+}
+
+func (p *postService) SendingStatisticsGet(ctx context.Context, params post.SendingStatisticsGetParams) (post.SendingStatisticsGetRes, error) {
+	p.mux.Lock()
+	defer p.mux.Unlock()
+
+	sendingStatistics := p.ExportSendingStatistics(params)
+
+	s := new(models.Sending)
+	resultSending, err := s.StatisticsSending(sendingStatistics)
+	if err != nil {
+		return nil, err
+	}
+
+	var items []post.SendingStatGetResponseItem
+
+	for _, data := range resultSending {
+		item := new(post.SendingStatGetResponseItem)
+		item.SetKey(data.Key)
+		item.SetValue(data.Value)
+
+		items = append(items, *item)
+	}
+
+	response := post.SendingStatisticsGetOKApplicationJSON(items)
+
+	return &response, nil
+
 }
