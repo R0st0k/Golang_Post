@@ -45,14 +45,14 @@ export default function AdvancedSearchEmployees(props){
 
     const handleDateStartChange = value =>{
         let event = {};
-        const target = {name: "birthday_start", value: value.format('YYYY-M-DD')};
+        const target = {name: "birth_date_start", value: value.format('YYYY-M-DD')};
         event.target = target;
         props.onChange(event);
     }
 
     const handleDateEndChange = value =>{
         let event = {};
-        const target = {name: "birthday_end", value: value.format('YYYY-M-DD')};
+        const target = {name: "birth_date_end", value: value.format('YYYY-M-DD')};
         event.target = target;
         props.onChange(event);
     }
@@ -118,7 +118,7 @@ export default function AdvancedSearchEmployees(props){
                         <DesktopDatePicker
                             name="date_start"
                             onChange={handleDateStartChange}
-                            value={props.values.birthday_start}
+                            value={props.values.birth_date_start}
                             label={"Дата рождения С"}
                             inputFormat="DD/MM/YYYY"
                             renderInput={(params) => <TextField fullWidth {...params} />}
@@ -130,7 +130,7 @@ export default function AdvancedSearchEmployees(props){
                         <DesktopDatePicker
                             name="date_end"
                             onChange={handleDateEndChange}
-                            value={props.values.birthday_end}
+                            value={props.values.birth_date_end}
                             label={"Дата рождения По"}
                             inputFormat="DD/MM/YYYY"
                             renderInput={(params) => <TextField fullWidth {...params} />}
@@ -142,17 +142,24 @@ export default function AdvancedSearchEmployees(props){
                         fullWidth
                         select
                         label="Пол"
-                        name="position"
-                        value={props.values.sex}
+                        name="gender"
+                        value={props.values.gender}
                         onChange={props.onChange}
                     >
                         <MenuItem value="">Не выбрано</MenuItem>
-                        <MenuItem value={'Мужской'}>Мужской</MenuItem>
-                        <MenuItem value={'Женский'}>Женский</MenuItem>
+                        <MenuItem value={'М'}>Мужской</MenuItem>
+                        <MenuItem value={'Ж'}>Женский</MenuItem>
                     </TextField>
                 </Grid>
                 <Grid item xs={4}>
-                    <MuiPhoneNumber defaultCountry={'ru'} onlyCountries={['ru']} onChange={handleNumberPhoneChange} />
+                    <TextField
+                        fullWidth
+                        label="Телефон"
+                        name="phone_number"
+                        value={props.values.phone_number}
+                        onChange={props.onChange}
+                        />
+                    {/*<MuiPhoneNumber defaultCountry={'ru'} onlyCountries={['ru']} onChange={handleNumberPhoneChange} />*/}
                 </Grid>
             </Grid>
         </div>

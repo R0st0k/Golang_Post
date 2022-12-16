@@ -11,6 +11,7 @@ import axios from 'axios';
 import CustomAccordion from "../components/customAccordion";
 import AdvancedSearchEmployees from "../components/advancedSearchEmployees";
 import EmployeesTable from "../components/employeesTable";
+import qs from "qs";
 
 
 export default class Employees extends React.Component {
@@ -24,9 +25,9 @@ export default class Employees extends React.Component {
                 settlement: "",
                 postcode: "",
                 position: "",
-                birthday_start: "",
-                birthday_end: "",
-                sex: "",
+                birth_date_start: "",
+                birth_date_end: "",
+                gender: "",
                 phone_number: ""
             },
             data: [],
@@ -42,6 +43,23 @@ export default class Employees extends React.Component {
         this.handleChangeAdvanceSearch = this.handleChangeAdvanceSearch.bind(this);
         this.handleChangeTable = this.handleChangeTable.bind(this);
         this.handleChangeRowsPerPage = this.handleChangeRowsPerPage.bind(this);
+    }
+
+    componentDidMount() {
+        axios.get('http://localhost:8080/api/v1/employee_filter', {
+            params:{
+                page: this.state.page + 1,
+                elems_on_page: this.state.rowsPerPage
+            }
+        })
+            .then(
+                (response) => {
+                    this.setState({
+                        data: response.data.result,
+                        total: response.data.total
+                    })
+                }
+            )
     }
 
     handleChange(event){
@@ -70,7 +88,7 @@ export default class Employees extends React.Component {
             filter: this.state.advanced_search,
             page: 0
         },  () => {
-            //this.refreshTable();
+            this.refreshTable();
         })
     }
 
@@ -80,7 +98,7 @@ export default class Employees extends React.Component {
         this.setState({
             [name]: value
         }, () =>{
-            //this.refreshTable();
+            this.refreshTable();
         })
     }
 
@@ -94,8 +112,51 @@ export default class Employees extends React.Component {
             page: page,
             rowsPerPage: value
         }, () => {
-            //this.refreshTable();
+            this.refreshTable();
         })
+    }
+
+    refreshTable(){
+        let params = {};
+        const filter = this.state.filter;
+        for(let key in filter){
+            if(filter[key] !== ""){
+                params[key] = filter[key];
+            }
+        }
+        params["page"] = this.state.page + 1;
+        params["elems_on_page"] = this.state.rowsPerPage;
+        if(this.state.surname !== ""){
+            params['surname'] = this.state.surname;
+        }
+        if(this.state.name !== ""){
+            params['name'] = this.state.name;
+        }
+        if(this.state.middle_name !== ""){
+            params['middle_name'] = this.state.middle_name;
+        }
+        if(this.state.orderBy !== ""){
+            params['sort_field'] = this.state.orderBy;
+            if(this.state.order !== ""){
+                params['sort_type'] = this.state.order;
+            }
+        }
+        const api = axios.create({
+            paramsSerializer: {
+                serialize: (params) => qs.stringify(params, {arrayFormat: 'repeat'})
+            }
+        });
+        api.get('http://localhost:8080/api/v1/employee_filter',{
+            params: params
+        })
+            .then(
+                (response) => {
+                    this.setState({
+                        data: response.data.result,
+                        total: response.data.total,
+                    })
+                }
+            )
     }
 
     render(){

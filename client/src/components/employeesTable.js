@@ -20,13 +20,13 @@ const headCells = [
         label: 'ФИО',
     },
     {
-        id: 'sex',
+        id: 'gender',
         numeric: false,
         disableSort: false,
         label: 'Пол',
     },
     {
-        id: 'birthday',
+        id: 'birth_date',
         numeric: false,
         disableSort: false,
         label: 'Дата рождения',
@@ -155,8 +155,8 @@ export default function EmployeesTable(props) {
                                             >
                                                 {row.surname} {row.name} {row.middle_name}
                                             </TableCell>
-                                            <TableCell align="center">{row.sex}</TableCell>
-                                            <TableCell align="center">{row.birthday}</TableCell>
+                                            <TableCell align="center">{row.gender}</TableCell>
+                                            <TableCell align="center">{row.birth_date}</TableCell>
                                             <TableCell align="center">{row.position}</TableCell>
                                             <TableCell align="center">{row.phone_number}</TableCell>
                                             <TableCell align="center">{row.settlement}</TableCell>
