@@ -9,8 +9,6 @@ import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import TableSortLabel from '@mui/material/TableSortLabel';
 import {Paper} from "@mui/material";
-import {Typography} from "@mui/material";
-import {useNavigate} from "react-router-dom";
 
 const headCells = [
     {
@@ -40,7 +38,7 @@ const headCells = [
     {
         id: 'phone_number',
         numeric: false,
-        disableSort: true,
+        disableSort: false,
         label: 'Номер телефона',
     },
     {
@@ -148,9 +146,6 @@ export default function EmployeesTable(props) {
                                             selected={isItemSelected}
                                         >
                                             <TableCell
-                                                component="th"
-                                                scope="row"
-                                                padding="normal"
                                                 align="center"
                                             >
                                                 {row.surname} {row.name} {row.middle_name}

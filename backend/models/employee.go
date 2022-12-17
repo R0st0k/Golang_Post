@@ -126,7 +126,6 @@ func (e *Employee) FilterEmployee(employeeFilter map[string]interface{}) (int64,
 			case "desc":
 				sortType = -1
 			}
-			/*[ full_name, settlement, postcode, position, birth_date, gender, phone_number ]*/
 			sortField := ""
 			if sortFieldInMap.(string) != "full_name" {
 				switch sortFieldInMap.(string) {

@@ -1,9 +1,6 @@
-import {Grid, Typography} from "@mui/material";
+import {Grid} from "@mui/material";
 import TextField from "@mui/material/TextField";
 import MenuItem from "@mui/material/MenuItem";
-import Stack from "@mui/material/Stack";
-import Box from "@mui/material/Box";
-import CloseIcon from "@mui/icons-material/Close";
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
@@ -11,7 +8,6 @@ import * as React from "react";
 import {useEffect, useState} from "react";
 import axios from "axios";
 import Autocomplete from "@mui/material/Autocomplete";
-import MuiPhoneNumber from 'material-ui-phone-number-2'
 
 export default function AdvancedSearchEmployees(props){
     const [cityAndPostcodes, setCityAndPostcodes] = useState([]);
@@ -25,13 +21,6 @@ export default function AdvancedSearchEmployees(props){
                 }
             )
     }, []);
-
-    /*const handleChangeCity = name => (event, value) => {
-        let my_event = {};
-        const target = {name: name, value: value};
-        my_event.target = target;
-        props.onChange(my_event);
-    }*/
 
     const handleChangeCity = (event, value) => {
         let my_event = {};
@@ -56,14 +45,6 @@ export default function AdvancedSearchEmployees(props){
         event.target = target;
         props.onChange(event);
     }
-
-    const handleNumberPhoneChange = value =>{
-        let event = {};
-        const target = {name: "phone_number", value: value};
-        event.target = target;
-        props.onChange(event);
-    }
-
 
     return (
         <div>
@@ -159,7 +140,6 @@ export default function AdvancedSearchEmployees(props){
                         value={props.values.phone_number}
                         onChange={props.onChange}
                         />
-                    {/*<MuiPhoneNumber defaultCountry={'ru'} onlyCountries={['ru']} onChange={handleNumberPhoneChange} />*/}
                 </Grid>
             </Grid>
         </div>

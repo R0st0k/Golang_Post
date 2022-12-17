@@ -39,7 +39,7 @@ function OrderTracking() {
             return <ListItem key={stage.timestamp}>
                         <ListItemText
                             primary={stage.name}
-                            secondary={/*dateFormat(*/stage.date + ", " + stage.postcode}
+                            secondary={stage.date + ", " + stage.postcode}
                         />
                     </ListItem>
         });
@@ -54,17 +54,10 @@ function OrderTracking() {
 
     function trackIsComplete(status, stage){
         if(status === "Доставлено"){
-            return <p style={{color: '#6C6D6F'}}>{"Вручено " + /*dateFormat(*/stage.date}</p>;
+            return <p style={{color: '#6C6D6F'}}>{"Вручено " + stage.date}</p>;
         }
         return null;
     }
-
-    /*function dateFormat(dateString){
-        const date = new Date(dateString);
-        const options = {day: 'numeric', month: 'long', year: 'numeric'};
-        return date.toLocaleDateString('ru-RU', options) + ", "+ date.toLocaleTimeString('ru-RU');
-
-    }*/
 
     return (
         <div>

@@ -5,9 +5,7 @@ import Select from '@mui/material/Select';
 import Chip from '@mui/material/Chip';
 import Slider from '@mui/material/Slider';
 import InputLabel from '@mui/material/InputLabel';
-import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
-import CloseIcon from "@mui/icons-material/Close";
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
@@ -30,13 +28,6 @@ export default function AdvancedSearchSendings(props){
                 }
             )
     }, []);
-
-    /*const handleChangeCity = name => (event, value) => {
-        let my_event = {};
-        const target = {name: name, value: value};
-        my_event.target = target;
-        props.onChange(my_event);
-    }*/
 
     const handleDateStartChange = value =>{
         let event = {};
@@ -137,14 +128,6 @@ export default function AdvancedSearchSendings(props){
                         value={props.values.sender_settlement}
                         onChange={props.onChange}
                     />
-                    {/*<Autocomplete
-                        renderInput={(params => <TextField
-                            {...params}
-                            label={"Откуда"}
-                        />)}
-                        onChange={handleChangeCity("sender_settlement")}
-                        options={Object.keys(cityAndPostcodes)}
-                    />*/}
                 </Grid>
                 <Grid item xs={4.5}>
                     <TextField
@@ -154,14 +137,6 @@ export default function AdvancedSearchSendings(props){
                         value={props.values.receiver_settlement}
                         onChange={props.onChange}
                     />
-                    {/*<Autocomplete
-                        renderInput={(params => <TextField
-                            {...params}
-                            label={"Куда"}
-                        />)}
-                        onChange={handleChangeCity("receiver_settlement")}
-                        options={Object.keys(cityAndPostcodes)}
-                    />*/}
                 </Grid>
                 <Grid item xs={3}>
                         <Typography textAlign={"center"} gutterBottom>
