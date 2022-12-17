@@ -19,7 +19,7 @@ export default function FadeMenu() {
         setAnchorEl(null);
     };
     const handleRegistration = useCallback(() => navigate('/registration', {replace: false}), [navigate]);
-    const handleStatics = useCallback(() => navigate('/', {replace: false}), [navigate]);
+    const handleStatics = useCallback(() => navigate('/statistics', {replace: false}), [navigate]);
     const handleTable = useCallback(() => navigate('/sendings-info', {replace: false}), [navigate]);
 
     return (

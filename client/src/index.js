@@ -11,6 +11,7 @@ import Main from "./pages/main"
 import Registration from "./pages/registration";
 import SendingsInfo from "./pages/sendings-info";
 import Employees from "./pages/employees";
+import Statistics from "./pages/statistics"
 
 const router = createBrowserRouter([
     {
@@ -33,6 +34,10 @@ const router = createBrowserRouter([
     {
         path: "/employees",
         element: <Employees/>
+    },
+    {
+        path: "/statistics",
+        element: <Statistics />
     }
 ]);
 
