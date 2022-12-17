@@ -1,9 +1,7 @@
 import * as React from 'react';
 import Head from "../components/head";
 import Autocomplete from '@mui/material/Autocomplete';
-import CheckboxTree from 'react-checkbox-tree';
 import {useEffect, useState} from "react";
-import Chip from '@mui/material/Chip';
 import Stack from "@mui/material/Stack";
 import Grid from '@mui/material/Unstable_Grid2';
 
@@ -11,7 +9,7 @@ import 'react-checkbox-tree/lib/react-checkbox-tree.css';
 import MenuItem from "@mui/material/MenuItem";
 import TextField from "@mui/material/TextField";
 import axios from "axios";
-import {ButtonGroup} from "@mui/material";
+import qs from 'qs';
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 
@@ -36,38 +34,25 @@ ChartJS.register(
     Legend
 );
 
-export const options = {
+const options = {
     responsive: true,
-    plugins: {
-        legend: {
-            position: 'top',
-        },
-        title: {
-            display: true,
-            text: 'Chart.js Bar Chart',
-        },
-    },
-};
-
-const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
-
-export const data = {
-    labels,
-    datasets: [
-        {
-            label: 'Dataset 1',
-            data: labels.map(() => 10),
-            backgroundColor: 'rgba(255, 99, 132, 0.5)',
-        }
-    ]
 };
 
 export default function Statistics(props){
     const [settlement, setSettlement] = useState([]);
     const [typeOfSending, setTypeOfSending] = useState([]);
-    const [expandedTypeOfSending, setExpandedTypeOfSending] = useState([]);
     const [direction, setDirection] = useState("");
     const [typeOfStatistic, setTypeOfStatistic] = useState("");
+    const [statisticsData, setStatisticData] = useState({
+        labels: ['empty'],
+        datasets: [
+            {
+                data: [0],
+                backgroundColor: 'rgba(255, 99, 132, 0.5)',
+            }
+        ]
+    });
+    const [showBar, setShowBar] = useState(false);
 
     const [cityAndPostcodes, setCityAndPostcodes] = useState([]);
 
@@ -80,26 +65,21 @@ export default function Statistics(props){
             )
     }, []);
 
-    const nodesTypesOfSending = [{
-        value: 'types_of_sendings',
-        label: 'Тип',
-        children: [
-            { value: 'Письмо', label: 'Письмо' },
-            { value: 'Бандероль', label: 'Бандероль' },
-            { value: 'Посылка', label: 'Посылка' }
-        ],
-    }];
-
-    const handleCheckTypesOfSending = (value) => {
-        setTypeOfSending(value);
-    }
-
-    const handleExpandTypesOfSending = (value) => {
-        setExpandedTypeOfSending(value);
+    const typeOptions = [ "Письмо", "Бандероль", "Посылка"];
+    const dic = {
+        "Количество": "Количество единиц",
+        "Время":"Часы",
+        "Вес":"Граммы",
     }
 
     const handleClickButtonShow = (event) => {
-        axios.get('http://localhost:8080/api/v1/sending_statistics', {
+        event.preventDefault();
+        const api = axios.create({
+            paramsSerializer: {
+                serialize: (params) => qs.stringify(params, {arrayFormat: 'repeat'})
+            }
+        });
+        api.get('http://localhost:8080/api/v1/sending_statistics', {
             params: {
                 settlement: settlement,
                 type: typeOfSending,
@@ -109,7 +89,20 @@ export default function Statistics(props){
         })
             .then(
                 (response) => {
-                    //setCityAndPostcodes(response.data);
+                    const data = response.data;
+                    const labels = data.map((element) => element.key);
+                    const statistics = {
+                        labels,
+                        datasets: [
+                            {
+                                label: dic[typeOfStatistic],
+                                data: data.map((element) => element.value),
+                                backgroundColor: 'rgba(49,78,253,0.5)',
+                            }
+                        ]
+                    };
+                    setStatisticData(statistics);
+                    setShowBar(true);
                 }
             )
     }
@@ -118,6 +111,10 @@ export default function Statistics(props){
         <>
             <Head/>
             <Box ml={5} mt={2}>
+                <form
+                    onSubmit={handleClickButtonShow}
+                    autoComplete="off"
+                >
                 <Grid spacing={10} container>
                     <Grid xs={3}>
                         <Stack spacing={2}>
@@ -126,20 +123,26 @@ export default function Statistics(props){
                                 renderInput={(params => <TextField
                                     {...params}
                                     label={"Населенный пункт"}
+                                    required={settlement.length === 0}
                                 />)}
                                 onChange={(e, value) => setSettlement(value)}
                                 options={Object.keys(cityAndPostcodes)}
+                                freeSolo={settlement.length >= 10 ? false : true}
+                                getOptionDisabled={(options) => (settlement.length >= 10 ? true : false)}
                             />
-                            <CheckboxTree
-                                nodes={nodesTypesOfSending}
-                                checked={typeOfSending}
-                                expanded={expandedTypeOfSending}
-                                onCheck={handleCheckTypesOfSending}
-                                onExpand={handleExpandTypesOfSending}
-                                showNodeIcon={false}
+
+                            <Autocomplete
+                                multiple
+                                renderInput={(params => <TextField
+                                    {...params}
+                                    label={"Тип"}
+                                    required={typeOfSending.length === 0}
+                                />)}
+                                onChange={(e, value) => setTypeOfSending(value)}
+                                options={typeOptions}
                             />
                             <TextField
-
+                                required
                                 select
                                 label="Направление"
                                 name="direction"
@@ -150,6 +153,7 @@ export default function Statistics(props){
                                 <MenuItem value={'Получения'}>Получение</MenuItem>
                             </TextField>
                             <TextField
+                                required
                                 select
                                 label="Данные"
                                 name="type_of_statistic"
@@ -163,12 +167,15 @@ export default function Statistics(props){
                         </Stack>
                     </Grid>
                     <Grid xs={6}>
-                        <Button variant={"contained"} onClick={handleClickButtonShow}>
+                        <Button variant={"contained"} type={"submit"}>
                             Показать
                         </Button>
+                        {
+                            showBar ? <Bar options={options} data={statisticsData} /> : null
+                        }
                     </Grid>
                 </Grid>
-                <Bar options={options} data={data} />;
+                </form>
             </Box>
         </>
     )
