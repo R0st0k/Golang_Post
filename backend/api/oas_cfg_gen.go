@@ -18,7 +18,10 @@ import (
 )
 
 var regexMap = map[string]*regexp.Regexp{
-	"^\\d{6}$": regexp.MustCompile("^\\d{6}$"),
+	"^[a-fA-F0-9]{24}$": regexp.MustCompile("^[a-fA-F0-9]{24}$"),
+	"^\\d{1,11}$":       regexp.MustCompile("^\\d{1,11}$"),
+	"^\\d{11}$":         regexp.MustCompile("^\\d{11}$"),
+	"^\\d{6}$":          regexp.MustCompile("^\\d{6}$"),
 }
 var (
 	// Allocate option closure once.

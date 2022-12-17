@@ -3,13 +3,16 @@ package models
 import (
 	"backend/db"
 	"context"
+	"errors"
 	"fmt"
 	"github.com/google/uuid"
+	"github.com/mongodb/mongo-tools/mongoexport"
+	"github.com/mongodb/mongo-tools/mongoimport"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"regexp"
+	"os"
 	"time"
 )
 
@@ -44,6 +47,12 @@ type Sending struct {
 	Weight           int64              `bson:"weight" json:"weight" example:"1000"`
 	Stages           []Stage            `bson:"stages" json:"stages"`
 	Status           string             `bson:"status" json:"status" example:"Доставлено"`
+}
+
+type SendingStatistics struct {
+	ID    primitive.ObjectID `bson:"_id,omitempty" json:"_id,omitempty"`
+	Key   string             `bson:"key" json:"key" example:"пос. Нугуш"`
+	Value int64              `bson:"value,truncate" json:"value,truncate" example:"10"`
 }
 
 func (s *Sending) GetSendingByOrderID(orderID uuid.UUID) (Sending, error) {
@@ -142,129 +151,73 @@ func (s *Sending) FilterSending(sendingFilter map[string]interface{}) (int64, []
 	client := db.GetDB()
 	sendingCollection := client.Database("post").Collection("sendings")
 
-	pagePipeline := mongo.Pipeline{}
+	var err error
+
+	pagePipeline := getPagePipeline(sendingFilter, "page", "elems")
 	matchPipeline := mongo.Pipeline{}
 	sortPipeline := mongo.Pipeline{}
 
-	if page := sendingFilter["page"].(int64); page > 1 {
-		skip := bson.D{{
-			"$skip", (page - 1) * sendingFilter["elems"].(int64),
-		}}
-		pagePipeline = append(pagePipeline, skip)
+	err = matchRegex(sendingFilter, "order_id", "order_id", "i", &matchPipeline)
+	if err != nil {
+		return 0, nil, err
 	}
-	{
-		limit := bson.D{{
-			"$limit", sendingFilter["elems"].(int64),
-		}}
-		pagePipeline = append(pagePipeline, limit)
+	err = matchArray(sendingFilter, "type", "type", "string", &matchPipeline)
+	if err != nil {
+		return 0, nil, err
 	}
-	if filter, ok := sendingFilter["order_id"]; ok {
-		match := bson.D{{
-			"$match", bson.D{{
-				"order_id", bson.D{{
-					"$regex", regexp.QuoteMeta(filter.(string)),
-				},
-					{
-						"$options", "",
-					}},
-			}},
-		}}
-		matchPipeline = append(matchPipeline, match)
+	err = matchArray(sendingFilter, "status", "status", "string", &matchPipeline)
+	if err != nil {
+		return 0, nil, err
 	}
-	if filter, ok := sendingFilter["type"]; ok {
-		match := bson.D{{
-			"$match", bson.D{{
-				"type", filter.(string),
-			}},
-		}}
-		matchPipeline = append(matchPipeline, match)
+	err = matchWithCompare(sendingFilter, "date_start", "registration_date", "time", "$gte", &matchPipeline)
+	if err != nil {
+		return 0, nil, err
 	}
-	if filter, ok := sendingFilter["status"]; ok {
-		match := bson.D{{
-			"$match", bson.D{{
-				"status", filter.(string),
-			}},
-		}}
-		matchPipeline = append(matchPipeline, match)
+	err = matchWithCompare(sendingFilter, "date_finish", "registration_date", "time", "$lte", &matchPipeline)
+	if err != nil {
+		return 0, nil, err
 	}
-	if filter, ok := sendingFilter["date_start"]; ok {
-		match := bson.D{{
-			"$match", bson.D{{
-				"registration_date", bson.D{{
-					"$gte", filter.(time.Time).Format(time.RFC3339),
-				}},
-			}},
-		}}
-		matchPipeline = append(matchPipeline, match)
+	err = matchRegex(sendingFilter, "sender_settlement", "sender.address.settlement", "i", &matchPipeline)
+	if err != nil {
+		return 0, nil, err
 	}
-	if filter, ok := sendingFilter["date_finish"]; ok {
-		match := bson.D{{
-			"$match", bson.D{{
-				"registration_date", bson.D{{
-					"$lte", filter.(time.Time).Format(time.RFC3339),
-				}},
-			}},
-		}}
-		matchPipeline = append(matchPipeline, match)
+	err = matchRegex(sendingFilter, "receiver_settlement", "receiver.address.settlement", "i", &matchPipeline)
+	if err != nil {
+		return 0, nil, err
 	}
-	if filter, ok := sendingFilter["sender_settlement"]; ok {
-		match := bson.D{{
-			"$match", bson.D{{
-				"sender.address.settlement", bson.D{{
-					"$regex", regexp.QuoteMeta(filter.(string)),
-				},
-					{
-						"$options", "i",
-					}},
-			}},
-		}}
-		matchPipeline = append(matchPipeline, match)
+	err = matchWithCompare(sendingFilter, "length_min", "size.length", "int64", "$gte", &matchPipeline)
+	if err != nil {
+		return 0, nil, err
 	}
-	if filter, ok := sendingFilter["receiver_settlement"]; ok {
-		match := bson.D{{
-			"$match", bson.D{{
-				"receiver.address.settlement", bson.D{{
-					"$regex", regexp.QuoteMeta(filter.(string)),
-				},
-					{
-						"$options", "i",
-					}},
-			}},
-		}}
-		matchPipeline = append(matchPipeline, match)
+	err = matchWithCompare(sendingFilter, "length_max", "size.length", "int64", "$lte", &matchPipeline)
+	if err != nil {
+		return 0, nil, err
 	}
-	if filter, ok := sendingFilter["length"]; ok {
-		match := bson.D{{
-			"$match", bson.D{{
-				"size.length", filter.(int64),
-			}},
-		}}
-		matchPipeline = append(matchPipeline, match)
+	err = matchWithCompare(sendingFilter, "width_min", "size.width", "int64", "$gte", &matchPipeline)
+	if err != nil {
+		return 0, nil, err
 	}
-	if filter, ok := sendingFilter["width"]; ok {
-		match := bson.D{{
-			"$match", bson.D{{
-				"size.width", filter.(int64),
-			}},
-		}}
-		matchPipeline = append(matchPipeline, match)
+	err = matchWithCompare(sendingFilter, "width_max", "size.width", "int64", "$lte", &matchPipeline)
+	if err != nil {
+		return 0, nil, err
 	}
-	if filter, ok := sendingFilter["height"]; ok {
-		match := bson.D{{
-			"$match", bson.D{{
-				"size.height", filter.(int64),
-			}},
-		}}
-		matchPipeline = append(matchPipeline, match)
+	err = matchWithCompare(sendingFilter, "height_min", "size.height", "int64", "$gte", &matchPipeline)
+	if err != nil {
+		return 0, nil, err
 	}
-	if filter, ok := sendingFilter["weight"]; ok {
-		match := bson.D{{
-			"$match", bson.D{{
-				"weight", filter.(int64),
-			}},
-		}}
-		matchPipeline = append(matchPipeline, match)
+	err = matchWithCompare(sendingFilter, "height_max", "size.height", "int64", "$lte", &matchPipeline)
+	if err != nil {
+		return 0, nil, err
 	}
+	err = matchWithCompare(sendingFilter, "weight_min", "weight", "int64", "$gte", &matchPipeline)
+	if err != nil {
+		return 0, nil, err
+	}
+	err = matchWithCompare(sendingFilter, "weight_max", "weight", "int64", "$lte", &matchPipeline)
+	if err != nil {
+		return 0, nil, err
+	}
+
 	{
 		sortTypeInMap, okType := sendingFilter["sort_type"]
 		sortFieldInMap, okField := sendingFilter["sort_field"]
@@ -341,4 +294,297 @@ func (s *Sending) FilterSending(sendingFilter map[string]interface{}) (int64, []
 	}
 
 	return total, results, nil
+}
+
+func (s *Sending) StatisticsSending(sendingFilter map[string]interface{}) ([]SendingStatistics, error) {
+	client := db.GetDB()
+	sendingCollection := client.Database("post").Collection("sendings")
+
+	var err error
+	var settlementField string
+
+	matchPipeline := mongo.Pipeline{}
+	groupPipeline := mongo.Pipeline{}
+	projectPipeline := mongo.Pipeline{}
+
+	if direction, ok := sendingFilter["direction"]; ok {
+		switch direction.(string) {
+		case "Отправления":
+			settlementField = "sender.address.settlement"
+			err = matchArray(sendingFilter, "settlement", settlementField, "string", &matchPipeline)
+
+		case "Получения":
+			settlementField = "receiver.address.settlement"
+			err = matchArray(sendingFilter, "settlement", settlementField, "string", &matchPipeline)
+		}
+		if err != nil {
+			return nil, err
+		}
+	}
+	err = matchArray(sendingFilter, "type", "type", "string", &matchPipeline)
+	if err != nil {
+		return nil, err
+	}
+
+	if statistics, ok := sendingFilter["statistics"]; ok {
+		switch statistics.(string) {
+		case "Количество":
+			group := bson.D{{
+				"$group", bson.D{
+					{"_id", fmt.Sprintf("$%s", settlementField)},
+					{"shipments_number", bson.D{{"$sum", 1}}},
+				},
+			}}
+			groupPipeline = append(groupPipeline, group)
+
+			project := bson.D{{
+				"$project", bson.D{
+					{"_id", 0},
+					{"key", "$_id"},
+					{"value", "$shipments_number"},
+				},
+			}}
+			projectPipeline = append(projectPipeline, project)
+
+		case "Время":
+			match := bson.D{{
+				"$match", bson.D{
+					{"status", "Доставлено"},
+				},
+			}}
+			matchPipeline = append(matchPipeline, match)
+
+			group := bson.D{{
+				"$group", bson.D{
+					{"_id", bson.D{{"settlement", fmt.Sprintf("$%s", settlementField)}}},
+					{"average_time", bson.D{
+						{"$avg", bson.D{
+							{"$dateDiff", bson.D{
+								{"startDate", "$registration_date"},
+								{"endDate", bson.D{
+									{"$getField", bson.D{
+										{"field", "timestamp"},
+										{"input", bson.D{
+											{"$last", "$stages"},
+										}},
+									}},
+								}},
+								{"unit", "hour"},
+								{"timezone", "GMT"},
+								{"startOfWeek", "mon"},
+							}},
+						}},
+					}},
+				},
+			}}
+			groupPipeline = append(groupPipeline, group)
+
+			project := bson.D{{
+				"$project", bson.D{
+					{"_id", 0},
+					{"key", "$_id.settlement"},
+					{"value", "$average_time"},
+				},
+			}}
+			projectPipeline = append(projectPipeline, project)
+
+		case "Вес":
+			group := bson.D{{
+				"$group", bson.D{
+					{"_id", bson.D{{"type", "$type"}}},
+					{"average_weight", bson.D{{"$avg", "$weight"}}},
+				},
+			}}
+			groupPipeline = append(groupPipeline, group)
+
+			project := bson.D{{
+				"$project", bson.D{
+					{"_id", 0},
+					{"key", "$_id.type"},
+					{"value", "$average_weight"},
+				},
+			}}
+			projectPipeline = append(projectPipeline, project)
+		}
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	resultPipeline := mongo.Pipeline{}
+	resultPipeline = append(resultPipeline, matchPipeline...)
+	resultPipeline = append(resultPipeline, groupPipeline...)
+	resultPipeline = append(resultPipeline, projectPipeline...)
+
+	cursor, err := sendingCollection.Aggregate(ctx, resultPipeline)
+	if err != nil {
+		return nil, fmt.Errorf("FindSendings: %v", err)
+	}
+	var results []SendingStatistics
+	if err = cursor.All(ctx, &results); err != nil {
+		return nil, fmt.Errorf("FindSendings: %v", err)
+	}
+
+	// Add not founded keys with "0" value
+	if statistics, ok := sendingFilter["statistics"]; ok {
+		switch statistics.(string) {
+		case "Количество":
+			for _, data := range sendingFilter["settlement"].([]string) {
+				find := false
+				for _, dataResult := range results {
+					if data == dataResult.Key {
+						find = true
+						break
+					}
+				}
+				if find != true {
+					addResult := new(SendingStatistics)
+					addResult.Key = data
+					addResult.Value = 0
+
+					results = append(results, *addResult)
+				}
+			}
+		case "Время":
+			for _, data := range sendingFilter["settlement"].([]string) {
+				find := false
+				for _, dataResult := range results {
+					if data == dataResult.Key {
+						find = true
+						break
+					}
+				}
+				if find != true {
+					addResult := new(SendingStatistics)
+					addResult.Key = data
+					addResult.Value = 0
+
+					results = append(results, *addResult)
+				}
+			}
+		case "Вес":
+			for _, data := range sendingFilter["type"].([]string) {
+				find := false
+				for _, dataResult := range results {
+					if data == dataResult.Key {
+						find = true
+						break
+					}
+				}
+				if find != true {
+					addResult := new(SendingStatistics)
+					addResult.Key = data
+					addResult.Value = 0
+
+					results = append(results, *addResult)
+				}
+			}
+		}
+	}
+
+	return results, nil
+
+}
+
+func (s *Sending) Export() (string, error) {
+	f, err := os.CreateTemp("", "sendings")
+	if err != nil {
+		return "", err
+	}
+	defer f.Close()
+
+	RawArgs := []string{
+		fmt.Sprintf("--uri=%s", db.GetDBURI()),
+		"--db=post",
+		"--collection=sendings",
+		fmt.Sprintf("--out=%s", f.Name()),
+		"--jsonArray",
+		"--pretty",
+	}
+
+	Options, err := mongoexport.ParseOptions(RawArgs, "", "")
+	if err != nil {
+		return "", err
+	}
+
+	MongoExport, err := mongoexport.New(Options)
+	if err != nil {
+		return "", err
+	}
+	defer MongoExport.Close()
+
+	_, err = MongoExport.Export(f)
+	if err != nil {
+		return "", err
+	}
+
+	return f.Name(), nil
+}
+
+func (s *Sending) Import(filename string) error {
+	client := db.GetDB()
+	sendingCollection := client.Database("post").Collection("sendings")
+	testCollection := client.Database("post").Collection("test")
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	RawArgsTest := []string{
+		fmt.Sprintf("--uri=%s", db.GetDBURI()),
+		"--db=post",
+		"--collection=test",
+		fmt.Sprintf("--file=%s", filename),
+		"--jsonArray",
+	}
+
+	RawArgs := []string{
+		fmt.Sprintf("--uri=%s", db.GetDBURI()),
+		"--db=post",
+		"--collection=sendings",
+		fmt.Sprintf("--file=%s", filename),
+		"--jsonArray",
+	}
+	{
+		Options, err := mongoimport.ParseOptions(RawArgsTest, "", "")
+		if err != nil {
+			return err
+		}
+		MongoImport, err := mongoimport.New(Options)
+		if err != nil {
+			return err
+		}
+		defer MongoImport.Close()
+		success, failed, err := MongoImport.ImportDocuments()
+		if err != nil {
+			return err
+		}
+		if failed > 0 {
+			return errors.New(fmt.Sprintf("%d imported and %d aborted", success, failed))
+		}
+		if err = testCollection.Drop(ctx); err != nil {
+			return err
+		}
+	}
+	Options, err := mongoimport.ParseOptions(RawArgs, "", "")
+	if err != nil {
+		return err
+	}
+	MongoImport, err := mongoimport.New(Options)
+	if err != nil {
+		return err
+	}
+	defer MongoImport.Close()
+
+	if err := sendingCollection.Drop(ctx); err != nil {
+		return err
+	}
+	success, failed, err := MongoImport.ImportDocuments()
+	if err != nil {
+		return err
+	}
+	if failed > 0 {
+		return errors.New(fmt.Sprintf("%d imported and %d aborted", success, failed))
+	}
+
+	return nil
 }

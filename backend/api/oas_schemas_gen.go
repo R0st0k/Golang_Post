@@ -91,7 +91,274 @@ func (s *Address) SetApartment(val OptString) {
 
 type AddressPostcode string
 
+// DataImportSendingPostOK is response for DataImportSendingPost operation.
+type DataImportSendingPostOK struct{}
+
+func (*DataImportSendingPostOK) dataImportSendingPostRes() {}
+
 type ElementsOnPage int64
+
+type EmployeeFilterGetBirthDate struct {
+	// Start of employee birth date range.
+	BirthDateStart OptDate `json:"birth_date_start"`
+	// Finish of employee birth date range.
+	BirthDateFinish OptDate `json:"birth_date_finish"`
+}
+
+// GetBirthDateStart returns the value of BirthDateStart.
+func (s EmployeeFilterGetBirthDate) GetBirthDateStart() OptDate {
+	return s.BirthDateStart
+}
+
+// GetBirthDateFinish returns the value of BirthDateFinish.
+func (s EmployeeFilterGetBirthDate) GetBirthDateFinish() OptDate {
+	return s.BirthDateFinish
+}
+
+// SetBirthDateStart sets the value of BirthDateStart.
+func (s *EmployeeFilterGetBirthDate) SetBirthDateStart(val OptDate) {
+	s.BirthDateStart = val
+}
+
+// SetBirthDateFinish sets the value of BirthDateFinish.
+func (s *EmployeeFilterGetBirthDate) SetBirthDateFinish(val OptDate) {
+	s.BirthDateFinish = val
+}
+
+type EmployeeFilterGetFullName struct {
+	// Name or a part of it.
+	Name OptString `json:"name"`
+	// Surname or a part of it.
+	Surname OptString `json:"surname"`
+	// Middle name or a part of it.
+	MiddleName OptString `json:"middle_name"`
+}
+
+// GetName returns the value of Name.
+func (s EmployeeFilterGetFullName) GetName() OptString {
+	return s.Name
+}
+
+// GetSurname returns the value of Surname.
+func (s EmployeeFilterGetFullName) GetSurname() OptString {
+	return s.Surname
+}
+
+// GetMiddleName returns the value of MiddleName.
+func (s EmployeeFilterGetFullName) GetMiddleName() OptString {
+	return s.MiddleName
+}
+
+// SetName sets the value of Name.
+func (s *EmployeeFilterGetFullName) SetName(val OptString) {
+	s.Name = val
+}
+
+// SetSurname sets the value of Surname.
+func (s *EmployeeFilterGetFullName) SetSurname(val OptString) {
+	s.Surname = val
+}
+
+// SetMiddleName sets the value of MiddleName.
+func (s *EmployeeFilterGetFullName) SetMiddleName(val OptString) {
+	s.MiddleName = val
+}
+
+type EmployeeFilterGetResponse struct {
+	Total  int64                                 `json:"total"`
+	Result []EmployeeFilterGetResponseResultItem `json:"result"`
+}
+
+// GetTotal returns the value of Total.
+func (s EmployeeFilterGetResponse) GetTotal() int64 {
+	return s.Total
+}
+
+// GetResult returns the value of Result.
+func (s EmployeeFilterGetResponse) GetResult() []EmployeeFilterGetResponseResultItem {
+	return s.Result
+}
+
+// SetTotal sets the value of Total.
+func (s *EmployeeFilterGetResponse) SetTotal(val int64) {
+	s.Total = val
+}
+
+// SetResult sets the value of Result.
+func (s *EmployeeFilterGetResponse) SetResult(val []EmployeeFilterGetResponseResultItem) {
+	s.Result = val
+}
+
+func (*EmployeeFilterGetResponse) employeeFilterGetRes() {}
+
+type EmployeeFilterGetResponseResultItem struct {
+	Name        string              `json:"name"`
+	Surname     string              `json:"surname"`
+	MiddleName  OptString           `json:"middle_name"`
+	Gender      EmployeeGender      `json:"gender"`
+	BirthDate   time.Time           `json:"birth_date"`
+	Position    EmployeePosition    `json:"position"`
+	PhoneNumber EmployeePhoneNumber `json:"phone_number"`
+	Settlement  string              `json:"settlement"`
+	Postcode    AddressPostcode     `json:"postcode"`
+}
+
+// GetName returns the value of Name.
+func (s EmployeeFilterGetResponseResultItem) GetName() string {
+	return s.Name
+}
+
+// GetSurname returns the value of Surname.
+func (s EmployeeFilterGetResponseResultItem) GetSurname() string {
+	return s.Surname
+}
+
+// GetMiddleName returns the value of MiddleName.
+func (s EmployeeFilterGetResponseResultItem) GetMiddleName() OptString {
+	return s.MiddleName
+}
+
+// GetGender returns the value of Gender.
+func (s EmployeeFilterGetResponseResultItem) GetGender() EmployeeGender {
+	return s.Gender
+}
+
+// GetBirthDate returns the value of BirthDate.
+func (s EmployeeFilterGetResponseResultItem) GetBirthDate() time.Time {
+	return s.BirthDate
+}
+
+// GetPosition returns the value of Position.
+func (s EmployeeFilterGetResponseResultItem) GetPosition() EmployeePosition {
+	return s.Position
+}
+
+// GetPhoneNumber returns the value of PhoneNumber.
+func (s EmployeeFilterGetResponseResultItem) GetPhoneNumber() EmployeePhoneNumber {
+	return s.PhoneNumber
+}
+
+// GetSettlement returns the value of Settlement.
+func (s EmployeeFilterGetResponseResultItem) GetSettlement() string {
+	return s.Settlement
+}
+
+// GetPostcode returns the value of Postcode.
+func (s EmployeeFilterGetResponseResultItem) GetPostcode() AddressPostcode {
+	return s.Postcode
+}
+
+// SetName sets the value of Name.
+func (s *EmployeeFilterGetResponseResultItem) SetName(val string) {
+	s.Name = val
+}
+
+// SetSurname sets the value of Surname.
+func (s *EmployeeFilterGetResponseResultItem) SetSurname(val string) {
+	s.Surname = val
+}
+
+// SetMiddleName sets the value of MiddleName.
+func (s *EmployeeFilterGetResponseResultItem) SetMiddleName(val OptString) {
+	s.MiddleName = val
+}
+
+// SetGender sets the value of Gender.
+func (s *EmployeeFilterGetResponseResultItem) SetGender(val EmployeeGender) {
+	s.Gender = val
+}
+
+// SetBirthDate sets the value of BirthDate.
+func (s *EmployeeFilterGetResponseResultItem) SetBirthDate(val time.Time) {
+	s.BirthDate = val
+}
+
+// SetPosition sets the value of Position.
+func (s *EmployeeFilterGetResponseResultItem) SetPosition(val EmployeePosition) {
+	s.Position = val
+}
+
+// SetPhoneNumber sets the value of PhoneNumber.
+func (s *EmployeeFilterGetResponseResultItem) SetPhoneNumber(val EmployeePhoneNumber) {
+	s.PhoneNumber = val
+}
+
+// SetSettlement sets the value of Settlement.
+func (s *EmployeeFilterGetResponseResultItem) SetSettlement(val string) {
+	s.Settlement = val
+}
+
+// SetPostcode sets the value of Postcode.
+func (s *EmployeeFilterGetResponseResultItem) SetPostcode(val AddressPostcode) {
+	s.Postcode = val
+}
+
+// Available gender of employee.
+// Ref: #/components/schemas/EmployeeGender
+type EmployeeGender string
+
+const (
+	EmployeeGender_0 EmployeeGender = "М"
+	EmployeeGender_1 EmployeeGender = "Ж"
+)
+
+type EmployeePhoneNumber string
+
+// Available positions to employee.
+// Ref: #/components/schemas/EmployeePosition
+type EmployeePosition string
+
+const (
+	EmployeePosition_0 EmployeePosition = "Сотрудник отделения связи"
+	EmployeePosition_1 EmployeePosition = "Сотрудник сортировочного центра"
+	EmployeePosition_2 EmployeePosition = "Водитель"
+	EmployeePosition_3 EmployeePosition = "Почтальон"
+)
+
+// Ref: #/components/schemas/EmployeeSort
+type EmployeeSort struct {
+	SortType  OptEmployeeSortSortType  `json:"sort_type"`
+	SortField OptEmployeeSortSortField `json:"sort_field"`
+}
+
+// GetSortType returns the value of SortType.
+func (s EmployeeSort) GetSortType() OptEmployeeSortSortType {
+	return s.SortType
+}
+
+// GetSortField returns the value of SortField.
+func (s EmployeeSort) GetSortField() OptEmployeeSortSortField {
+	return s.SortField
+}
+
+// SetSortType sets the value of SortType.
+func (s *EmployeeSort) SetSortType(val OptEmployeeSortSortType) {
+	s.SortType = val
+}
+
+// SetSortField sets the value of SortField.
+func (s *EmployeeSort) SetSortField(val OptEmployeeSortSortField) {
+	s.SortField = val
+}
+
+type EmployeeSortSortField string
+
+const (
+	EmployeeSortSortFieldFullName    EmployeeSortSortField = "full_name"
+	EmployeeSortSortFieldSettlement  EmployeeSortSortField = "settlement"
+	EmployeeSortSortFieldPostcode    EmployeeSortSortField = "postcode"
+	EmployeeSortSortFieldPosition    EmployeeSortSortField = "position"
+	EmployeeSortSortFieldBirthDate   EmployeeSortSortField = "birth_date"
+	EmployeeSortSortFieldGender      EmployeeSortSortField = "gender"
+	EmployeeSortSortFieldPhoneNumber EmployeeSortSortField = "phone_number"
+)
+
+type EmployeeSortSortType string
+
+const (
+	EmployeeSortSortTypeAsc  EmployeeSortSortType = "asc"
+	EmployeeSortSortTypeDesc EmployeeSortSortType = "desc"
+)
 
 // Ref: #/components/schemas/Error
 type Error struct {
@@ -108,8 +375,73 @@ func (s *Error) SetErrorMessage(val string) {
 	s.ErrorMessage = val
 }
 
-func (*Error) sendingFilterGetRes() {}
-func (*Error) sendingPostRes()      {}
+func (*Error) dataImportSendingPostRes() {}
+func (*Error) employeeFilterGetRes()     {}
+func (*Error) sendingFilterGetRes()      {}
+func (*Error) sendingPostRes()           {}
+func (*Error) sendingStatisticsGetRes()  {}
+
+// ObjectID of sending (24 byte hex string).
+// Ref: #/components/schemas/ObjectID
+type ObjectID struct {
+	Oid string `json:"$oid"`
+}
+
+// GetOid returns the value of Oid.
+func (s ObjectID) GetOid() string {
+	return s.Oid
+}
+
+// SetOid sets the value of Oid.
+func (s *ObjectID) SetOid(val string) {
+	s.Oid = val
+}
+
+// NewOptAddressPostcode returns new OptAddressPostcode with value set to v.
+func NewOptAddressPostcode(v AddressPostcode) OptAddressPostcode {
+	return OptAddressPostcode{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptAddressPostcode is optional AddressPostcode.
+type OptAddressPostcode struct {
+	Value AddressPostcode
+	Set   bool
+}
+
+// IsSet returns true if OptAddressPostcode was set.
+func (o OptAddressPostcode) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptAddressPostcode) Reset() {
+	var v AddressPostcode
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptAddressPostcode) SetTo(v AddressPostcode) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptAddressPostcode) Get() (v AddressPostcode, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptAddressPostcode) Or(d AddressPostcode) AddressPostcode {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
 
 // NewOptDate returns new OptDate with value set to v.
 func NewOptDate(v time.Time) OptDate {
@@ -157,6 +489,236 @@ func (o OptDate) Or(d time.Time) time.Time {
 	return d
 }
 
+// NewOptEmployeeFilterGetBirthDate returns new OptEmployeeFilterGetBirthDate with value set to v.
+func NewOptEmployeeFilterGetBirthDate(v EmployeeFilterGetBirthDate) OptEmployeeFilterGetBirthDate {
+	return OptEmployeeFilterGetBirthDate{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptEmployeeFilterGetBirthDate is optional EmployeeFilterGetBirthDate.
+type OptEmployeeFilterGetBirthDate struct {
+	Value EmployeeFilterGetBirthDate
+	Set   bool
+}
+
+// IsSet returns true if OptEmployeeFilterGetBirthDate was set.
+func (o OptEmployeeFilterGetBirthDate) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptEmployeeFilterGetBirthDate) Reset() {
+	var v EmployeeFilterGetBirthDate
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptEmployeeFilterGetBirthDate) SetTo(v EmployeeFilterGetBirthDate) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptEmployeeFilterGetBirthDate) Get() (v EmployeeFilterGetBirthDate, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptEmployeeFilterGetBirthDate) Or(d EmployeeFilterGetBirthDate) EmployeeFilterGetBirthDate {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptEmployeeFilterGetFullName returns new OptEmployeeFilterGetFullName with value set to v.
+func NewOptEmployeeFilterGetFullName(v EmployeeFilterGetFullName) OptEmployeeFilterGetFullName {
+	return OptEmployeeFilterGetFullName{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptEmployeeFilterGetFullName is optional EmployeeFilterGetFullName.
+type OptEmployeeFilterGetFullName struct {
+	Value EmployeeFilterGetFullName
+	Set   bool
+}
+
+// IsSet returns true if OptEmployeeFilterGetFullName was set.
+func (o OptEmployeeFilterGetFullName) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptEmployeeFilterGetFullName) Reset() {
+	var v EmployeeFilterGetFullName
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptEmployeeFilterGetFullName) SetTo(v EmployeeFilterGetFullName) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptEmployeeFilterGetFullName) Get() (v EmployeeFilterGetFullName, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptEmployeeFilterGetFullName) Or(d EmployeeFilterGetFullName) EmployeeFilterGetFullName {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptEmployeeSort returns new OptEmployeeSort with value set to v.
+func NewOptEmployeeSort(v EmployeeSort) OptEmployeeSort {
+	return OptEmployeeSort{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptEmployeeSort is optional EmployeeSort.
+type OptEmployeeSort struct {
+	Value EmployeeSort
+	Set   bool
+}
+
+// IsSet returns true if OptEmployeeSort was set.
+func (o OptEmployeeSort) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptEmployeeSort) Reset() {
+	var v EmployeeSort
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptEmployeeSort) SetTo(v EmployeeSort) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptEmployeeSort) Get() (v EmployeeSort, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptEmployeeSort) Or(d EmployeeSort) EmployeeSort {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptEmployeeSortSortField returns new OptEmployeeSortSortField with value set to v.
+func NewOptEmployeeSortSortField(v EmployeeSortSortField) OptEmployeeSortSortField {
+	return OptEmployeeSortSortField{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptEmployeeSortSortField is optional EmployeeSortSortField.
+type OptEmployeeSortSortField struct {
+	Value EmployeeSortSortField
+	Set   bool
+}
+
+// IsSet returns true if OptEmployeeSortSortField was set.
+func (o OptEmployeeSortSortField) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptEmployeeSortSortField) Reset() {
+	var v EmployeeSortSortField
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptEmployeeSortSortField) SetTo(v EmployeeSortSortField) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptEmployeeSortSortField) Get() (v EmployeeSortSortField, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptEmployeeSortSortField) Or(d EmployeeSortSortField) EmployeeSortSortField {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptEmployeeSortSortType returns new OptEmployeeSortSortType with value set to v.
+func NewOptEmployeeSortSortType(v EmployeeSortSortType) OptEmployeeSortSortType {
+	return OptEmployeeSortSortType{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptEmployeeSortSortType is optional EmployeeSortSortType.
+type OptEmployeeSortSortType struct {
+	Value EmployeeSortSortType
+	Set   bool
+}
+
+// IsSet returns true if OptEmployeeSortSortType was set.
+func (o OptEmployeeSortSortType) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptEmployeeSortSortType) Reset() {
+	var v EmployeeSortSortType
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptEmployeeSortSortType) SetTo(v EmployeeSortSortType) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptEmployeeSortSortType) Get() (v EmployeeSortSortType, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptEmployeeSortSortType) Or(d EmployeeSortSortType) EmployeeSortSortType {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
 // NewOptInt64 returns new OptInt64 with value set to v.
 func NewOptInt64(v int64) OptInt64 {
 	return OptInt64{
@@ -197,6 +759,328 @@ func (o OptInt64) Get() (v int64, ok bool) {
 
 // Or returns value if set, or given parameter if does not.
 func (o OptInt64) Or(d int64) int64 {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptSendingFilterGetDate returns new OptSendingFilterGetDate with value set to v.
+func NewOptSendingFilterGetDate(v SendingFilterGetDate) OptSendingFilterGetDate {
+	return OptSendingFilterGetDate{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptSendingFilterGetDate is optional SendingFilterGetDate.
+type OptSendingFilterGetDate struct {
+	Value SendingFilterGetDate
+	Set   bool
+}
+
+// IsSet returns true if OptSendingFilterGetDate was set.
+func (o OptSendingFilterGetDate) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptSendingFilterGetDate) Reset() {
+	var v SendingFilterGetDate
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptSendingFilterGetDate) SetTo(v SendingFilterGetDate) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptSendingFilterGetDate) Get() (v SendingFilterGetDate, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptSendingFilterGetDate) Or(d SendingFilterGetDate) SendingFilterGetDate {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptSendingFilterGetHeight returns new OptSendingFilterGetHeight with value set to v.
+func NewOptSendingFilterGetHeight(v SendingFilterGetHeight) OptSendingFilterGetHeight {
+	return OptSendingFilterGetHeight{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptSendingFilterGetHeight is optional SendingFilterGetHeight.
+type OptSendingFilterGetHeight struct {
+	Value SendingFilterGetHeight
+	Set   bool
+}
+
+// IsSet returns true if OptSendingFilterGetHeight was set.
+func (o OptSendingFilterGetHeight) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptSendingFilterGetHeight) Reset() {
+	var v SendingFilterGetHeight
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptSendingFilterGetHeight) SetTo(v SendingFilterGetHeight) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptSendingFilterGetHeight) Get() (v SendingFilterGetHeight, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptSendingFilterGetHeight) Or(d SendingFilterGetHeight) SendingFilterGetHeight {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptSendingFilterGetLength returns new OptSendingFilterGetLength with value set to v.
+func NewOptSendingFilterGetLength(v SendingFilterGetLength) OptSendingFilterGetLength {
+	return OptSendingFilterGetLength{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptSendingFilterGetLength is optional SendingFilterGetLength.
+type OptSendingFilterGetLength struct {
+	Value SendingFilterGetLength
+	Set   bool
+}
+
+// IsSet returns true if OptSendingFilterGetLength was set.
+func (o OptSendingFilterGetLength) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptSendingFilterGetLength) Reset() {
+	var v SendingFilterGetLength
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptSendingFilterGetLength) SetTo(v SendingFilterGetLength) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptSendingFilterGetLength) Get() (v SendingFilterGetLength, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptSendingFilterGetLength) Or(d SendingFilterGetLength) SendingFilterGetLength {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptSendingFilterGetSettlements returns new OptSendingFilterGetSettlements with value set to v.
+func NewOptSendingFilterGetSettlements(v SendingFilterGetSettlements) OptSendingFilterGetSettlements {
+	return OptSendingFilterGetSettlements{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptSendingFilterGetSettlements is optional SendingFilterGetSettlements.
+type OptSendingFilterGetSettlements struct {
+	Value SendingFilterGetSettlements
+	Set   bool
+}
+
+// IsSet returns true if OptSendingFilterGetSettlements was set.
+func (o OptSendingFilterGetSettlements) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptSendingFilterGetSettlements) Reset() {
+	var v SendingFilterGetSettlements
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptSendingFilterGetSettlements) SetTo(v SendingFilterGetSettlements) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptSendingFilterGetSettlements) Get() (v SendingFilterGetSettlements, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptSendingFilterGetSettlements) Or(d SendingFilterGetSettlements) SendingFilterGetSettlements {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptSendingFilterGetWeight returns new OptSendingFilterGetWeight with value set to v.
+func NewOptSendingFilterGetWeight(v SendingFilterGetWeight) OptSendingFilterGetWeight {
+	return OptSendingFilterGetWeight{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptSendingFilterGetWeight is optional SendingFilterGetWeight.
+type OptSendingFilterGetWeight struct {
+	Value SendingFilterGetWeight
+	Set   bool
+}
+
+// IsSet returns true if OptSendingFilterGetWeight was set.
+func (o OptSendingFilterGetWeight) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptSendingFilterGetWeight) Reset() {
+	var v SendingFilterGetWeight
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptSendingFilterGetWeight) SetTo(v SendingFilterGetWeight) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptSendingFilterGetWeight) Get() (v SendingFilterGetWeight, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptSendingFilterGetWeight) Or(d SendingFilterGetWeight) SendingFilterGetWeight {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptSendingFilterGetWidth returns new OptSendingFilterGetWidth with value set to v.
+func NewOptSendingFilterGetWidth(v SendingFilterGetWidth) OptSendingFilterGetWidth {
+	return OptSendingFilterGetWidth{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptSendingFilterGetWidth is optional SendingFilterGetWidth.
+type OptSendingFilterGetWidth struct {
+	Value SendingFilterGetWidth
+	Set   bool
+}
+
+// IsSet returns true if OptSendingFilterGetWidth was set.
+func (o OptSendingFilterGetWidth) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptSendingFilterGetWidth) Reset() {
+	var v SendingFilterGetWidth
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptSendingFilterGetWidth) SetTo(v SendingFilterGetWidth) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptSendingFilterGetWidth) Get() (v SendingFilterGetWidth, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptSendingFilterGetWidth) Or(d SendingFilterGetWidth) SendingFilterGetWidth {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptSendingSort returns new OptSendingSort with value set to v.
+func NewOptSendingSort(v SendingSort) OptSendingSort {
+	return OptSendingSort{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptSendingSort is optional SendingSort.
+type OptSendingSort struct {
+	Value SendingSort
+	Set   bool
+}
+
+// IsSet returns true if OptSendingSort was set.
+func (o OptSendingSort) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptSendingSort) Reset() {
+	var v SendingSort
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptSendingSort) SetTo(v SendingSort) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptSendingSort) Get() (v SendingSort, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptSendingSort) Or(d SendingSort) SendingSort {
 	if v, ok := o.Get(); ok {
 		return v
 	}
@@ -289,98 +1173,6 @@ func (o OptSendingSortSortType) Get() (v SendingSortSortType, ok bool) {
 
 // Or returns value if set, or given parameter if does not.
 func (o OptSendingSortSortType) Or(d SendingSortSortType) SendingSortSortType {
-	if v, ok := o.Get(); ok {
-		return v
-	}
-	return d
-}
-
-// NewOptSendingStatus returns new OptSendingStatus with value set to v.
-func NewOptSendingStatus(v SendingStatus) OptSendingStatus {
-	return OptSendingStatus{
-		Value: v,
-		Set:   true,
-	}
-}
-
-// OptSendingStatus is optional SendingStatus.
-type OptSendingStatus struct {
-	Value SendingStatus
-	Set   bool
-}
-
-// IsSet returns true if OptSendingStatus was set.
-func (o OptSendingStatus) IsSet() bool { return o.Set }
-
-// Reset unsets value.
-func (o *OptSendingStatus) Reset() {
-	var v SendingStatus
-	o.Value = v
-	o.Set = false
-}
-
-// SetTo sets value to v.
-func (o *OptSendingStatus) SetTo(v SendingStatus) {
-	o.Set = true
-	o.Value = v
-}
-
-// Get returns value and boolean that denotes whether value was set.
-func (o OptSendingStatus) Get() (v SendingStatus, ok bool) {
-	if !o.Set {
-		return v, false
-	}
-	return o.Value, true
-}
-
-// Or returns value if set, or given parameter if does not.
-func (o OptSendingStatus) Or(d SendingStatus) SendingStatus {
-	if v, ok := o.Get(); ok {
-		return v
-	}
-	return d
-}
-
-// NewOptSendingType returns new OptSendingType with value set to v.
-func NewOptSendingType(v SendingType) OptSendingType {
-	return OptSendingType{
-		Value: v,
-		Set:   true,
-	}
-}
-
-// OptSendingType is optional SendingType.
-type OptSendingType struct {
-	Value SendingType
-	Set   bool
-}
-
-// IsSet returns true if OptSendingType was set.
-func (o OptSendingType) IsSet() bool { return o.Set }
-
-// Reset unsets value.
-func (o *OptSendingType) Reset() {
-	var v SendingType
-	o.Value = v
-	o.Set = false
-}
-
-// SetTo sets value to v.
-func (o *OptSendingType) SetTo(v SendingType) {
-	o.Set = true
-	o.Value = v
-}
-
-// Get returns value and boolean that denotes whether value was set.
-func (o OptSendingType) Get() (v SendingType, ok bool) {
-	if !o.Set {
-		return v, false
-	}
-	return o.Value, true
-}
-
-// Or returns value if set, or given parameter if does not.
-func (o OptSendingType) Or(d SendingType) SendingType {
 	if v, ok := o.Get(); ok {
 		return v
 	}
@@ -529,6 +1321,15 @@ func (s *PostClient) SetAddress(val Address) {
 	s.Address = val
 }
 
+// Available types of post offices.
+// Ref: #/components/schemas/PostOfficeType
+type PostOfficeType string
+
+const (
+	PostOfficeType_0 PostOfficeType = "Отделение связи"
+	PostOfficeType_1 PostOfficeType = "Сортировочный центр"
+)
+
 type PostcodesBySettlementGetResponse map[string][]AddressPostcode
 
 func (s *PostcodesBySettlementGetResponse) init() PostcodesBySettlementGetResponse {
@@ -540,137 +1341,197 @@ func (s *PostcodesBySettlementGetResponse) init() PostcodesBySettlementGetRespon
 	return m
 }
 
-// Ref: #/components/schemas/SendingFilter
-type SendingFilter struct {
-	// UUID or a part of it.
-	OrderID OptString `json:"order_id"`
-	// Type of sending.
-	Type OptSendingType `json:"type"`
-	// Status of sending.
-	Status OptSendingStatus `json:"status"`
+// Schema of sending.
+// Ref: #/components/schemas/Sending
+type Sending struct {
+	ID      ObjectID       `json:"_id"`
+	OrderID SendingOrderID `json:"order_id"`
+	// Registration date of sending.
+	RegistrationDate SendingRegistrationDate `json:"registration_date"`
+	Sender           PostClient              `json:"sender"`
+	Receiver         PostClient              `json:"receiver"`
+	Type             SendingType             `json:"type"`
+	Size             SendingSize             `json:"size"`
+	Weight           SendingWeight           `json:"weight"`
+	Stages           []SendingStage          `json:"stages"`
+	Status           SendingStatus           `json:"status"`
+}
+
+// GetID returns the value of ID.
+func (s Sending) GetID() ObjectID {
+	return s.ID
+}
+
+// GetOrderID returns the value of OrderID.
+func (s Sending) GetOrderID() SendingOrderID {
+	return s.OrderID
+}
+
+// GetRegistrationDate returns the value of RegistrationDate.
+func (s Sending) GetRegistrationDate() SendingRegistrationDate {
+	return s.RegistrationDate
+}
+
+// GetSender returns the value of Sender.
+func (s Sending) GetSender() PostClient {
+	return s.Sender
+}
+
+// GetReceiver returns the value of Receiver.
+func (s Sending) GetReceiver() PostClient {
+	return s.Receiver
+}
+
+// GetType returns the value of Type.
+func (s Sending) GetType() SendingType {
+	return s.Type
+}
+
+// GetSize returns the value of Size.
+func (s Sending) GetSize() SendingSize {
+	return s.Size
+}
+
+// GetWeight returns the value of Weight.
+func (s Sending) GetWeight() SendingWeight {
+	return s.Weight
+}
+
+// GetStages returns the value of Stages.
+func (s Sending) GetStages() []SendingStage {
+	return s.Stages
+}
+
+// GetStatus returns the value of Status.
+func (s Sending) GetStatus() SendingStatus {
+	return s.Status
+}
+
+// SetID sets the value of ID.
+func (s *Sending) SetID(val ObjectID) {
+	s.ID = val
+}
+
+// SetOrderID sets the value of OrderID.
+func (s *Sending) SetOrderID(val SendingOrderID) {
+	s.OrderID = val
+}
+
+// SetRegistrationDate sets the value of RegistrationDate.
+func (s *Sending) SetRegistrationDate(val SendingRegistrationDate) {
+	s.RegistrationDate = val
+}
+
+// SetSender sets the value of Sender.
+func (s *Sending) SetSender(val PostClient) {
+	s.Sender = val
+}
+
+// SetReceiver sets the value of Receiver.
+func (s *Sending) SetReceiver(val PostClient) {
+	s.Receiver = val
+}
+
+// SetType sets the value of Type.
+func (s *Sending) SetType(val SendingType) {
+	s.Type = val
+}
+
+// SetSize sets the value of Size.
+func (s *Sending) SetSize(val SendingSize) {
+	s.Size = val
+}
+
+// SetWeight sets the value of Weight.
+func (s *Sending) SetWeight(val SendingWeight) {
+	s.Weight = val
+}
+
+// SetStages sets the value of Stages.
+func (s *Sending) SetStages(val []SendingStage) {
+	s.Stages = val
+}
+
+// SetStatus sets the value of Status.
+func (s *Sending) SetStatus(val SendingStatus) {
+	s.Status = val
+}
+
+type SendingFilterGetDate struct {
 	// Start of sending date range.
 	DateStart OptDate `json:"date_start"`
 	// Finish of sending date range.
 	DateFinish OptDate `json:"date_finish"`
-	// Sender's settlement or a part of it.
-	SenderSettlement OptString `json:"sender_settlement"`
-	// Receiver's settlement or a part of it.
-	ReceiverSettlement OptString `json:"receiver_settlement"`
-	Length             OptInt64  `json:"length"`
-	Width              OptInt64  `json:"width"`
-	Height             OptInt64  `json:"height"`
-	// Weight of sending.
-	Weight OptSendingWeight `json:"weight"`
-}
-
-// GetOrderID returns the value of OrderID.
-func (s SendingFilter) GetOrderID() OptString {
-	return s.OrderID
-}
-
-// GetType returns the value of Type.
-func (s SendingFilter) GetType() OptSendingType {
-	return s.Type
-}
-
-// GetStatus returns the value of Status.
-func (s SendingFilter) GetStatus() OptSendingStatus {
-	return s.Status
 }
 
 // GetDateStart returns the value of DateStart.
-func (s SendingFilter) GetDateStart() OptDate {
+func (s SendingFilterGetDate) GetDateStart() OptDate {
 	return s.DateStart
 }
 
 // GetDateFinish returns the value of DateFinish.
-func (s SendingFilter) GetDateFinish() OptDate {
+func (s SendingFilterGetDate) GetDateFinish() OptDate {
 	return s.DateFinish
 }
 
-// GetSenderSettlement returns the value of SenderSettlement.
-func (s SendingFilter) GetSenderSettlement() OptString {
-	return s.SenderSettlement
-}
-
-// GetReceiverSettlement returns the value of ReceiverSettlement.
-func (s SendingFilter) GetReceiverSettlement() OptString {
-	return s.ReceiverSettlement
-}
-
-// GetLength returns the value of Length.
-func (s SendingFilter) GetLength() OptInt64 {
-	return s.Length
-}
-
-// GetWidth returns the value of Width.
-func (s SendingFilter) GetWidth() OptInt64 {
-	return s.Width
-}
-
-// GetHeight returns the value of Height.
-func (s SendingFilter) GetHeight() OptInt64 {
-	return s.Height
-}
-
-// GetWeight returns the value of Weight.
-func (s SendingFilter) GetWeight() OptSendingWeight {
-	return s.Weight
-}
-
-// SetOrderID sets the value of OrderID.
-func (s *SendingFilter) SetOrderID(val OptString) {
-	s.OrderID = val
-}
-
-// SetType sets the value of Type.
-func (s *SendingFilter) SetType(val OptSendingType) {
-	s.Type = val
-}
-
-// SetStatus sets the value of Status.
-func (s *SendingFilter) SetStatus(val OptSendingStatus) {
-	s.Status = val
-}
-
 // SetDateStart sets the value of DateStart.
-func (s *SendingFilter) SetDateStart(val OptDate) {
+func (s *SendingFilterGetDate) SetDateStart(val OptDate) {
 	s.DateStart = val
 }
 
 // SetDateFinish sets the value of DateFinish.
-func (s *SendingFilter) SetDateFinish(val OptDate) {
+func (s *SendingFilterGetDate) SetDateFinish(val OptDate) {
 	s.DateFinish = val
 }
 
-// SetSenderSettlement sets the value of SenderSettlement.
-func (s *SendingFilter) SetSenderSettlement(val OptString) {
-	s.SenderSettlement = val
+type SendingFilterGetHeight struct {
+	HeightMin OptInt64 `json:"height_min"`
+	HeightMax OptInt64 `json:"height_max"`
 }
 
-// SetReceiverSettlement sets the value of ReceiverSettlement.
-func (s *SendingFilter) SetReceiverSettlement(val OptString) {
-	s.ReceiverSettlement = val
+// GetHeightMin returns the value of HeightMin.
+func (s SendingFilterGetHeight) GetHeightMin() OptInt64 {
+	return s.HeightMin
 }
 
-// SetLength sets the value of Length.
-func (s *SendingFilter) SetLength(val OptInt64) {
-	s.Length = val
+// GetHeightMax returns the value of HeightMax.
+func (s SendingFilterGetHeight) GetHeightMax() OptInt64 {
+	return s.HeightMax
 }
 
-// SetWidth sets the value of Width.
-func (s *SendingFilter) SetWidth(val OptInt64) {
-	s.Width = val
+// SetHeightMin sets the value of HeightMin.
+func (s *SendingFilterGetHeight) SetHeightMin(val OptInt64) {
+	s.HeightMin = val
 }
 
-// SetHeight sets the value of Height.
-func (s *SendingFilter) SetHeight(val OptInt64) {
-	s.Height = val
+// SetHeightMax sets the value of HeightMax.
+func (s *SendingFilterGetHeight) SetHeightMax(val OptInt64) {
+	s.HeightMax = val
 }
 
-// SetWeight sets the value of Weight.
-func (s *SendingFilter) SetWeight(val OptSendingWeight) {
-	s.Weight = val
+type SendingFilterGetLength struct {
+	LengthMin OptInt64 `json:"length_min"`
+	LengthMax OptInt64 `json:"length_max"`
+}
+
+// GetLengthMin returns the value of LengthMin.
+func (s SendingFilterGetLength) GetLengthMin() OptInt64 {
+	return s.LengthMin
+}
+
+// GetLengthMax returns the value of LengthMax.
+func (s SendingFilterGetLength) GetLengthMax() OptInt64 {
+	return s.LengthMax
+}
+
+// SetLengthMin sets the value of LengthMin.
+func (s *SendingFilterGetLength) SetLengthMin(val OptInt64) {
+	s.LengthMin = val
+}
+
+// SetLengthMax sets the value of LengthMax.
+func (s *SendingFilterGetLength) SetLengthMax(val OptInt64) {
+	s.LengthMax = val
 }
 
 type SendingFilterGetResponse struct {
@@ -805,6 +1666,83 @@ func (s *SendingFilterGetResponseResultItemSettlement) SetReceiver(val string) {
 	s.Receiver = val
 }
 
+type SendingFilterGetSettlements struct {
+	// Sender's settlement or a part of it.
+	SenderSettlement OptString `json:"sender_settlement"`
+	// Receiver's settlement or a part of it.
+	ReceiverSettlement OptString `json:"receiver_settlement"`
+}
+
+// GetSenderSettlement returns the value of SenderSettlement.
+func (s SendingFilterGetSettlements) GetSenderSettlement() OptString {
+	return s.SenderSettlement
+}
+
+// GetReceiverSettlement returns the value of ReceiverSettlement.
+func (s SendingFilterGetSettlements) GetReceiverSettlement() OptString {
+	return s.ReceiverSettlement
+}
+
+// SetSenderSettlement sets the value of SenderSettlement.
+func (s *SendingFilterGetSettlements) SetSenderSettlement(val OptString) {
+	s.SenderSettlement = val
+}
+
+// SetReceiverSettlement sets the value of ReceiverSettlement.
+func (s *SendingFilterGetSettlements) SetReceiverSettlement(val OptString) {
+	s.ReceiverSettlement = val
+}
+
+type SendingFilterGetWeight struct {
+	WeightMin OptSendingWeight `json:"weight_min"`
+	WeightMax OptSendingWeight `json:"weight_max"`
+}
+
+// GetWeightMin returns the value of WeightMin.
+func (s SendingFilterGetWeight) GetWeightMin() OptSendingWeight {
+	return s.WeightMin
+}
+
+// GetWeightMax returns the value of WeightMax.
+func (s SendingFilterGetWeight) GetWeightMax() OptSendingWeight {
+	return s.WeightMax
+}
+
+// SetWeightMin sets the value of WeightMin.
+func (s *SendingFilterGetWeight) SetWeightMin(val OptSendingWeight) {
+	s.WeightMin = val
+}
+
+// SetWeightMax sets the value of WeightMax.
+func (s *SendingFilterGetWeight) SetWeightMax(val OptSendingWeight) {
+	s.WeightMax = val
+}
+
+type SendingFilterGetWidth struct {
+	WidthMin OptInt64 `json:"width_min"`
+	WidthMax OptInt64 `json:"width_max"`
+}
+
+// GetWidthMin returns the value of WidthMin.
+func (s SendingFilterGetWidth) GetWidthMin() OptInt64 {
+	return s.WidthMin
+}
+
+// GetWidthMax returns the value of WidthMax.
+func (s SendingFilterGetWidth) GetWidthMax() OptInt64 {
+	return s.WidthMax
+}
+
+// SetWidthMin sets the value of WidthMin.
+func (s *SendingFilterGetWidth) SetWidthMin(val OptInt64) {
+	s.WidthMin = val
+}
+
+// SetWidthMax sets the value of WidthMax.
+func (s *SendingFilterGetWidth) SetWidthMax(val OptInt64) {
+	s.WidthMax = val
+}
+
 type SendingGetApplicationJSONBadRequest Error
 
 func (*SendingGetApplicationJSONBadRequest) sendingGetRes() {}
@@ -814,9 +1752,9 @@ type SendingGetApplicationJSONNotFound Error
 func (*SendingGetApplicationJSONNotFound) sendingGetRes() {}
 
 type SendingGetResponse struct {
-	Type   SendingType    `json:"type"`
-	Status SendingStatus  `json:"status"`
-	Stages []SendingStage `json:"stages"`
+	Type   SendingType                    `json:"type"`
+	Status SendingStatus                  `json:"status"`
+	Stages []SendingGetResponseStagesItem `json:"stages"`
 }
 
 // GetType returns the value of Type.
@@ -830,7 +1768,7 @@ func (s SendingGetResponse) GetStatus() SendingStatus {
 }
 
 // GetStages returns the value of Stages.
-func (s SendingGetResponse) GetStages() []SendingStage {
+func (s SendingGetResponse) GetStages() []SendingGetResponseStagesItem {
 	return s.Stages
 }
 
@@ -845,11 +1783,69 @@ func (s *SendingGetResponse) SetStatus(val SendingStatus) {
 }
 
 // SetStages sets the value of Stages.
-func (s *SendingGetResponse) SetStages(val []SendingStage) {
+func (s *SendingGetResponse) SetStages(val []SendingGetResponseStagesItem) {
 	s.Stages = val
 }
 
 func (*SendingGetResponse) sendingGetRes() {}
+
+type SendingGetResponseStagesItem struct {
+	Name       SendingGetResponseStagesItemName `json:"name"`
+	Date       time.Time                        `json:"date"`
+	Postcode   AddressPostcode                  `json:"postcode"`
+	Settlement string                           `json:"settlement"`
+}
+
+// GetName returns the value of Name.
+func (s SendingGetResponseStagesItem) GetName() SendingGetResponseStagesItemName {
+	return s.Name
+}
+
+// GetDate returns the value of Date.
+func (s SendingGetResponseStagesItem) GetDate() time.Time {
+	return s.Date
+}
+
+// GetPostcode returns the value of Postcode.
+func (s SendingGetResponseStagesItem) GetPostcode() AddressPostcode {
+	return s.Postcode
+}
+
+// GetSettlement returns the value of Settlement.
+func (s SendingGetResponseStagesItem) GetSettlement() string {
+	return s.Settlement
+}
+
+// SetName sets the value of Name.
+func (s *SendingGetResponseStagesItem) SetName(val SendingGetResponseStagesItemName) {
+	s.Name = val
+}
+
+// SetDate sets the value of Date.
+func (s *SendingGetResponseStagesItem) SetDate(val time.Time) {
+	s.Date = val
+}
+
+// SetPostcode sets the value of Postcode.
+func (s *SendingGetResponseStagesItem) SetPostcode(val AddressPostcode) {
+	s.Postcode = val
+}
+
+// SetSettlement sets the value of Settlement.
+func (s *SendingGetResponseStagesItem) SetSettlement(val string) {
+	s.Settlement = val
+}
+
+type SendingGetResponseStagesItemName string
+
+const (
+	SendingGetResponseStagesItemName_0 SendingGetResponseStagesItemName = "Принято в отделении связи"
+	SendingGetResponseStagesItemName_1 SendingGetResponseStagesItemName = "Покинуло место приема"
+	SendingGetResponseStagesItemName_2 SendingGetResponseStagesItemName = "Прибыло в сортировочный центр"
+	SendingGetResponseStagesItemName_3 SendingGetResponseStagesItemName = "Покинуло сортировочный центр"
+	SendingGetResponseStagesItemName_4 SendingGetResponseStagesItemName = "Прибыло в место вручения"
+	SendingGetResponseStagesItemName_5 SendingGetResponseStagesItemName = "Вручено адресату"
+)
 
 type SendingOrderID uuid.UUID
 
@@ -926,6 +1922,21 @@ func (s *SendingPostResponse) SetOrderID(val SendingOrderID) {
 }
 
 func (*SendingPostResponse) sendingPostRes() {}
+
+// Registration date of sending.
+type SendingRegistrationDate struct {
+	Date time.Time `json:"$date"`
+}
+
+// GetDate returns the value of Date.
+func (s SendingRegistrationDate) GetDate() time.Time {
+	return s.Date
+}
+
+// SetDate sets the value of Date.
+func (s *SendingRegistrationDate) SetDate(val time.Time) {
+	s.Date = val
+}
 
 // Ref: #/components/schemas/SendingSize
 type SendingSize struct {
@@ -1011,10 +2022,10 @@ const (
 
 // Ref: #/components/schemas/SendingStage
 type SendingStage struct {
-	Name       SendingStageName `json:"name"`
-	Date       time.Time        `json:"date"`
-	Postcode   AddressPostcode  `json:"postcode"`
-	Settlement string           `json:"settlement"`
+	Name       SendingStageName      `json:"name"`
+	Timestamp  SendingStageTimestamp `json:"timestamp"`
+	Postcode   AddressPostcode       `json:"postcode"`
+	EmployeeID ObjectID              `json:"employee_id"`
 }
 
 // GetName returns the value of Name.
@@ -1022,9 +2033,9 @@ func (s SendingStage) GetName() SendingStageName {
 	return s.Name
 }
 
-// GetDate returns the value of Date.
-func (s SendingStage) GetDate() time.Time {
-	return s.Date
+// GetTimestamp returns the value of Timestamp.
+func (s SendingStage) GetTimestamp() SendingStageTimestamp {
+	return s.Timestamp
 }
 
 // GetPostcode returns the value of Postcode.
@@ -1032,9 +2043,9 @@ func (s SendingStage) GetPostcode() AddressPostcode {
 	return s.Postcode
 }
 
-// GetSettlement returns the value of Settlement.
-func (s SendingStage) GetSettlement() string {
-	return s.Settlement
+// GetEmployeeID returns the value of EmployeeID.
+func (s SendingStage) GetEmployeeID() ObjectID {
+	return s.EmployeeID
 }
 
 // SetName sets the value of Name.
@@ -1042,9 +2053,9 @@ func (s *SendingStage) SetName(val SendingStageName) {
 	s.Name = val
 }
 
-// SetDate sets the value of Date.
-func (s *SendingStage) SetDate(val time.Time) {
-	s.Date = val
+// SetTimestamp sets the value of Timestamp.
+func (s *SendingStage) SetTimestamp(val SendingStageTimestamp) {
+	s.Timestamp = val
 }
 
 // SetPostcode sets the value of Postcode.
@@ -1052,9 +2063,9 @@ func (s *SendingStage) SetPostcode(val AddressPostcode) {
 	s.Postcode = val
 }
 
-// SetSettlement sets the value of Settlement.
-func (s *SendingStage) SetSettlement(val string) {
-	s.Settlement = val
+// SetEmployeeID sets the value of EmployeeID.
+func (s *SendingStage) SetEmployeeID(val ObjectID) {
+	s.EmployeeID = val
 }
 
 type SendingStageName string
@@ -1066,6 +2077,64 @@ const (
 	SendingStageName_3 SendingStageName = "Покинуло сортировочный центр"
 	SendingStageName_4 SendingStageName = "Прибыло в место вручения"
 	SendingStageName_5 SendingStageName = "Вручено адресату"
+)
+
+type SendingStageTimestamp struct {
+	Date time.Time `json:"$date"`
+}
+
+// GetDate returns the value of Date.
+func (s SendingStageTimestamp) GetDate() time.Time {
+	return s.Date
+}
+
+// SetDate sets the value of Date.
+func (s *SendingStageTimestamp) SetDate(val time.Time) {
+	s.Date = val
+}
+
+type SendingStatGetResponseItem struct {
+	Key   string `json:"key"`
+	Value int64  `json:"value"`
+}
+
+// GetKey returns the value of Key.
+func (s SendingStatGetResponseItem) GetKey() string {
+	return s.Key
+}
+
+// GetValue returns the value of Value.
+func (s SendingStatGetResponseItem) GetValue() int64 {
+	return s.Value
+}
+
+// SetKey sets the value of Key.
+func (s *SendingStatGetResponseItem) SetKey(val string) {
+	s.Key = val
+}
+
+// SetValue sets the value of Value.
+func (s *SendingStatGetResponseItem) SetValue(val int64) {
+	s.Value = val
+}
+
+type SendingStatisticsGetDirection string
+
+const (
+	SendingStatisticsGetDirection_0 SendingStatisticsGetDirection = "Отправления"
+	SendingStatisticsGetDirection_1 SendingStatisticsGetDirection = "Получения"
+)
+
+type SendingStatisticsGetOKApplicationJSON []SendingStatGetResponseItem
+
+func (SendingStatisticsGetOKApplicationJSON) sendingStatisticsGetRes() {}
+
+type SendingStatisticsGetStatistics string
+
+const (
+	SendingStatisticsGetStatistics_0 SendingStatisticsGetStatistics = "Количество"
+	SendingStatisticsGetStatistics_1 SendingStatisticsGetStatistics = "Время"
+	SendingStatisticsGetStatistics_2 SendingStatisticsGetStatistics = "Вес"
 )
 
 // Ref: #/components/schemas/SendingStatus

@@ -75,7 +75,11 @@ export default class Registration extends React.Component{
     }
 
     componentDidMount() {
-        axios.get('http://localhost:8080/api/v1/postcodes_by_settlement')
+        axios.get('http://localhost:8080/api/v1/postcodes_by_settlement',{
+            params: {
+                type: "Отделение связи"
+            }
+        })
             .then(
                 (response) => {
                     this.setState({

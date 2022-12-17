@@ -8,13 +8,32 @@ import (
 
 // Handler handles operations described by OpenAPI v3 specification.
 type Handler interface {
+	// DataExportSendingGet implements GET /data_export_sending operation.
+	//
+	// Get data from collection `sendings` from database. Return json array.
+	//
+	// GET /data_export_sending
+	DataExportSendingGet(ctx context.Context) ([]Sending, error)
+	// DataImportSendingPost implements POST /data_import_sending operation.
+	//
+	// Import data into collection `sendings` in database. Require array of json.
+	//
+	// POST /data_import_sending
+	DataImportSendingPost(ctx context.Context, req []Sending) (DataImportSendingPostRes, error)
+	// EmployeeFilterGet implements GET /employee_filter operation.
+	//
+	// Get employees that fit the filter. Require `page` and `elems_on_page`. Return amount of employees
+	// that fit the filter and employees on the selected page.
+	//
+	// GET /employee_filter
+	EmployeeFilterGet(ctx context.Context, params EmployeeFilterGetParams) (EmployeeFilterGetRes, error)
 	// PostcodesBySettlementGet implements GET /postcodes_by_settlement operation.
 	//
 	// Get information about postcodes in cities. Return map with `settlement` key and `postcode` array
 	// value.
 	//
 	// GET /postcodes_by_settlement
-	PostcodesBySettlementGet(ctx context.Context) (PostcodesBySettlementGetResponse, error)
+	PostcodesBySettlementGet(ctx context.Context, params PostcodesBySettlementGetParams) (PostcodesBySettlementGetResponse, error)
 	// SendingFilterGet implements GET /sending_filter operation.
 	//
 	// Get sendings that fit the filter. Require `page` and `elems_on_page`. Return amount of sendings
@@ -36,6 +55,12 @@ type Handler interface {
 	//
 	// POST /sending
 	SendingPost(ctx context.Context, req SendingPostReq) (SendingPostRes, error)
+	// SendingStatisticsGet implements GET /sending_statistics operation.
+	//
+	// Get statistics of sendings. Return array of keys and statistic value.
+	//
+	// GET /sending_statistics
+	SendingStatisticsGet(ctx context.Context, params SendingStatisticsGetParams) (SendingStatisticsGetRes, error)
 }
 
 // Server implements http server based on OpenAPI v3 specification and
