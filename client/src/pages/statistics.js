@@ -15,6 +15,53 @@ import {ButtonGroup} from "@mui/material";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 
+
+import {
+    Chart as ChartJS,
+    CategoryScale,
+    LinearScale,
+    BarElement,
+    Title,
+    Tooltip,
+    Legend,
+} from 'chart.js';
+import { Bar } from 'react-chartjs-2';
+
+ChartJS.register(
+    CategoryScale,
+    LinearScale,
+    BarElement,
+    Title,
+    Tooltip,
+    Legend
+);
+
+export const options = {
+    responsive: true,
+    plugins: {
+        legend: {
+            position: 'top',
+        },
+        title: {
+            display: true,
+            text: 'Chart.js Bar Chart',
+        },
+    },
+};
+
+const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
+
+export const data = {
+    labels,
+    datasets: [
+        {
+            label: 'Dataset 1',
+            data: labels.map(() => 10),
+            backgroundColor: 'rgba(255, 99, 132, 0.5)',
+        }
+    ]
+};
+
 export default function Statistics(props){
     const [settlement, setSettlement] = useState([]);
     const [typeOfSending, setTypeOfSending] = useState([]);
@@ -52,7 +99,19 @@ export default function Statistics(props){
     }
 
     const handleClickButtonShow = (event) => {
-
+        axios.get('http://localhost:8080/api/v1/sending_statistics', {
+            params: {
+                settlement: settlement,
+                type: typeOfSending,
+                direction: direction,
+                statistics: typeOfStatistic
+            }
+        })
+            .then(
+                (response) => {
+                    //setCityAndPostcodes(response.data);
+                }
+            )
     }
 
     return (
@@ -87,8 +146,8 @@ export default function Statistics(props){
                                 value={direction}
                                 onChange={(e) => setDirection(e.target.value)}
                             >
-                                <MenuItem value={'Отправление'}>Отправление</MenuItem>
-                                <MenuItem value={'Получение'}>Получение</MenuItem>
+                                <MenuItem value={'Отправления'}>Отправление</MenuItem>
+                                <MenuItem value={'Получения'}>Получение</MenuItem>
                             </TextField>
                             <TextField
                                 select
@@ -98,8 +157,8 @@ export default function Statistics(props){
                                 onChange={(e) => setTypeOfStatistic(e.target.value)}
                             >
                                 <MenuItem value={'Количество'}>Количество</MenuItem>
-                                <MenuItem value={'Среднее время в пути'}>Среднее время в пути</MenuItem>
-                                <MenuItem value={'Средний вес'}>Средний вес</MenuItem>
+                                <MenuItem value={'Время'}>Среднее время в пути</MenuItem>
+                                <MenuItem value={'Вес'}>Средний вес</MenuItem>
                             </TextField>
                         </Stack>
                     </Grid>
@@ -109,6 +168,7 @@ export default function Statistics(props){
                         </Button>
                     </Grid>
                 </Grid>
+                <Bar options={options} data={data} />;
             </Box>
         </>
     )
