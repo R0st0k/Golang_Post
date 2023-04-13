@@ -1,4 +1,6 @@
-# nosql2h22-post
+# Post
+
+Проект является тестом генератора ogen-go и MongoDB
 
 **Примечание**: в данной инструкции команды `docker compose` и `docker-compose` взаимозаменямы
 
